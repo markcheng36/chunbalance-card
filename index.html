@@ -199,7 +199,7 @@
           <img class="logo" src="images/logo.png" alt="CB STUDIO">
           <div class="name">鄭鴻鈞<span class="nick">馬克</span></div>
           <div class="role">身 體 結 構 平 衡 教 練</div>
-          <a class="btn btn-brown" href="images/intro_card.jpg" target="_blank" rel="noopener">查看背景資訊</a>
+          <button class="btn btn-brown" type="button" onclick="openModal('images/intro_card.jpg')">查看背景資訊</button>
           </div>
           <div class="swipe-hint">滑動查看更多<span class="arrow">→</span></div>
         </section>
@@ -216,7 +216,7 @@
             <div class="service-pill">足弓平衡</div>
           </div>
           <div class="tagline">讓平衡，成為身體最自在的歸屬</div>
-          <button class="btn btn-grey" type="button" onclick="openModal()">查看完整價目表</button>
+          <button class="btn btn-grey" type="button" onclick="openModal('images/pricelist.jpg')">查看完整價目表</button>
           </div>
         </section>
 
@@ -271,7 +271,7 @@
   <div class="modal-overlay" id="priceModal" onclick="if(event.target===this)closeModal()">
     <div class="modal-box">
       <button class="modal-close" type="button" onclick="closeModal()">✕</button>
-      <img src="images/pricelist.jpg" alt="鈞衡舍 價目表">
+      <img id="modalImg" src="images/pricelist.jpg" alt="鈞衡舍 價目表">
     </div>
   </div>
 
@@ -282,7 +282,7 @@
     const idx = Math.round(track.scrollLeft / track.clientWidth);
     dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
   });
-  function openModal(){ document.getElementById('priceModal').classList.add('open'); }
+  function openModal(src){ document.getElementById('modalImg').src = src; document.getElementById('priceModal').classList.add('open'); }
   function closeModal(){ document.getElementById('priceModal').classList.remove('open'); }
 </script>
 </body>
