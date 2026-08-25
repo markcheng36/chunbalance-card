@@ -181,10 +181,10 @@
 
   /* ---- card 0 BNI ---- */
   .card-bni{
-    background:var(--cream);padding:40px 28px 84px;justify-content:flex-start;
+    background:var(--cream);padding:64px 28px 84px;justify-content:flex-start;
     font-family:"PingFang TC","Microsoft JhengHei",sans-serif;
   }
-  .bni-info{width:100%;text-align:left;}
+  .bni-info{width:calc(100% - 14px);text-align:left;margin-left:14px;}
   .bni-topbar{
     width:100%;display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px;
   }
@@ -192,14 +192,14 @@
   .bni-group{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--olive-dark);}
   .bni-chapter{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--ink-soft);margin-bottom:6px;}
 
-  .bni-body{width:100%;display:flex;align-items:flex-start;gap:12px;margin-top:16px;margin-bottom:30px;}
-  .bni-photo-col{flex:0 0 138px;position:relative;height:310px;}
+  .bni-body{width:calc(100% - 14px);display:flex;align-items:flex-start;gap:12px;margin-top:16px;margin-bottom:14px;margin-left:14px;}
+  .bni-photo-col{flex:0 0 124px;position:relative;height:310px;}
   .bni-photo{
-    position:absolute;left:-28px;top:0;width:200px;height:auto;
+    position:absolute;left:-28px;top:0;width:200px;height:auto;z-index:1;
     -webkit-mask-image:linear-gradient(to bottom, #000 90%, transparent 100%);
     mask-image:linear-gradient(to bottom, #000 90%, transparent 100%);
   }
-  .bni-text-col-right{flex:1 1 0%;min-width:0;text-align:right;display:flex;flex-direction:column;align-items:flex-end;}
+  .bni-text-col-right{flex:1 1 0%;min-width:0;text-align:right;display:flex;flex-direction:column;align-items:flex-end;position:relative;z-index:2;}
   .bni-name-stack{display:flex;flex-direction:column;align-items:flex-end;line-height:0.9;font-family:"Noto Serif TC",serif;margin-bottom:12px;}
   .bni-name-stack span{
     font-size:46px;font-weight:900;color:var(--ink);letter-spacing:0px;
@@ -210,8 +210,8 @@
     font-size:13px;font-weight:700;color:var(--coral);
     border:1px solid var(--coral);border-radius:999px;padding:4px 8px;white-space:nowrap;
   }
-  .bni-brand{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:0.5px;margin-bottom:6px;}
-  .bni-phone{font-size:18px;font-weight:900;color:var(--ink);letter-spacing:0.5px;}
+  .bni-brand{font-size:16px;font-weight:900;color:var(--ink);letter-spacing:0.5px;margin-bottom:8px;}
+  .bni-phone{font-size:23px;font-weight:900;color:var(--ink);letter-spacing:0.5px;}
 
   .bni-banner{width:100%;padding:4px 4px 18px;margin-bottom:8px;text-align:center;border-top:1px solid #DDD5C2;}
   .bni-banner div{
