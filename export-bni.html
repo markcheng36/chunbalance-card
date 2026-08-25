@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>鄭鴻鈞 馬克｜鈞衡舍 電子名片</title>
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8">
 <style>
   :root{
     --olive:#6B7355;
@@ -237,116 +232,33 @@
   }
   .dot{width:7px;height:7px;border-radius:50%;background:#D8CFBE;transition:background .2s,transform .2s;}
   .dot.active{background:var(--coral);transform:scale(1.3);}
-</style>
-</head>
-<body>
-  <div class="stage">
-    <div class="phone">
-      <div class="track" id="track">
-
-        <section class="card card1">
-          <div class="content-scale">
-          <img class="headshot" src="images/headshot.jpg" alt="鄭鴻鈞 馬克教練">
-          <img class="logo" src="images/logo.png" alt="CB STUDIO">
-          <div class="name">鄭鴻鈞<span class="nick">馬克</span></div>
-          <div class="role">身 體 結 構 平 衡 教 練</div>
-          <button class="btn btn-brown" type="button" onclick="openModal('images/intro_card.jpg')">查看背景資訊</button>
-          <button class="btn btn-ink" type="button" style="margin-top:12px;" onclick="sharePage()">分享</button>
+  html,body{background:#F3F2EE;height:auto;}
+  .card-bni{width:430px;height:auto;flex:none;padding-bottom:0px;}
+</style></head><body>
+        <section class="card card-bni">
+          <div class="bni-info">
+            <div class="bni-topbar">
+              <div class="bni-wordmark">BNI</div>
+              <div class="bni-group">品味生活組</div>
+            </div>
+            <div class="bni-chapter">大恆白金分會</div>
           </div>
-          <div class="swipe-hint">滑動查看更多<span class="arrow">→</span></div>
+          <div class="bni-body">
+            <div class="bni-photo-col">
+              <img class="bni-photo" src="images/bni-headshot-cutout-crop.png" alt="鄭鴻鈞 馬克">
+            </div>
+            <div class="bni-text-col-right">
+              <div class="bni-name-stack"><span>鄭</span><span>鴻</span><span>鈞</span></div>
+              <div class="bni-industry">身體平衡</div>
+              <div class="bni-tags">
+                <div class="bni-tag">結構調整</div>
+                <div class="bni-tag">運動訓練</div>
+                <div class="bni-tag">能量療癒</div>
+              </div>
+              <div class="bni-brand">鈞衡舍 &amp; 結構X獵人</div>
+              <div class="bni-phone">0928-058-314</div>
+            </div>
+          </div>
+          <div class="bni-banner"><div>身體平衡找馬克<br>站得穩才<span class="banner-accent">走得久</span></div></div>
         </section>
-
-        <section class="card card2">
-          <div class="content-scale">
-          <div class="eyebrow">SERVICE</div>
-          <div class="heading">服務項目</div>
-          <div class="service-list">
-            <div class="service-pill">結構調整</div>
-            <div class="service-pill">運動按摩</div>
-            <div class="service-pill">運動訓練</div>
-            <div class="service-pill">能量平衡</div>
-            <div class="service-pill">足弓平衡</div>
-          </div>
-          <div class="tagline">讓平衡，成為身體最自在的歸屬</div>
-          <button class="btn btn-grey" type="button" onclick="openModal('images/pricelist.jpg')">查看完整價目表</button>
-          </div>
-        </section>
-
-        <section class="card card3">
-          <div class="content-scale">
-          <div class="eyebrow">LOCATION</div>
-          <div class="heading">駐點位置</div>
-          <img class="venue-logo" src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER">
-          <div class="pin">📍</div>
-          <div class="place-name">板橋江子翠捷運站</div>
-          <a class="btn" href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">開啟 Google 地圖</a>
-          </div>
-        </section>
-
-        <section class="card card4">
-          <div class="content-scale">
-          <div class="eyebrow">CHARITY</div>
-          <div class="heading">公益活動</div>
-          <div class="charity-org">中華武醫國際交流發展總會<br>北部分會 執行長</div>
-          <div class="charity-desc">
-            長期投入「武醫義整」公益活動，提供無償足部健檢與結構調整服務，
-            秉持「心法勝過招式」的理念，先幫助想幫助別人的人恢復健康。
-          </div>
-          <a class="btn btn-coral" href="https://wuyi-taiwan.github.io/north/" target="_blank" rel="noopener">查看武醫北部分會官網</a>
-          </div>
-        </section>
-
-        <section class="card card5">
-          <div class="content-scale">
-          <div class="eyebrow">CONTACT</div>
-          <div class="heading">聯絡方式</div>
-          <img class="qr" src="images/qr.png" alt="LINE QR Code">
-          <div class="line-id">LINE ID：@chunbalance</div>
-          <a class="btn line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加 LINE 好友</a>
-          <a class="phone-link" href="tel:0928058314">0928-058-314</a>
-          <div class="phone-note">點擊直接撥打</div>
-          <a class="btn btn-brown" href="tel:0928058314">撥打電話</a>
-          </div>
-        </section>
-
-      </div>
-      <div class="dots" id="dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="priceModal" onclick="if(event.target===this)closeModal()">
-    <div class="modal-box">
-      <button class="modal-close" type="button" onclick="closeModal()">✕</button>
-      <img id="modalImg" src="images/pricelist.jpg" alt="鈞衡舍 價目表">
-    </div>
-  </div>
-
-<script>
-  const track = document.getElementById('track');
-  const dots = document.querySelectorAll('.dot');
-  track.addEventListener('scroll', () => {
-    const idx = Math.round(track.scrollLeft / track.clientWidth);
-    dots.forEach((d,i)=>d.classList.toggle('active', i===idx));
-  });
-  function openModal(src){ document.getElementById('modalImg').src = src; document.getElementById('priceModal').classList.add('open'); }
-  function sharePage(){
-    var url = location.href.split('#')[0].split('?')[0];
-    var title = document.title;
-    if (navigator.share) {
-      navigator.share({title:title, url:url}).catch(function(){});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(url).then(function(){ alert('連結已複製'); });
-    } else {
-      window.prompt('複製這個連結：', url);
-    }
-  }
-  function closeModal(){ document.getElementById('priceModal').classList.remove('open'); }
-</script>
-</body>
-</html>
+</body></html>
