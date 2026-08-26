@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8">
+<style>
+  :root{
+    --olive:#6B7355;
+    --olive-dark:#4F5740;
+    --brown:#8B7355;
+    --brown-light:#A89078;
+    --coral:#C1553D;
+    --cream:#F3F2EE;
+    --ink:#3A362F;
+    --ink-soft:#6B6558;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{
+    height:100%;
+    background:var(--olive-dark);
+    font-family:"Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;
+    color:var(--ink);
+    overscroll-behavior:none;
+  }
+  .card{
+    flex:0 0 100%;
+    scroll-snap-align:start;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:64px 34px 90px;
+    text-align:center;
+    position:relative;
+  }
+  .content-scale{
+    display:flex;flex-direction:column;align-items:center;
+  }
+
+  /* ---- shared heading ---- */
+  .eyebrow{
+    font-size:15px;letter-spacing:4px;color:var(--brown);font-weight:700;margin-bottom:12px;
+  }
+  .heading{
+    font-size:33px;font-weight:700;letter-spacing:3px;color:var(--ink);margin-bottom:28px;
+  }
+
+  /* ---- card 5 contact ---- */
+  .card5{background:var(--cream);}
+  .qr{width:188px;height:188px;object-fit:contain;margin-bottom:14px;border-radius:12px;}
+  .line-id{font-size:16px;font-weight:700;color:var(--ink-soft);letter-spacing:1px;margin-bottom:22px;}
+  .phone-link{
+    font-size:28px;font-weight:700;color:var(--ink);letter-spacing:1px;text-decoration:none;
+  }
+  .phone-note{font-size:14px;color:var(--brown);margin-top:6px;letter-spacing:1px;}
+  html,body{background:#F3F2EE;height:auto;}
+  .card5{width:430px;height:auto;flex:none;}
+</style></head><body>
+<section class="card card5"><div class="content-scale">
+<div class="eyebrow">CONTACT</div>
+<div class="heading">聯絡方式</div>
+<img class="qr" src="images/qr.png" alt="">
+<div class="line-id">LINE ID：@chunbalance</div>
+<a class="phone-link" href="tel:0928058314">0928-058-314</a>
+<div class="phone-note">點擊直接撥打</div>
+</div></section>
+</body></html>
