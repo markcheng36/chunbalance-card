@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>場地費結算</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --card: #ffffff; --text: #222; --muted: #6b6b6b;
+    --line: #e2ddd3; --accent: #2f6b4f; --accent-soft: #e6f0ea; --warn: #a3541b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161816; --card: #212421; --text: #ececec; --muted: #a0a0a0;
+            --line: #353a35; --accent: #7cc39d; --accent-soft: #24382c; --warn: #e3a06a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font-family: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+         font-size: 16px; line-height: 1.5; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 22px; margin: 4px 0 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+          padding: 14px 16px; margin-bottom: 14px; }
+  .total { background: var(--accent-soft); border-color: var(--accent); text-align: center; }
+  .total .big { font-size: 34px; font-weight: 700; color: var(--accent); }
+  .muted { color: var(--muted); font-size: 14px; }
+  select, input, textarea, button { font: inherit; color: var(--text); }
+  select, input[type=number] { background: var(--card); border: 1px solid var(--line);
+                               border-radius: 8px; padding: 6px 8px; }
+  input[type=number] { width: 64px; text-align: right; }
+  textarea { width: 100%; min-height: 120px; background: var(--card); border: 1px solid var(--line);
+             border-radius: 8px; padding: 8px; }
+  button { background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+           padding: 10px 16px; font-weight: 600; width: 100%; margin-top: 8px; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { padding: 6px 4px; border-bottom: 1px solid var(--line); text-align: left; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .warn { color: var(--warn); }
+  label.chk { display: flex; gap: 8px; align-items: center; margin-top: 8px; font-size: 15px; }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+           background: var(--text); color: var(--bg); padding: 8px 16px; border-radius: 20px;
+           opacity: 0; transition: opacity .2s; pointer-events: none; }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<main>
+  <h1>場地費結算</h1>
+
+  <div id="empty" class="card" hidden>
+    <p>還沒有收到日曆資料。請在 iPhone 執行「場地費結算」捷徑，或把資料貼在下面（一行一筆，例如 <code>2026-10-03|按摩-板橋（1800）鴻鈞</code>）。</p>
+    <textarea id="paste" placeholder="2026-10-03|按摩-板橋（1800）鴻鈞"></textarea>
+    <button id="pasteBtn">計算</button>
+  </div>
+
+  <div id="result" hidden>
+    <div class="card row">
+      <span>結算月份</span>
+      <select id="month"></select>
+    </div>
+
+    <div class="card total">
+      <div class="muted">這個月要給師父</div>
+      <div class="big" id="grand">$0</div>
+      <div class="muted" id="grandSub"></div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>地點</th><th class="num">次數</th><th class="num">收入</th><th class="num">抽成</th><th class="num">場地費</th></tr></thead>
+        <tbody id="byLoc"></tbody>
+      </table>
+      <p class="muted">抽成 % 可以直接改，改完會記在這支手機上。</p>
+    </div>
+
+    <div class="card">
+      <button id="copyBtn">複製結算內容（可貼給師父）</button>
+      <label class="chk"><input type="checkbox" id="withNames"> 複製時附上客人名字</label>
+    </div>
+
+    <div class="card">
+      <b>明細</b>
+      <table>
+        <thead><tr><th>日期</th><th>地點</th><th>客人</th><th class="num">金額</th></tr></thead>
+        <tbody id="detail"></tbody>
+      </table>
+    </div>
+
+    <div id="badCard" class="card" hidden>
+      <b class="warn">這些預約格式對不到，沒有算進去</b>
+      <p class="muted">標題要像「按摩-板橋（1800）客人名字」。改好日曆後重新執行捷徑即可。</p>
+      <ul id="bad"></ul>
+    </div>
+  </div>
+</main>
+<div id="toast"></div>
+
+<script>
+(function () {
+  // 各地點預設抽成（%），和 Notion「鈞衡舍」頁面的設定一致
+  var DEFAULT_RATES = { '板橋': 20, '泰山': 30, '三重': 40 };
+  var RATE_KEY = 'venueFeeRates';
+
+  function loadRates() {
+    var r = Object.assign({}, DEFAULT_RATES);
+    try { Object.assign(r, JSON.parse(localStorage.getItem(RATE_KEY) || '{}')); } catch (e) {}
+    return r;
+  }
+  function saveRates() {
+    try { localStorage.setItem(RATE_KEY, JSON.stringify(rates)); } catch (e) {}
+  }
+
+  var rates = loadRates();
+  var entries = [], bad = [];
+
+  // 一行：日期|標題。日期接受 2026-10-03、2026/10/3、2026年10月3日 等格式
+  var DATE_RE = /(\d{4})\s*[-\/.年]\s*(\d{1,2})\s*[-\/.月]\s*(\d{1,2})/;
+  var TITLE_RE = /^(.*?)[-－—–]\s*(.+?)\s*[（(]\s*\$?([\d,，]+)\s*元?\s*[）)]\s*(.*)$/;
+
+  function parse(text) {
+    entries = []; bad = [];
+    text.split(/\r?\n/).forEach(function (line) {
+      line = line.trim();
+      if (!line) return;
+      var sep = line.indexOf('|');
+      var datePart = sep >= 0 ? line.slice(0, sep) : line;
+      var title = (sep >= 0 ? line.slice(sep + 1) : line).trim();
+      var d = datePart.match(DATE_RE);
+      var t = title.match(TITLE_RE);
+      if (d && t) {
+        entries.push({
+          y: +d[1], m: +d[2], day: +d[3],
+          service: t[1].trim(), loc: t[2].trim(),
+          amount: +t[3].replace(/[,，]/g, ''), client: t[4].trim()
+        });
+      } else if (/[（(]\s*\d/.test(title) || /^按摩/.test(title)) {
+        // 只列出看起來像預約、但格式有誤的；一般行程不顯示
+        bad.push((d ? d[1] + '/' + d[2] + '/' + d[3] + ' ' : '') + title);
+      }
+    });
+    entries.sort(function (a, b) { return (a.y - b.y) || (a.m - b.m) || (a.day - b.day); });
+  }
+
+  function key(y, m) { return y + '-' + (m < 10 ? '0' : '') + m; }
+  function money(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  function defaultMonth(months) {
+    var now = new Date();
+    var y = now.getFullYear(), m = now.getMonth() + 1;
+    // 月初（10號前）通常是結算上個月
+    if (now.getDate() <= 10) { m -= 1; if (m === 0) { m = 12; y -= 1; } }
+    var k = key(y, m);
+    return months.indexOf(k) >= 0 ? k : months[months.length - 1];
+  }
+
+  var sel = document.getElementById('month');
+
+  function render() {
+    var k = sel.value;
+    var list = entries.filter(function (e) { return key(e.y, e.m) === k; });
+    var locs = {}, order = [];
+    list.forEach(function (e) {
+      if (!locs[e.loc]) { locs[e.loc] = { n: 0, sum: 0 }; order.push(e.loc); }
+      locs[e.loc].n++; locs[e.loc].sum += e.amount;
+    });
+
+    var grand = 0, income = 0, rows = '';
+    order.forEach(function (loc) {
+      var r = rates[loc] != null ? rates[loc] : 0;
+      var fee = Math.round(locs[loc].sum * r / 100);
+      grand += fee; income += locs[loc].sum;
+      rows += '<tr><td>' + esc(loc) + '</td><td class="num">' + locs[loc].n + '</td><td class="num">' +
+        money(locs[loc].sum) + '</td><td class="num"><input type="number" min="0" max="100" data-loc="' +
+        esc(loc) + '" value="' + r + '">%</td><td class="num">' + money(fee) + '</td></tr>';
+    });
+    document.getElementById('byLoc').innerHTML = rows || '<tr><td colspan="5" class="muted">這個月沒有預約</td></tr>';
+    document.getElementById('grand').textContent = money(grand);
+    document.getElementById('grandSub').textContent = list.length + ' 筆預約，收入合計 ' + money(income);
+
+    document.getElementById('detail').innerHTML = list.map(function (e) {
+      return '<tr><td>' + e.m + '/' + e.day + '</td><td>' + esc(e.loc) + '</td><td>' + esc(e.client) +
+        '</td><td class="num">' + money(e.amount) + '</td></tr>';
+    }).join('');
+
+    Array.prototype.forEach.call(document.querySelectorAll('#byLoc input'), function (inp) {
+      inp.addEventListener('change', function () {
+        var v = parseFloat(inp.value);
+        rates[inp.getAttribute('data-loc')] = isNaN(v) ? 0 : v;
+        saveRates(); render();
+      });
+    });
+
+    var badEl = document.getElementById('bad');
+    badEl.innerHTML = bad.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('');
+    document.getElementById('badCard').hidden = bad.length === 0;
+
+    render.summary = function (withNames) {
+      var m = +k.split('-')[1];
+      var out = [k.split('-')[0] + '年' + m + '月 場地費結算'];
+      order.forEach(function (loc) {
+        var r = rates[loc] != null ? rates[loc] : 0;
+        if (!r) return;
+        out.push(loc + '：' + locs[loc].n + '次，收入 ' + money(locs[loc].sum) + ' × ' + r + '% = ' +
+          money(locs[loc].sum * r / 100));
+      });
+      out.push('合計：' + money(grand));
+      out.push('');
+      list.forEach(function (e) {
+        if (!rates[e.loc]) return;
+        out.push(e.m + '/' + e.day + ' ' + e.loc + ' ' + money(e.amount) + (withNames && e.client ? ' ' + e.client : ''));
+      });
+      return out.join('\n');
+    };
+  }
+
+  function show(text) {
+    parse(text);
+    var months = [];
+    entries.forEach(function (e) { var k = key(e.y, e.m); if (months.indexOf(k) < 0) months.push(k); });
+    if (!months.length) {
+      document.getElementById('empty').hidden = false;
+      document.getElementById('result').hidden = true;
+      if (text.trim()) toast('沒有找到符合格式的預約');
+      return;
+    }
+    sel.innerHTML = months.map(function (k) {
+      var p = k.split('-'); return '<option value="' + k + '">' + p[0] + '年' + (+p[1]) + '月</option>';
+    }).join('');
+    sel.value = defaultMonth(months);
+    document.getElementById('empty').hidden = true;
+    document.getElementById('result').hidden = false;
+    render();
+  }
+
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(function () { t.classList.remove('show'); }, 1800);
+  }
+
+  sel.addEventListener('change', render);
+  document.getElementById('pasteBtn').addEventListener('click', function () {
+    show(document.getElementById('paste').value);
+  });
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var text = render.summary(document.getElementById('withNames').checked);
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); toast('已複製'); } catch (e) { toast('複製失敗'); }
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast('已複製'); }, fallback);
+    else fallback();
+  });
+
+  // 資料放在網址 # 後面，只在這支手機上處理，不會傳到任何伺服器
+  var raw = '';
+  try { raw = decodeURIComponent(location.hash.slice(1)); } catch (e) { raw = location.hash.slice(1); }
+  if (raw) show(raw); else document.getElementById('empty').hidden = false;
+})();
+</script>
+</body>
+</html>
