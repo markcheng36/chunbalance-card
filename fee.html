@@ -40,6 +40,8 @@
   .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .warn { color: var(--warn); }
   label.chk { display: flex; gap: 8px; align-items: center; margin-top: 8px; font-size: 15px; }
+  .statement-title { font-weight: 700; font-size: 17px; margin-bottom: 4px; }
+  tfoot th { border-bottom: 0; border-top: 2px solid var(--text); }
   #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
            background: var(--text); color: var(--bg); padding: 8px 16px; border-radius: 20px;
            opacity: 0; transition: opacity .2s; pointer-events: none; }
@@ -82,11 +84,13 @@
     </div>
 
     <div class="card">
-      <b>明細</b>
+      <div class="statement-title" id="stmtTitle">場地費對帳</div>
       <table>
-        <thead><tr><th>日期</th><th>地點</th><th>客人</th><th class="num">金額</th></tr></thead>
+        <thead><tr><th>日期</th><th>地點</th><th>客人</th><th class="num">金額</th><th class="num">場地費</th></tr></thead>
         <tbody id="detail"></tbody>
+        <tfoot id="detailFoot"></tfoot>
       </table>
+      <p class="muted">這張表可以直接截圖給師父。抽成 0% 的地點不會列在這裡。</p>
     </div>
 
     <div id="badCard" class="card" hidden>
@@ -181,10 +185,16 @@
     document.getElementById('grand').textContent = money(grand);
     document.getElementById('grandSub').textContent = list.length + ' 筆預約，收入合計 ' + money(income);
 
-    document.getElementById('detail').innerHTML = list.map(function (e) {
+    var paid = list.filter(function (e) { return rates[e.loc]; }), paidSum = 0;
+    var p = k.split('-');
+    document.getElementById('stmtTitle').textContent = p[0] + '年' + (+p[1]) + '月 場地費對帳';
+    document.getElementById('detail').innerHTML = paid.map(function (e) {
+      paidSum += e.amount;
       return '<tr><td>' + e.m + '/' + e.day + '</td><td>' + esc(e.loc) + '</td><td>' + esc(e.client) +
-        '</td><td class="num">' + money(e.amount) + '</td></tr>';
+        '</td><td class="num">' + money(e.amount) + '</td><td class="num">' + money(e.amount * rates[e.loc] / 100) + '</td></tr>';
     }).join('');
+    document.getElementById('detailFoot').innerHTML = paid.length ? '<tr><th colspan="3">合計 ' + paid.length +
+      ' 堂</th><th class="num">' + money(paidSum) + '</th><th class="num">' + money(grand) + '</th></tr>' : '';
 
     Array.prototype.forEach.call(document.querySelectorAll('#byLoc input'), function (inp) {
       inp.addEventListener('change', function () {
