@@ -71,17 +71,23 @@
 
   <div class="card setup">
     <details id="setupBox" open>
-      <summary>設定（抽之前先填好）</summary>
+      <summary>設定（抽之前先確認）</summary>
+      <div class="row"><label>場次</label>
+        <input id="session" list="sessionList" style="width:110px" placeholder="例如 1021">
+        <datalist id="sessionList"></datalist>
+        <span class="muted">預設是今天的日期</span></div>
+      <p class="muted" id="sheetStatus">讀取試算表中…</p>
       <div class="row"><label>券號從</label><input type="number" id="from" min="1" value="1">
         <span>到</span><input type="number" id="to" min="1" value="30"></div>
       <div class="row"><label>不抽這些</label>
         <input class="wide" id="skip" placeholder="沒發出去的號碼，例如 5, 12, 20-25"></div>
       <div class="row"><label>獎項</label>
-        <input class="wide" id="prizes" placeholder="一行一個也可以用逗號隔開，例如 足弓墊, 免費調整一次"></div>
-      <p class="muted">獎項會照順序一個一個抽，抽完後再按會繼續抽「加碼」。設定會記在這台手機上，重新整理也不會不見。同一個號碼不會被抽到兩次。</p>
+        <input class="wide" id="prizes" placeholder="用逗號隔開，例如 足弓墊, 免費調整一次"></div>
+      <p class="muted">兩種設定方式都可以：先在 Google 試算表「專講抽獎名單」填好每一場，這裡會自動帶入；來不及的話，直接改上面的欄位就好，改過的會記在這台手機上。每個場次的中獎名單分開記，同一個號碼不會被抽到兩次。</p>
       <div class="row">
+        <button class="secondary" id="reloadBtn">重新讀取試算表</button>
         <button class="secondary" id="hideBtn">投影模式（藏起設定）</button>
-        <button class="danger" id="resetBtn">清空中獎名單</button>
+        <button class="danger" id="resetBtn">清空這場中獎名單</button>
       </div>
     </details>
   </div>
@@ -89,13 +95,34 @@
 </main>
 
 <script>
-const KEY = 'chun-draw-v1';
+// 試算表「專講抽獎名單」（Drive Claude產出\BNI），共用設定要是「知道連結的任何人：檢視者」
+const SHEET_ID = '1LqtbRljg33-HiJFFbfieXjbNKS0g_uopELeXGkXqlcA';
+const KEY = 'chun-draw-v2';
 const $ = id => document.getElementById(id);
-let state = { from: 1, to: 30, skip: '', prizes: '', winners: [] };
-try { Object.assign(state, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
-function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 
-const pad = n => String(n).padStart(Math.max(4, String(state.to).length), '0');
+let store = { current: '', sessions: {} };
+try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+
+let sheet = {};           // 場次 -> 設定（從試算表讀到的）
+const blank = () => ({ from: 1, to: 30, skip: '', prizes: '', winners: [], edited: false });
+const normKey = k => { k = String(k || '').trim().replace(/\D/g, ''); return k.length === 3 ? '0' + k : k; };
+const today = () => { const d = new Date(); return String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); };
+
+function sess() {
+  const k = store.current;
+  if (!store.sessions[k]) store.sessions[k] = Object.assign(blank(), sheet[k] || {});
+  return store.sessions[k];
+}
+function applySheet(force) {
+  Object.keys(sheet).forEach(k => {
+    const s = store.sessions[k];
+    if (!s) return;
+    if (force ? k === store.current : !s.edited) Object.assign(s, sheet[k], { edited: false });
+  });
+}
+
+const pad = n => String(n).padStart(Math.max(4, String(sess().to).length), '0');
 
 function parseSkip(text) {
   const set = new Set();
@@ -108,18 +135,19 @@ function parseSkip(text) {
   return set;
 }
 function prizeList() {
-  return String(state.prizes).split(/[\n,，、]+/).map(s => s.trim()).filter(Boolean);
+  return String(sess().prizes).split(/[\n,，、]+/).map(s => s.trim()).filter(Boolean);
 }
 function pool() {
-  const skip = parseSkip(state.skip);
-  const won = new Set(state.winners.map(w => w.n));
+  const s = sess();
+  const skip = parseSkip(s.skip);
+  const won = new Set(s.winners.map(w => w.n));
   const out = [];
-  for (let i = +state.from; i <= +state.to; i++) if (!skip.has(i) && !won.has(i)) out.push(i);
+  for (let i = +s.from; i <= +s.to; i++) if (!skip.has(i) && !won.has(i)) out.push(i);
   return out;
 }
 function nextPrize() {
   const list = prizeList();
-  const i = state.winners.length;
+  const i = sess().winners.length;
   if (!list.length) return '第 ' + (i + 1) + ' 位';
   return i < list.length ? list[i] : '加碼';
 }
@@ -130,20 +158,24 @@ function randInt(n) {
   return a[0] % n;
 }
 
+let rolling = false;
 function render() {
-  $('from').value = state.from; $('to').value = state.to;
-  $('skip').value = state.skip; $('prizes').value = state.prizes;
+  const s = sess();
+  if (document.activeElement !== $('session')) $('session').value = store.current;
+  $('from').value = s.from; $('to').value = s.to;
+  $('skip').value = s.skip; $('prizes').value = s.prizes;
   const p = pool();
-  $('prizeLabel').textContent = p.length ? '這次抽：' + nextPrize() : '';
+  $('prizeLabel').textContent = (store.current ? store.current + ' 場　' : '') + (p.length ? '這次抽：' + nextPrize() : '');
   $('leftInfo').textContent = '還有 ' + p.length + ' 個號碼可以抽';
   $('goBtn').disabled = !p.length || rolling;
-  $('winners').innerHTML = state.winners.map(w =>
-    '<li><b>No.' + pad(w.n) + '</b>　' + w.prize.replace(/[<>&]/g, '') + '</li>').join('');
-  $('noWin').hidden = state.winners.length > 0;
-  $('undoBtn').hidden = !state.winners.length;
+  $('winners').innerHTML = s.winners.map(w =>
+    '<li><b>No.' + pad(w.n) + '</b>　' + String(w.prize).replace(/[<>&]/g, '') + '</li>').join('');
+  $('noWin').hidden = s.winners.length > 0;
+  $('undoBtn').hidden = !s.winners.length;
+  $('sessionList').innerHTML = [...new Set([...Object.keys(sheet), ...Object.keys(store.sessions)])]
+    .filter(Boolean).sort().map(k => '<option value="' + k + '">').join('');
 }
 
-let rolling = false;
 $('goBtn').onclick = () => {
   const p = pool();
   if (!p.length || rolling) return;
@@ -151,6 +183,7 @@ $('goBtn').onclick = () => {
   const el = $('num'); el.classList.remove('win');
   const pick = p[randInt(p.length)];
   const prize = nextPrize();
+  const s = sess();
   let t = 0, delay = 40;
   (function spin() {
     el.textContent = pad(p[randInt(p.length)]);
@@ -158,17 +191,25 @@ $('goBtn').onclick = () => {
     if (t < 2600) { delay = t > 1600 ? delay * 1.18 : delay; setTimeout(spin, delay); return; }
     el.textContent = pad(pick);
     void el.offsetWidth; el.classList.add('win');
-    state.winners.push({ n: pick, prize });
+    s.winners.push({ n: pick, prize });
     save(); rolling = false; render();
   })();
 };
 
 ['from', 'to', 'skip', 'prizes'].forEach(id => $(id).addEventListener('input', () => {
-  state[id] = (id === 'from' || id === 'to') ? (+$(id).value || 1) : $(id).value;
+  const s = sess();
+  s[id] = (id === 'from' || id === 'to') ? (+$(id).value || 1) : $(id).value;
+  s.edited = true;
   save(); render();
 }));
+$('session').addEventListener('change', () => {
+  const k = normKey($('session').value);
+  if (!k) return;
+  store.current = k; $('num').textContent = '----'; $('num').classList.remove('win');
+  save(); render();
+});
 
-// Two-tap buttons: confirm() is not reliable everywhere, so the first tap arms, the second does it.
+// 按兩次才執行（Apps Script 等環境會擋 confirm()）
 function twoTap(btn, label, action) {
   let armed = null;
   btn.onclick = () => {
@@ -177,14 +218,52 @@ function twoTap(btn, label, action) {
     armed = setTimeout(() => { armed = null; btn.textContent = label; }, 3000);
   };
 }
-twoTap($('resetBtn'), '清空中獎名單', () => { state.winners = []; $('num').textContent = '----';
+twoTap($('resetBtn'), '清空這場中獎名單', () => { sess().winners = []; $('num').textContent = '----';
   $('num').classList.remove('win'); save(); render(); });
-twoTap($('undoBtn'), '取消上一個', () => { state.winners.pop(); save(); render(); });
+twoTap($('undoBtn'), '取消上一個', () => { sess().winners.pop(); save(); render(); });
+twoTap($('reloadBtn'), '重新讀取試算表', () => loadSheet(true));
 
 $('hideBtn').onclick = () => { document.body.classList.add('show'); $('showSetup').hidden = false; };
 $('showSetup').onclick = e => { e.preventDefault(); document.body.classList.remove('show'); $('showSetup').hidden = true; };
 
+function parseCSV(text) {
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+    else if (c === '"') q = true;
+    else if (c === ',') { row.push(cell); cell = ''; }
+    else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+
+async function loadSheet(force) {
+  $('sheetStatus').textContent = '讀取試算表中…';
+  try {
+    const res = await fetch('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&headers=1&t=' + Date.now());
+    const text = await res.text();
+    if (!res.ok || /^\s*</.test(text)) throw new Error('not csv');
+    sheet = {};
+    parseCSV(text).slice(1).forEach(r => {
+      const k = normKey(r[0]);
+      if (!k) return;
+      sheet[k] = { from: +r[1] || 1, to: +r[2] || 1, skip: (r[3] || '').trim(), prizes: (r[4] || '').trim() };
+    });
+    applySheet(force);
+    $('sheetStatus').textContent = '已從試算表讀到 ' + Object.keys(sheet).length + ' 個場次。';
+  } catch (e) {
+    $('sheetStatus').textContent = '讀不到試算表，請直接在下面設定（或檢查試算表是否開了「知道連結的任何人可檢視」）。';
+  }
+  if (!store.current) store.current = today();
+  save(); render();
+}
+
+if (!store.current || !store.sessions[store.current] || !store.sessions[store.current].winners.length) store.current = today();
 render();
+loadSheet(false);
 </script>
 </body>
 </html>
