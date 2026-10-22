@@ -223,7 +223,8 @@
     .brand{justify-content:center;}
     .keywords{justify-content:center;gap:5px;}
     .keywords{flex-wrap:nowrap;gap:4px;}
-    .keywords span{font-size:12px;padding:3px 8px;}
+    .keywords span{font-size:min(12px,3.1vw);padding:3px min(8px,1.9vw);}
+    .hero .info{min-width:0;max-width:100%;}
     .scroll-q{font-size:13.5px;}
     .title-line{font-size:14.5px;}
     .slogan-box{text-align:center;padding:20px 16px;}
@@ -236,6 +237,12 @@
     .cta-row .btn-sub{min-width:0;padding:12px 6px;}
     .cta-row .btn-share{grid-column:1 / -1;}
     .num strong{white-space:nowrap;}
+    .num{padding:14px 4px;min-width:0;}
+    .num span{display:block;font-size:min(12.5px,3.2vw);white-space:nowrap;line-height:1.5;}
+  }
+  @media (max-width:350px){
+    .keywords{flex-wrap:wrap;}
+    .keywords span{font-size:11px;padding:3px 7px;}
   }
 </style>
 </head>
