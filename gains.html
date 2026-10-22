@@ -6,340 +6,365 @@
 <title>鄭鴻鈞 馬克｜身體結構平衡教練</title>
 <meta name="description" content="10 年 IT 解決系統的問題，現在解決人的問題。身體結構平衡教練 鄭鴻鈞 馬克，站得穩才走的久。">
 <meta property="og:title" content="鄭鴻鈞 馬克｜身體結構平衡教練">
-<meta property="og:description" content="BNI 大恆白金分會．品味生活組｜站得穩才走的久">
+<meta property="og:description" content="BNI 大恆白金分會．品味生活組｜身體平衡找馬克，站得穩才走的久">
 <meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/bni-headshot.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --olive:#6B7355;
     --olive-dark:#4F5740;
     --brown:#8B7355;
-    --brown-light:#A89078;
     --coral:#C1553D;
-    --cream:#F3F2EE;
-    --sand:#EDEAE0;
+    --coral-soft:rgba(193,85,61,0.1);
+    --bg:#F8F7F3;
+    --bg-alt:#F1EFE8;
+    --card:#ECE9E0;
     --line:#DDD5C2;
-    --ink:#3A362F;
+    --ink:#2F2B24;
     --ink-soft:#6B6558;
+    --grad:linear-gradient(120deg,#4F5740 0%,#C1553D 100%);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
-  body{
-    background:var(--cream);
-    font-family:"PingFang TC","Microsoft JhengHei",sans-serif;
-    color:var(--ink);line-height:1.75;
-  }
-  a{color:inherit;}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
-  .serif{font-family:"Noto Serif TC","PingFang TC",serif;}
+  body{background:var(--bg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);line-height:1.75;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px;}
+  section{padding:80px 0;}
+  section.alt{background:var(--bg-alt);}
 
-  /* ---- top nav ---- */
-  .nav{position:sticky;top:0;z-index:10;background:rgba(243,242,238,0.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
-  .nav .wrap{display:flex;align-items:center;justify-content:space-between;height:58px;}
-  .nav-name{font-weight:900;font-size:17px;letter-spacing:1px;text-decoration:none;}
-  .nav-name span{color:var(--coral);font-weight:700;margin-left:4px;}
-  .nav-links{display:flex;gap:4px;}
-  .nav-links a{
-    text-decoration:none;font-weight:900;font-size:15px;color:var(--coral);
-    width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:50%;
-  }
-  .nav-links a:hover{background:#fff;}
+  /* section head */
+  .head{text-align:center;margin-bottom:40px;}
+  .kicker{font-size:13px;font-weight:700;letter-spacing:4px;color:var(--coral);}
+  .head h2{font-size:32px;font-weight:900;letter-spacing:1px;margin-top:6px;line-height:1.35;}
+  .head p{font-size:16px;color:var(--ink-soft);margin-top:8px;font-weight:300;}
+  .head p.hl{color:var(--coral);font-weight:700;font-size:18px;}
 
-  /* ---- hero ---- */
-  .hero{background:linear-gradient(135deg,var(--cream) 0%,var(--sand) 100%);overflow:hidden;}
-  .hero .wrap{display:grid;grid-template-columns:1.15fr 0.85fr;align-items:end;gap:20px;padding-top:56px;}
-  .hero-text{padding-bottom:64px;align-self:center;}
-  .eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--olive-dark);
-    background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 14px;margin-bottom:20px;}
-  .eyebrow b{color:var(--coral);margin-right:6px;}
-  .hero h1{font-size:54px;line-height:1.2;font-weight:900;letter-spacing:2px;}
-  .hero h1 small{font-size:24px;color:var(--coral);font-weight:700;margin-left:10px;}
-  .hero .role{font-size:21px;font-weight:700;color:var(--ink-soft);letter-spacing:4px;margin-top:8px;}
-  .hero .lead{font-size:19px;margin-top:22px;max-width:440px;}
-  .hero .lead b{color:var(--coral);}
-  .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;}
-  .btn{display:inline-block;text-decoration:none;color:#fff;font-weight:700;font-size:15px;letter-spacing:1px;
-    padding:13px 24px;border-radius:999px;border:none;font-family:inherit;cursor:pointer;}
-  .btn-line{background:#06C755;}
-  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink);}
-  .hero-photo{position:relative;display:flex;justify-content:center;}
-  .hero-photo::before{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-    width:86%;aspect-ratio:1;border-radius:50%;background:var(--olive);opacity:.18;}
-  .hero-photo img{position:relative;width:100%;max-width:360px;display:block;}
+  /* 1. hero */
+  .hero{padding:56px 0 40px;}
+  .hero .wrap{display:grid;grid-template-columns:380px 1fr;gap:48px;align-items:center;}
+  .portrait{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;border-radius:24px;box-shadow:0 16px 40px rgba(60,50,30,0.18);}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .brand img{height:46px;width:auto;}
+  .brand span{font-size:15px;font-weight:700;color:var(--ink-soft);letter-spacing:2px;}
+  .hero h1{font-size:46px;font-weight:900;line-height:1.2;letter-spacing:1px;}
+  .hero h1 em{font-style:normal;color:var(--coral);margin-left:8px;}
+  .keywords{margin-top:14px;font-size:16px;color:var(--ink-soft);letter-spacing:1px;}
+  .keywords i{font-style:normal;color:var(--line);margin:0 6px;}
+  .title-line{margin-top:10px;font-size:16px;font-weight:700;}
+  .chapter{margin-top:4px;font-size:15px;color:var(--ink-soft);}
+  .chapter b{color:var(--coral);}
+  .slogan-box{margin-top:24px;background:var(--grad);color:#fff;border-radius:20px;padding:24px 26px;}
+  .slogan-box strong{display:block;font-size:24px;font-weight:900;line-height:1.5;}
+  .slogan-box span{display:block;margin-top:8px;font-size:15px;opacity:.92;font-weight:300;}
+  .scroll-q{margin-top:40px;text-align:center;font-size:15px;color:var(--ink-soft);}
+  .scroll-btn{display:inline-flex;margin-top:10px;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);
+    align-items:center;justify-content:center;color:var(--coral);font-size:20px;animation:bob 1.8s ease-in-out infinite;}
+  @keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(6px);}}
 
-  /* ---- stats ---- */
-  .stats{background:var(--olive-dark);color:#fff;}
-  .stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);}
-  .stat{padding:26px 10px;text-align:center;border-right:1px solid rgba(255,255,255,0.15);}
-  .stat:last-child{border-right:none;}
-  .stat .num{font-size:30px;font-weight:900;line-height:1.2;}
-  .stat .num small{font-size:16px;margin-left:2px;}
-  .stat .lbl{font-size:13.5px;opacity:.85;margin-top:4px;}
+  /* 2. referral */
+  .ref-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+  .ref{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 22px;display:flex;flex-direction:column;}
+  .ico{width:48px;height:48px;border-radius:14px;background:var(--coral-soft);color:var(--coral);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px;}
+  .ref h3{font-size:19px;font-weight:900;line-height:1.45;}
+  .ref .q{margin-top:10px;font-style:italic;color:var(--coral);font-size:15.5px;}
+  .ref .d{margin-top:8px;font-size:14.5px;color:var(--ink-soft);font-weight:300;flex:1;}
+  .tag{align-self:flex-start;margin-top:16px;font-size:13px;font-weight:700;color:var(--coral);background:var(--coral-soft);border-radius:999px;padding:4px 14px;}
+  .ref.todo{border:2px dashed var(--brown);background:transparent;}
+  .ref.todo h3,.ref.todo .d{color:var(--brown);}
+  .more-link{display:block;text-align:center;margin-top:28px;font-weight:700;color:var(--coral);}
 
-  /* ---- sections ---- */
-  section.block{padding:76px 0;}
-  section.alt{background:var(--sand);}
-  .sec-kicker{font-size:13px;font-weight:700;letter-spacing:4px;color:var(--coral);}
-  .sec-title{font-size:34px;font-weight:900;letter-spacing:2px;line-height:1.3;margin:6px 0 30px;}
+  /* 3. about */
+  .about{display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;}
+  .about p{font-size:16.5px;color:var(--ink-soft);font-weight:300;margin-bottom:14px;}
+  .about p b{color:var(--ink);font-weight:700;}
+  .nums{display:flex;flex-direction:column;gap:14px;}
+  .num{background:#fff;border-radius:18px;padding:20px 22px;box-shadow:0 4px 14px rgba(60,50,30,0.06);}
+  .num strong{display:block;font-size:30px;font-weight:900;color:var(--coral);line-height:1.2;}
+  .num span{font-size:14.5px;color:var(--ink-soft);}
 
-  /* about */
-  .about{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
-  .quote{font-size:28px;font-weight:900;line-height:1.6;border-left:5px solid var(--coral);padding-left:20px;}
-  .quote span{color:var(--coral);}
-  .about p{font-size:17px;color:var(--ink-soft);margin-bottom:12px;}
-  .about p b{color:var(--ink);}
+  /* 4. services */
+  .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .svc{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px 20px;}
+  .svc .ico{margin-bottom:12px;}
+  .svc h3{font-size:18px;font-weight:900;}
+  .svc p{font-size:14.5px;color:var(--ink-soft);font-weight:300;margin-top:4px;}
+  .svc.star{background:var(--grad);border:none;color:#fff;}
+  .svc.star .ico{background:rgba(255,255,255,0.18);color:#fff;}
+  .svc.star p{color:#fff;opacity:.9;}
 
-  /* GAINS overview */
-  .gains-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:46px;}
-  .gains-row a{text-decoration:none;background:#fff;border-radius:18px;padding:18px 8px;text-align:center;
-    box-shadow:0 4px 14px rgba(90,80,60,0.08);transition:transform .15s;}
-  .gains-row a:hover{transform:translateY(-3px);}
-  .gains-row .L{font-size:38px;font-weight:900;color:var(--coral);line-height:1.1;}
-  .gains-row .W{font-size:11px;letter-spacing:1.5px;color:var(--brown);font-weight:700;}
-  .gains-row .Z{font-size:16px;font-weight:900;margin-top:4px;}
+  /* 5. process */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:70px;}
+  .step{text-align:center;}
+  .step .n{width:62px;height:62px;border-radius:50%;background:var(--coral-soft);color:var(--coral);font-size:22px;font-weight:900;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+  .step h3{font-size:18px;font-weight:900;}
+  .step p{font-size:14.5px;color:var(--ink-soft);font-weight:300;margin-top:4px;}
 
-  .g-block{display:grid;grid-template-columns:200px 1fr;gap:30px;padding:34px 0;border-top:1px solid var(--line);scroll-margin-top:70px;}
-  .g-side .L{font-size:72px;font-weight:900;color:var(--coral);line-height:1;}
-  .g-side .Z{font-size:24px;font-weight:900;margin-top:6px;}
-  .g-side .W{font-size:12px;letter-spacing:3px;color:var(--brown);font-weight:700;}
+  /* 6. pills */
+  .pills{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:70px;}
+  .pill{background:var(--card);border-radius:999px;padding:8px 18px;font-size:15px;}
 
-  .timeline{list-style:none;position:relative;padding-left:26px;}
-  .timeline::before{content:"";position:absolute;left:7px;top:10px;bottom:10px;width:2px;background:var(--line);}
-  .timeline li{position:relative;margin-bottom:16px;font-size:16.5px;}
-  .timeline li::before{content:"";position:absolute;left:-25px;top:8px;width:14px;height:14px;border-radius:50%;
-    background:var(--cream);border:3px solid var(--coral);}
-  .timeline li b{display:block;font-size:18px;}
-  .timeline li span{color:var(--ink-soft);}
+  /* 7. cta */
+  .cta{text-align:center;}
+  .btn-main{display:inline-flex;align-items:center;gap:10px;background:var(--grad);color:#fff;font-weight:700;font-size:17px;
+    padding:16px 32px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;box-shadow:0 10px 26px rgba(193,85,61,0.3);}
+  .cta-row{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:16px;}
+  .btn-sub{display:inline-block;padding:12px 24px;border-radius:999px;font-weight:700;font-size:15px;border:1.5px solid var(--ink);background:transparent;cursor:pointer;font-family:inherit;color:var(--ink);}
+  .btn-line{background:#06C755;border-color:#06C755;color:#fff;}
+  .copy{margin-top:36px;font-size:13px;color:var(--ink-soft);}
 
-  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
-  .card{background:#fff;border-radius:16px;padding:18px 20px;box-shadow:0 3px 12px rgba(90,80,60,0.07);}
-  .card b{display:block;font-size:17px;color:var(--olive-dark);}
-  .card span{font-size:14.5px;color:var(--ink-soft);}
+  /* 8. follow */
+  .follow{padding:56px 0 70px;}
+  .icons{display:flex;justify-content:center;gap:14px;}
+  .icons a{width:54px;height:54px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:900;color:var(--ink-soft);background:#fff;}
+  .icons a:hover{border-color:var(--coral);color:var(--coral);}
+  .icons svg{width:24px;height:24px;fill:currentColor;}
 
-  .chips{display:flex;flex-wrap:wrap;gap:8px;}
-  .chip{font-size:16px;font-weight:700;color:var(--coral);background:#fff;border:1.5px solid var(--coral);border-radius:999px;padding:7px 18px;}
-  .feature{margin-top:18px;background:var(--coral);color:#fff;border-radius:16px;padding:18px 22px;font-size:17px;}
-  .feature b{font-size:20px;display:block;}
-  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
-  .steps div{background:var(--olive);color:#fff;border-radius:14px;padding:14px 6px;text-align:center;font-weight:900;font-size:17px;}
-  .steps small{display:block;font-size:12px;opacity:.75;font-weight:700;}
-  .todo{border:2px dashed var(--brown-light);border-radius:16px;padding:18px 20px;font-size:16px;color:var(--brown);background:rgba(255,255,255,0.55);}
+  /* GAINS modal */
+  .modal{position:fixed;inset:0;background:rgba(30,26,20,0.6);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:50;overflow-y:auto;}
+  .modal.open{display:flex;}
+  .sheet{background:#fff;border-radius:22px;max-width:620px;width:100%;padding:30px 26px;position:relative;}
+  .sheet h3{font-size:24px;font-weight:900;text-align:center;}
+  .sheet .sub{text-align:center;color:var(--ink-soft);font-size:14px;margin-bottom:20px;}
+  .close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:none;background:var(--card);font-size:18px;cursor:pointer;}
+  .g-row{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:16px 0;border-top:1px solid var(--line);}
+  .g-row .L{width:56px;height:56px;border-radius:16px;background:var(--grad);color:#fff;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+  .g-row h4{font-size:17px;font-weight:900;}
+  .g-row h4 small{font-size:11px;letter-spacing:2px;color:var(--brown);margin-left:6px;}
+  .g-row ul{list-style:none;margin-top:4px;}
+  .g-row li{font-size:15px;color:var(--ink-soft);padding-left:14px;position:relative;}
+  .g-row li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--coral);}
+  .g-row li.todo{color:var(--brown);}
+  .g-row li.todo::before{background:none;border:1.5px dashed var(--brown);}
 
-  /* referral */
-  .refer{background:var(--coral);color:#fff;}
-  .refer .grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
-  .refer .sec-kicker{color:#fff;opacity:.8;}
-  .refer .sec-title{margin-bottom:0;}
-  .refer ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
-  .refer li{background:rgba(255,255,255,0.15);border-radius:14px;padding:16px 18px;font-size:17px;font-weight:700;}
-  .refer .say{margin-top:18px;font-size:16px;}
-  .refer .say b{font-size:19px;display:block;}
-
-  /* contact */
-  .contact{text-align:center;}
-  .contact .brand{font-size:16px;font-weight:700;color:var(--ink-soft);}
-  .contact .place{font-size:16px;color:var(--olive-dark);margin:4px 0 26px;}
-  .contact .btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;}
-  .btn-call{background:var(--brown);}
-  .btn-ig{background:var(--coral);}
-  .btn-fb{background:var(--olive);}
-  .btn-share{background:var(--ink);}
-  footer{background:var(--olive-dark);color:rgba(255,255,255,0.8);text-align:center;padding:26px 20px;font-size:14px;letter-spacing:1px;}
-  footer .slogan{font-size:22px;font-weight:900;color:#fff;margin-bottom:4px;}
-
-  /* ---- mobile ---- */
   @media (max-width:760px){
-    .nav-name{font-size:15px;}
-    .nav-links a{width:30px;height:30px;font-size:14px;}
-    .hero .wrap{grid-template-columns:1fr 0.8fr;padding-top:30px;gap:0;}
-    .hero-text{padding-bottom:30px;}
-    .eyebrow{font-size:11px;padding:4px 10px;letter-spacing:1px;margin-bottom:14px;}
-    .hero h1{font-size:34px;}
-    .hero h1 small{display:block;margin-left:0;font-size:17px;}
-    .hero .role{font-size:14px;letter-spacing:2px;}
-    .hero .lead{font-size:15px;margin-top:12px;}
-    .hero .cta{grid-column:1 / -1;}
-    .cta{margin-top:16px;}
-    .btn{padding:11px 18px;font-size:14px;}
-    .stats .wrap{grid-template-columns:repeat(2,1fr);padding:0;}
-    .stat{border-bottom:1px solid rgba(255,255,255,0.15);padding:18px 6px;}
-    .stat:nth-child(2){border-right:none;}
-    .stat .num{font-size:24px;}
-    section.block{padding:52px 0;}
-    .sec-title{font-size:26px;margin-bottom:22px;}
-    .about,.refer .grid{grid-template-columns:1fr;gap:22px;}
-    .quote{font-size:22px;}
-    .gains-row{gap:6px;margin-bottom:30px;}
-    .gains-row a{padding:12px 2px;border-radius:14px;}
-    .gains-row .L{font-size:28px;}
-    .gains-row .W{display:none;}
-    .gains-row .Z{font-size:14px;}
-    .g-block{grid-template-columns:1fr;gap:14px;padding:26px 0;}
-    .g-side{display:flex;align-items:center;gap:14px;}
-    .g-side .L{font-size:52px;}
-    .g-side .Z{font-size:21px;margin-top:0;}
-    .cards{grid-template-columns:1fr;}
-    .steps div{font-size:15px;padding:12px 2px;}
+    section{padding:56px 0;}
+    .head h2{font-size:25px;}
+    .hero{padding:28px 0 30px;}
+    .hero .wrap{grid-template-columns:1fr;gap:26px;}
+    .portrait{max-width:300px;margin:0 auto;display:block;}
+    .hero h1{font-size:36px;}
+    .keywords{font-size:14.5px;}
+    .slogan-box strong{font-size:20px;}
+    .ref-grid{grid-template-columns:1fr;}
+    .about{grid-template-columns:1fr;gap:24px;}
+    .nums{flex-direction:row;gap:8px;}
+    .num{flex:1;padding:14px 8px;text-align:center;}
+    .num strong{font-size:20px;}
+    .num span{font-size:12.5px;}
+    .svc-grid{grid-template-columns:repeat(2,1fr);gap:10px;}
+    .svc{padding:18px 14px;}
+    .svc h3{font-size:16px;}
+    .svc p{font-size:13.5px;}
+    .steps{grid-template-columns:1fr;gap:0;margin-top:50px;}
+    .step{display:grid;grid-template-columns:56px 1fr;gap:14px;text-align:left;padding-bottom:18px;}
+    .step .n{width:52px;height:52px;font-size:18px;margin:0;}
+    .pills{margin-top:50px;}
   }
 </style>
 </head>
 <body>
 
-<nav class="nav">
+<!-- 1. Hero -->
+<header class="hero">
   <div class="wrap">
-    <a class="nav-name" href="#top">鄭鴻鈞<span>馬克</span></a>
-    <div class="nav-links">
-      <a href="#g">G</a><a href="#a">A</a><a href="#i">I</a><a href="#n">N</a><a href="#s">S</a>
-    </div>
-  </div>
-</nav>
-
-<header class="hero" id="top">
-  <div class="wrap">
-    <div class="hero-text">
-      <div class="eyebrow"><b>BNI</b>大恆白金分會．品味生活組</div>
-      <h1 class="serif">鄭鴻鈞<small>馬克</small></h1>
-      <div class="role">身體結構平衡教練</div>
-      <p class="lead">從解決系統的問題，<br>變成<b>解決人的問題</b>。</p>
-      <div class="cta">
-        <a class="btn btn-line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加 LINE 鈞衡舍</a>
-        <a class="btn btn-ghost" href="#gains">看我的 GAINS</a>
+    <img class="portrait" src="images/bni-headshot.jpg" alt="鄭鴻鈞 馬克">
+    <div>
+      <div class="brand"><img src="images/logo.png" alt="鈞衡舍"><span>鈞衡舍</span></div>
+      <h1>鄭鴻鈞<em>馬克</em></h1>
+      <div class="keywords">結構調整<i>／</i>運動按摩<i>／</i>運動訓練<i>／</i>能量平衡<i>／</i>足弓平衡</div>
+      <div class="title-line">身體結構平衡教練．武醫北部分會執行長</div>
+      <div class="chapter"><b>BNI</b> 大恆白金分會．品味生活組</div>
+      <div class="slogan-box">
+        <strong>身體平衡找馬克，<br>站得穩才走的久。</strong>
+        <span>先聽懂問題，再給解決方案和維持計畫。</span>
       </div>
     </div>
-    <div class="hero-photo">
-      <img src="images/bni-headshot-cutout.png" alt="鄭鴻鈞 馬克">
-    </div>
+  </div>
+  <div class="scroll-q">你身邊有人坐著一定翹腳、常喊腰痠嗎？往下看<br>
+    <a class="scroll-btn" href="#referral" aria-label="往下滾動">↓</a>
   </div>
 </header>
 
-<div class="stats">
+<!-- 2. Referral -->
+<section class="alt" id="referral">
   <div class="wrap">
-    <div class="stat"><div class="num">10<small>年</small></div><div class="lbl">IT 系統分析．專案經理</div></div>
-    <div class="stat"><div class="num">國家級</div><div class="lbl">健美裁判．教練</div></div>
-    <div class="stat"><div class="num">第五代</div><div class="lbl">董氏針灸傳人</div></div>
-    <div class="stat"><div class="num">執行長</div><div class="lbl">武醫北部分會</div></div>
+    <div class="head">
+      <div class="kicker">REFERRAL</div>
+      <h2>如果你身邊有這樣的人</h2>
+      <p class="hl">很適合介紹給我</p>
+      <p>不用幫我推銷，想到這些人，幫我牽個線就好</p>
+    </div>
+    <div class="ref-grid">
+      <div class="ref">
+        <div class="ico">🪑</div>
+        <h3>坐著一定翹腳的上班族</h3>
+        <div class="q">「我同事每天下班都在喊腰痠…」</div>
+        <div class="d">坐著翹腳、站著三七步，下班肩緊、腰痠、背痛，其實是身體歪了在代償。</div>
+        <span class="tag">好引薦</span>
+      </div>
+      <div class="ref todo">
+        <div class="ico">？</div>
+        <h3>待馬克補充</h3>
+        <div class="d">理想引薦：什麼樣的人最適合找你？</div>
+        <span class="tag">理想引薦</span>
+      </div>
+      <div class="ref todo">
+        <div class="ico">？</div>
+        <h3>待馬克補充</h3>
+        <div class="d">夢幻引薦：最想合作的對象（公司、團體、單位）？</div>
+        <span class="tag">夢幻引薦</span>
+      </div>
+    </div>
+    <a class="more-link" href="#cta">想到人了？幫我介紹一下 →</a>
+  </div>
+</section>
+
+<!-- 3. About -->
+<section>
+  <div class="wrap">
+    <div class="head">
+      <div class="kicker">ABOUT</div>
+      <h2>為什麼找馬克？</h2>
+    </div>
+    <div class="about">
+      <div>
+        <p>我是鄭鴻鈞 馬克，<b>身體結構平衡教練</b>。</p>
+        <p>做了 <b>10 年 IT</b>，從系統分析師到專案、產品經理，每天都在解決公司和客戶的問題。</p>
+        <p>因為熱愛重量訓練，考到<b>國家級健美裁判</b>，決定離開 IT 走進健康產業。之後學了<b>運動按摩、結構調整、靈氣、頭薦骨</b>，成為<b>董氏針灸第五代傳人</b>，現在也是<b>武醫北部分會執行長</b>。</p>
+        <p>從解決系統的問題，變成解決人的問題。<br>一切都沒有固定的方式，重要的只有心法。</p>
+      </div>
+      <div class="nums">
+        <div class="num"><strong>10 年</strong><span>IT 解決問題經驗</span></div>
+        <div class="num"><strong>國家級</strong><span>健美裁判．教練</span></div>
+        <div class="num"><strong>第五代</strong><span>董氏針灸傳人</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4-6. Services / Process / Network -->
+<section class="alt">
+  <div class="wrap">
+    <div class="head">
+      <div class="kicker">SERVICES</div>
+      <h2>我能為你做什麼</h2>
+      <p>從結構、肌肉到身心，找到原因再處理</p>
+    </div>
+    <div class="svc-grid">
+      <div class="svc star"><div class="ico">★</div><h3>獨門絕活</h3><p>調整 4 根腳趾頭，身體就能鬆一半</p></div>
+      <div class="svc"><div class="ico">⚖</div><h3>結構調整</h3><p>身體歪了在代償，把結構調回平衡</p></div>
+      <div class="svc"><div class="ico">✋</div><h3>運動按摩</h3><p>放鬆緊繃的肌肉、筋膜</p></div>
+      <div class="svc"><div class="ico">🏋</div><h3>運動訓練</h3><p>國家健美教練帶你把身體練起來</p></div>
+      <div class="svc"><div class="ico">☯</div><h3>能量平衡</h3><p>靈氣、頭薦骨，照顧身心這一層</p></div>
+      <div class="svc"><div class="ico">👣</div><h3>足弓平衡</h3><p>從足底受力，找出身體哪裡痠緊累</p></div>
+    </div>
+
+    <div class="head" style="margin-top:80px;margin-bottom:0;">
+      <div class="kicker">PROCESS</div>
+      <h2>調整流程</h2>
+      <p>調整我來，維持交給你</p>
+    </div>
+    <div class="steps" style="margin-top:40px;">
+      <div class="step"><div class="n">01</div><div><h3>聽懂</h3><p>先聽懂你哪裡不舒服、生活怎麼過</p></div></div>
+      <div class="step"><div class="n">02</div><div><h3>找原因</h3><p>痛的地方，不一定是痛的原因</p></div></div>
+      <div class="step"><div class="n">03</div><div><h3>處理</h3><p>從結構下手，讓身體回到平衡</p></div></div>
+      <div class="step"><div class="n">04</div><div><h3>維護</h3><p>穿對鞋、改習慣、練起來</p></div></div>
+    </div>
+
+    <div class="head" style="margin-top:80px;margin-bottom:0;">
+      <div class="kicker">NETWORK</div>
+      <h2>我在的地方</h2>
+    </div>
+    <div class="pills" style="margin-top:30px;">
+      <span class="pill">BNI 大恆白金分會．品味生活組</span>
+      <span class="pill">中華武醫國際交流發展總會 北部分會</span>
+      <span class="pill">武醫義整公益活動</span>
+      <span class="pill">結構X獵人．板橋江子翠</span>
+      <span class="pill">國家健美協會</span>
+      <span class="pill">鈞衡舍</span>
+    </div>
+  </div>
+</section>
+
+<!-- 7. CTA -->
+<section class="cta" id="cta">
+  <div class="wrap">
+    <div class="head">
+      <div class="kicker">CONTACT</div>
+      <h2>想到可以介紹的人了嗎？</h2>
+      <p>歡迎轉發這個頁面，或直接跟我聊聊</p>
+    </div>
+    <button class="btn-main" type="button" onclick="openGains()">📄 點我看完整 GAINS 表</button>
+    <div class="cta-row">
+      <a class="btn-sub btn-line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加 LINE 鈞衡舍</a>
+      <a class="btn-sub" href="tel:0928058314">0928-058-314</a>
+      <button class="btn-sub" type="button" onclick="sharePage()">轉發這一頁</button>
+    </div>
+    <div class="copy">© 2026 鄭鴻鈞 馬克 · 鈞衡舍</div>
+  </div>
+</section>
+
+<!-- 8. Follow -->
+<section class="alt follow">
+  <div class="wrap">
+    <div class="head" style="margin-bottom:24px;">
+      <div class="kicker">FOLLOW</div>
+      <h2>追蹤 鈞衡舍</h2>
+    </div>
+    <div class="icons">
+      <a href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener" aria-label="LINE">LINE</a>
+      <a href="https://www.instagram.com/chunbalance" target="_blank" rel="noopener" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4zM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zM12 2c-2.7 0-3 0-4.1.1C4.3 2.2 2.2 4.3 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.1 3.6 2.2 5.7 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.6-.1 5.7-2.2 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1c-.1-3.6-2.2-5.7-5.8-5.8C15 2 14.7 2 12 2zm0 1.8c2.7 0 3 0 4 .1 2.6.1 3.9 1.4 4 4 .1 1 .1 1.3.1 4s0 3-.1 4c-.1 2.6-1.4 3.9-4 4-1 .1-1.3.1-4 .1s-3 0-4-.1c-2.6-.1-3.9-1.4-4-4-.1-1-.1-1.3-.1-4s0-3 .1-4c.1-2.6 1.4-3.9 4-4 1-.1 1.3-.1 4-.1z"/></svg>
+      </a>
+      <a href="https://www.facebook.com/chunbalance" target="_blank" rel="noopener" aria-label="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M14 8.5V6.6c0-.9.6-1.1 1-1.1h2.6V1.6L14 1.6c-4 0-4.9 3-4.9 4.9v2H6.8v4h2.3V22.4H14V12.5h3.3l.4-4H14z"/></svg>
+      </a>
+      <a href="tel:0928058314" aria-label="電話">
+        <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- GAINS sheet -->
+<div class="modal" id="gains" onclick="if(event.target===this)closeGains()">
+  <div class="sheet">
+    <button class="close" type="button" onclick="closeGains()" aria-label="關閉">✕</button>
+    <h3>GAINS 表</h3>
+    <div class="sub">鄭鴻鈞 馬克．身體結構平衡教練</div>
+    <div class="g-row"><div class="L">G</div><div><h4>目標<small>GOALS</small></h4><ul>
+      <li class="todo">待馬克補充</li>
+    </ul></div></div>
+    <div class="g-row"><div class="L">A</div><div><h4>成就<small>ACCOMPLISHMENTS</small></h4><ul>
+      <li>10 年 IT：系統分析師 → 專案、產品經理</li>
+      <li>國家級健美裁判</li>
+      <li>董氏針灸第五代傳人</li>
+      <li>中華武醫國際交流發展總會 北部分會執行長</li>
+    </ul></div></div>
+    <div class="g-row"><div class="L">I</div><div><h4>興趣<small>INTERESTS</small></h4><ul>
+      <li>重量訓練</li>
+      <li class="todo">其他興趣待馬克補充</li>
+    </ul></div></div>
+    <div class="g-row"><div class="L">N</div><div><h4>人脈<small>NETWORKS</small></h4><ul>
+      <li>BNI 大恆白金分會．品味生活組</li>
+      <li>武醫北部分會、武醫義整公益活動</li>
+      <li>結構X獵人</li>
+      <li>國家健美協會</li>
+    </ul></div></div>
+    <div class="g-row"><div class="L">S</div><div><h4>專長<small>SKILLS</small></h4><ul>
+      <li>結構調整、運動按摩、運動訓練</li>
+      <li>能量平衡（靈氣、頭薦骨）、足弓平衡</li>
+      <li>獨門絕活：調整 4 根腳趾頭</li>
+    </ul></div></div>
   </div>
 </div>
 
-<section class="block">
-  <div class="wrap">
-    <div class="sec-kicker">ABOUT</div>
-    <h2 class="sec-title serif">關於我</h2>
-    <div class="about">
-      <div class="quote serif">一切都沒有固定的方式，<br><span>重要的只有心法。</span></div>
-      <div>
-        <p>我做了 <b>10 年 IT</b>，從系統分析師做到專案、產品經理，每天在幫公司和客戶解決問題。</p>
-        <p>現在我是<b>身體結構平衡教練</b>，用一樣的方法解決身體的問題：先聽懂問題，再給解決方案和維持計畫。</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="block alt" id="gains">
-  <div class="wrap">
-    <div class="sec-kicker">GAINS</div>
-    <h2 class="sec-title serif">認識我的五個面向</h2>
-
-    <div class="gains-row">
-      <a href="#g"><div class="L">G</div><div class="W">GOALS</div><div class="Z">目標</div></a>
-      <a href="#a"><div class="L">A</div><div class="W">ACCOMPLISH</div><div class="Z">成就</div></a>
-      <a href="#i"><div class="L">I</div><div class="W">INTERESTS</div><div class="Z">興趣</div></a>
-      <a href="#n"><div class="L">N</div><div class="W">NETWORKS</div><div class="Z">人脈</div></a>
-      <a href="#s"><div class="L">S</div><div class="W">SKILLS</div><div class="Z">專長</div></a>
-    </div>
-
-    <div class="g-block" id="g">
-      <div class="g-side"><div class="L">G</div><div><div class="Z">目標</div><div class="W">GOALS</div></div></div>
-      <div class="todo">待馬克補充：事業目標、個人目標</div>
-    </div>
-
-    <div class="g-block" id="a">
-      <div class="g-side"><div class="L">A</div><div><div class="Z">成就</div><div class="W">ACCOMPLISHMENTS</div></div></div>
-      <ul class="timeline">
-        <li><b>10 年 IT</b><span>從系統分析師做到專案、產品經理</span></li>
-        <li><b>國家級健美裁判</b><span>熱愛重量訓練，考到裁判後決定離開 IT，走進健康產業</span></li>
-        <li><b>運動按摩</b><span>學生常常不來上課跑去按摩，於是自己學會放鬆肌肉筋膜</span></li>
-        <li><b>結構調整</b><span>發現很多問題出在結構，再往下學</span></li>
-        <li><b>靈氣．頭薦骨</b><span>補上身心、能量這一層</span></li>
-        <li><b>董氏針灸第五代傳人</b></li>
-        <li><b>武醫北部分會執行長</b><span>帶志工做武醫義整公益活動</span></li>
-      </ul>
-    </div>
-
-    <div class="g-block" id="i">
-      <div class="g-side"><div class="L">I</div><div><div class="Z">興趣</div><div class="W">INTERESTS</div></div></div>
-      <div>
-        <div class="chips" style="margin-bottom:14px;"><span class="chip">重量訓練</span></div>
-        <div class="todo">待馬克補充：其他興趣</div>
-      </div>
-    </div>
-
-    <div class="g-block" id="n">
-      <div class="g-side"><div class="L">N</div><div><div class="Z">人脈</div><div class="W">NETWORKS</div></div></div>
-      <div class="cards">
-        <div class="card"><b>BNI 大恆白金分會</b><span>品味生活組</span></div>
-        <div class="card"><b>中華武醫國際交流發展總會</b><span>北部分會 執行長</span></div>
-        <div class="card"><b>結構X獵人</b><span>板橋江子翠捷運站</span></div>
-        <div class="card"><b>國家健美協會</b><span>裁判．教練</span></div>
-      </div>
-    </div>
-
-    <div class="g-block" id="s">
-      <div class="g-side"><div class="L">S</div><div><div class="Z">專長</div><div class="W">SKILLS</div></div></div>
-      <div>
-        <div class="chips">
-          <span class="chip">結構調整</span><span class="chip">運動按摩</span><span class="chip">運動訓練</span>
-          <span class="chip">能量平衡</span><span class="chip">足弓平衡</span>
-        </div>
-        <div class="feature"><b>獨門絕活</b>調整 4 根腳趾頭，身體就能鬆一半</div>
-        <div class="steps">
-          <div><small>STEP 1</small>聽懂</div>
-          <div><small>STEP 2</small>找原因</div>
-          <div><small>STEP 3</small>處理</div>
-          <div><small>STEP 4</small>維護</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="block refer">
-  <div class="wrap grid">
-    <div>
-      <div class="sec-kicker">REFERRAL</div>
-      <h2 class="sec-title serif">請幫我引薦</h2>
-    </div>
-    <div>
-      <ul>
-        <li>坐著一定翹腳、站著三七步的上班族</li>
-        <li>下班常喊肩緊、腰痠、背痛的朋友</li>
-      </ul>
-      <div class="say">告訴他：<b>身體平衡找馬克，站得穩才走的久。</b></div>
-    </div>
-  </div>
-</section>
-
-<section class="block contact">
-  <div class="wrap">
-    <div class="sec-kicker">CONTACT</div>
-    <h2 class="sec-title serif">聯絡我</h2>
-    <div class="brand">鈞衡舍 &amp; 結構X獵人</div>
-    <div class="place">📍 板橋江子翠捷運站</div>
-    <div class="btns">
-      <a class="btn btn-line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加 LINE 鈞衡舍</a>
-      <a class="btn btn-call" href="tel:0928058314">0928-058-314</a>
-      <a class="btn btn-ig" href="https://www.instagram.com/chunbalance" target="_blank" rel="noopener">Instagram</a>
-      <a class="btn btn-fb" href="https://www.facebook.com/chunbalance" target="_blank" rel="noopener">Facebook</a>
-      <button class="btn btn-share" type="button" onclick="sharePage()">分享這一頁</button>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="slogan serif">站得穩才走的久</div>
-  鄭鴻鈞 馬克．身體結構平衡教練
-</footer>
-
 <script>
+  function openGains(){ document.getElementById('gains').classList.add('open'); }
+  function closeGains(){ document.getElementById('gains').classList.remove('open'); }
   function sharePage(){
     var url = location.href.split('#')[0].split('?')[0];
     if (navigator.share) {
