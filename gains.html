@@ -200,32 +200,67 @@
     .step .n{width:52px;height:52px;font-size:18px;margin:0;}
     .pills{margin-top:50px;}
   }
+
+  /* ---- 排版整齊、置中 ---- */
+  h1,h2,h3,.head p,.slogan-box strong,.slogan-box span,.scroll-q,.ref .q,.ref h3,.svc h3,.step h3{ text-wrap:balance; }
+  .about p,.gw li,.gw p,.gw-kv{ text-align:justify; text-wrap:pretty; }
+  .ref .d,.svc p,.step p{ text-wrap:balance; }
+  .nowrap{white-space:nowrap;}
+  .hero .info{text-align:left;}
+  .keywords{display:flex;flex-wrap:wrap;gap:6px;}
+  .keywords span{font-size:14px;color:var(--olive-dark);background:var(--card);border-radius:999px;padding:3px 12px;white-space:nowrap;}
+  .ref{align-items:center;text-align:center;}
+  .ref .tag{align-self:center;}
+  .ref .d{text-align:center;}
+  .svc{text-align:center;}
+  .svc .ico{margin:0 auto 12px;}
+  .svc p{text-align:center;}
+  .step{text-align:center;}
+  .gw-dance{text-align:center;}
+  .cta-row .btn-sub{min-width:150px;}
+  @media (max-width:760px){
+    .hero .info{text-align:center;}
+    .brand{justify-content:center;}
+    .keywords{justify-content:center;gap:5px;}
+    .keywords{flex-wrap:nowrap;gap:4px;}
+    .keywords span{font-size:12px;padding:3px 8px;}
+    .scroll-q{font-size:13.5px;}
+    .title-line{font-size:14.5px;}
+    .slogan-box{text-align:center;padding:20px 16px;}
+    .about p{font-size:16px;}
+    .steps{grid-template-columns:1fr 1fr;gap:10px;}
+    .step{display:block;text-align:center;padding:14px 8px;background:#fff;border-radius:16px;}
+    .step .n{margin:0 auto 8px;}
+    .step p{text-align:center;}
+    .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:340px;margin-left:auto;margin-right:auto;}
+    .cta-row .btn-sub{min-width:0;padding:12px 6px;}
+    .cta-row .btn-share{grid-column:1 / -1;}
+    .num strong{white-space:nowrap;}
+  }
 </style>
 </head>
 <body>
 
-<!-- 1. Hero -->
 <header class="hero">
   <div class="wrap">
-    <img class="portrait" src="images/bni-headshot.jpg" alt="鄭鴻鈞 馬克">
-    <div>
-      <div class="brand"><img src="images/logo.png" alt="鈞衡舍"><span>鈞衡舍</span></div>
-      <h1>鄭鴻鈞<em>馬克</em></h1>
-      <div class="keywords">結構調整<i>／</i>運動按摩<i>／</i>運動訓練<i>／</i>能量平衡<i>／</i>足弓平衡</div>
-      <div class="title-line">身體結構平衡教練．武醫北部分會執行長</div>
-      <div class="chapter"><b>BNI</b> 大恆白金分會．品味生活組</div>
+    <img class="portrait" src="images/bni-headshot.jpg" alt="">
+    <div class="info">
+      <div class="brand"><img src="images/logo.png" alt=""><span data-t="brand"></span></div>
+      <h1><span data-t="name"></span><em data-t="nick"></em></h1>
+      <div class="keywords" id="kw"></div>
+      <div class="title-line" data-t="title_line"></div>
+      <div class="chapter"><b>BNI</b> <span data-t="chapter"></span></div>
       <div class="slogan-box">
-        <strong>身體平衡找馬克，<br>站得穩才走的久。</strong>
-        <span>先聽懂問題，再給解決方案和維持計畫。</span>
+        <strong data-t="slogan"></strong>
+        <span data-t="slogan_sub"></span>
       </div>
     </div>
   </div>
-  <div class="scroll-q">你身邊有人常喊站不久、身體緊痠痛麻嗎？往下看<br>
+  <div class="scroll-q"><span data-t="scroll_q"></span><br>
     <a class="scroll-btn" href="#referral" aria-label="往下滾動">↓</a>
   </div>
 </header>
 
-<!-- 2. Referral -->
 <section class="alt" id="referral">
   <div class="wrap">
     <div class="head">
@@ -234,59 +269,24 @@
       <p class="hl">很適合介紹給我</p>
       <p>不用幫我推銷，想到這些人，幫我牽個線就好</p>
     </div>
-    <div class="ref-grid">
-      <div class="ref">
-        <div class="ico">🪑</div>
-        <h3>上班族／久坐族</h3>
-        <div class="q">「我同事每天都喊站不久、肩頸好緊…」</div>
-        <div class="d">常覺得「站不久」、身體「緊、痠、痛、麻」，願意花時間調整改善的人。</div>
-        <span class="tag">好引薦</span>
-      </div>
-      <div class="ref">
-        <div class="ico">🏠</div>
-        <h3>社區管委會／工作室</h3>
-        <div class="q">「我們社區想辦一場健康活動…」</div>
-        <div class="d">有場地、能號召人潮，我們可以到場辦大健康體驗會。</div>
-        <span class="tag">理想引薦</span>
-      </div>
-      <div class="ref">
-        <div class="ico">🏢</div>
-        <h3>企業人資、福委會／連鎖健身房</h3>
-        <div class="q">「公司想幫員工安排健康講座…」</div>
-        <div class="d">雙北具規模企業的人資、福委會窗口、護理師、營養師，或連鎖健身房、運動品牌高層，促成員工健康講座、團體結構調整或長期異業合作。</div>
-        <span class="tag">夢幻引薦</span>
-      </div>
-    </div>
+    <div class="ref-grid" id="ref"></div>
     <a class="more-link" href="#cta">想到人了？幫我介紹一下 →</a>
   </div>
 </section>
 
-<!-- 3. About -->
 <section>
   <div class="wrap">
     <div class="head">
       <div class="kicker">ABOUT</div>
-      <h2>為什麼找馬克？</h2>
+      <h2>為什麼找<span data-t="nick"></span>？</h2>
     </div>
     <div class="about">
-      <div>
-        <p>我是<b>鈞衡舍創辦人</b>鄭鴻鈞 馬克，<b>身體結構平衡教練</b>。</p>
-        <p>以前在資訊業做了 <b>10 年</b>，工作就是幫公司和客戶解決問題。</p>
-        <p>大學開始就喜歡重訓，不過後來疫情停了訓練，身材走樣、身體也很多地方不舒服，肩緊腰酸酸痛樣樣找上我；後來重新回到訓練並重新結合飲食及休息慢慢一步一步調回來，也考取<b>國家級健美裁判、健身教練</b>，並規劃進入健康產業。</p>
-        <p>當教練時學生常請假去按摩，因此我進修了<b>運動按摩</b>；後來發現很多問題是結構造成的，也補足了<b>結構調整</b>；到後來發覺身體跟心靈一樣重要，並心靈、能量進修了<b>靈氣、生物能頭薦骨</b>，也成為<b>董氏針灸第五代傳人</b>，透過穴位來保養自己並分享觀念。</p>
-        <p>我是<b>武醫北部分會執行長</b>，透過公益方式來幫助需要幫助的人，並分享大健康理念。</p>
-        <p>從解決系統的問題，變成解決人的問題。一切都沒有固定的方式，重要的只有心法。<br>先了解你，再用適合你的方式處理你。<br><b>身體回到平衡這條路需要我們一起努力，調整我來，但維持需要你。</b></p>
-      </div>
-      <div class="nums">
-        <div class="num"><strong>10 年</strong><span>IT 解決問題經驗</span></div>
-        <div class="num"><strong>國家級</strong><span>健美裁判．教練</span></div>
-        <div class="num"><strong>第五代</strong><span>董氏針灸傳人</span></div>
-      </div>
+      <div id="about"></div>
+      <div class="nums" id="num"></div>
     </div>
   </div>
 </section>
 
-<!-- 4-6. Services / Process / Network -->
 <section class="alt">
   <div class="wrap">
     <div class="head">
@@ -294,43 +294,23 @@
       <h2>我能為你做什麼</h2>
       <p>從結構、肌肉到身心，找到原因再處理</p>
     </div>
-    <div class="svc-grid">
-      <div class="svc star"><div class="ico">★</div><h3>獨門絕活</h3><p>調整 4 根腳趾頭，身體就能鬆一半</p></div>
-      <div class="svc"><div class="ico">⚖</div><h3>結構調整</h3><p>身體歪了在代償，把結構調回平衡</p></div>
-      <div class="svc"><div class="ico">✋</div><h3>運動按摩</h3><p>放鬆緊繃的肌肉、筋膜</p></div>
-      <div class="svc"><div class="ico">🏋</div><h3>運動訓練</h3><p>國家健美教練帶你把身體練起來</p></div>
-      <div class="svc"><div class="ico">☯</div><h3>能量平衡</h3><p>靈氣、頭薦骨，照顧身心這一層</p></div>
-      <div class="svc"><div class="ico">👣</div><h3>足弓平衡</h3><p>從足底受力，找出身體哪裡痠緊累</p></div>
-    </div>
+    <div class="svc-grid" id="svc"></div>
 
     <div class="head" style="margin-top:80px;margin-bottom:0;">
       <div class="kicker">PROCESS</div>
       <h2>調整流程</h2>
-      <p>調整我來，維持交給你</p>
+      <p data-t="process_sub"></p>
     </div>
-    <div class="steps" style="margin-top:40px;">
-      <div class="step"><div class="n">01</div><div><h3>聽懂</h3><p>先聽懂你哪裡不舒服、生活怎麼過</p></div></div>
-      <div class="step"><div class="n">02</div><div><h3>找原因</h3><p>痛的地方，不一定是痛的原因</p></div></div>
-      <div class="step"><div class="n">03</div><div><h3>處理</h3><p>從結構下手，讓身體回到平衡</p></div></div>
-      <div class="step"><div class="n">04</div><div><h3>維護</h3><p>穿對鞋、改習慣、練起來</p></div></div>
-    </div>
+    <div class="steps" id="step" style="margin-top:40px;"></div>
 
     <div class="head" style="margin-top:80px;margin-bottom:0;">
       <div class="kicker">CLIENTS</div>
       <h2>合作過的單位</h2>
-      <p>從職業選手、運動團隊到企業與公益協會</p>
     </div>
-    <div class="pills" style="margin-top:30px;">
-      <span class="pill">IFBB PRO 健美職業選手 蔡勇峰</span>
-      <span class="pill">泰山三鐵工作室</span>
-      <span class="pill">內湖炎洲集團 員工福利</span>
-      <span class="pill">台灣健康久久協會</span>
-      <span class="pill">武醫北部分會 公益義整</span>
-    </div>
+    <div class="pills" id="client" style="margin-top:30px;"></div>
   </div>
 </section>
 
-<!-- 7. CTA -->
 <section class="cta" id="cta">
   <div class="wrap">
     <div class="head">
@@ -340,83 +320,66 @@
     </div>
     <button class="btn-main" type="button" onclick="openGains()">📄 點我看完整 GAINS 表</button>
     <div class="cta-row">
-      <a class="btn-sub btn-line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加 LINE 鈞衡舍</a>
-      <a class="btn-sub" href="tel:0928058314">0928-058-314</a>
-      <button class="btn-sub" type="button" onclick="sharePage()">轉發這一頁</button>
+      <a class="btn-sub btn-line" data-href="line_url" target="_blank" rel="noopener">加 LINE 好友</a>
+      <a class="btn-sub" data-tel="phone"><span data-t="phone"></span></a>
+      <button class="btn-sub btn-share" type="button" onclick="sharePage()">轉發這一頁</button>
     </div>
-    <div class="copy">© 2026 鄭鴻鈞 馬克 · 鈞衡舍</div>
+    <div class="copy">© 2026 <span data-t="name"></span> <span data-t="nick"></span> · <span data-t="brand"></span></div>
   </div>
 </section>
 
-<!-- 8. Follow -->
 <section class="alt follow">
   <div class="wrap">
     <div class="head" style="margin-bottom:24px;">
       <div class="kicker">FOLLOW</div>
-      <h2>追蹤 鈞衡舍</h2>
+      <h2>追蹤 <span class="nowrap" data-t="brand"></span></h2>
     </div>
     <div class="icons">
-      <a href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener" aria-label="LINE">LINE</a>
-      <a href="https://www.instagram.com/chunbalance" target="_blank" rel="noopener" aria-label="Instagram">
+      <a data-href="line_url" target="_blank" rel="noopener" aria-label="LINE">LINE</a>
+      <a data-href="ig_url" target="_blank" rel="noopener" aria-label="Instagram">
         <svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 8.2A3.2 3.2 0 1 1 12 8.8a3.2 3.2 0 0 1 0 6.4zM17.3 5.5a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zM12 2c-2.7 0-3 0-4.1.1C4.3 2.2 2.2 4.3 2.1 7.9 2 9 2 9.3 2 12s0 3 .1 4.1c.1 3.6 2.2 5.7 5.8 5.8 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c3.6-.1 5.7-2.2 5.8-5.8.1-1.1.1-1.4.1-4.1s0-3-.1-4.1c-.1-3.6-2.2-5.7-5.8-5.8C15 2 14.7 2 12 2zm0 1.8c2.7 0 3 0 4 .1 2.6.1 3.9 1.4 4 4 .1 1 .1 1.3.1 4s0 3-.1 4c-.1 2.6-1.4 3.9-4 4-1 .1-1.3.1-4 .1s-3 0-4-.1c-2.6-.1-3.9-1.4-4-4-.1-1-.1-1.3-.1-4s0-3 .1-4c.1-2.6 1.4-3.9 4-4 1-.1 1.3-.1 4-.1z"/></svg>
       </a>
-      <a href="https://www.facebook.com/chunbalance" target="_blank" rel="noopener" aria-label="Facebook">
+      <a data-href="fb_url" target="_blank" rel="noopener" aria-label="Facebook">
         <svg viewBox="0 0 24 24"><path d="M14 8.5V6.6c0-.9.6-1.1 1-1.1h2.6V1.6L14 1.6c-4 0-4.9 3-4.9 4.9v2H6.8v4h2.3V22.4H14V12.5h3.3l.4-4H14z"/></svg>
       </a>
-      <a href="tel:0928058314" aria-label="電話">
+      <a data-tel="phone" aria-label="電話">
         <svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1l-2.3 2.2z"/></svg>
       </a>
     </div>
   </div>
 </section>
 
-<!-- GAINS worksheet -->
 <div class="gw" id="gains" role="dialog" aria-label="GAINS 工作表">
   <div class="gw-top">
-    <div><b>GAINS 工作表</b><span>鄭鴻鈞 馬克 · BNI 大恆白金分會</span></div>
+    <div><b>GAINS 工作表</b><span><span data-t="name"></span> <span data-t="nick"></span> · BNI <span data-t="chapter"></span></span></div>
     <button class="gw-x" type="button" onclick="closeGains()" aria-label="關閉">✕</button>
   </div>
   <div class="gw-body" id="gwBody"><div class="gw-in">
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i o">💼</div><h3>商業資訊</h3></div>
-      <div class="gw-kv"><em>公司</em>駐點：結構X獵人／品牌：鈞衡舍 ChunBalance</div>
-      <div class="gw-kv"><em>職業</em>武醫協會北部分會執行長／身體結構平衡教練／足弓墊經銷商／品牌創辦人</div>
-      <div class="gw-kv"><em>經驗</em>前一份工作：資訊業產品經理（10 年 IT，系統分析師 → 專案、產品經理）</div>
-      <div class="gw-kv"><em>地點</em>新北市板橋區</div>
+      <div class="gw-kv"><em>公司</em><span data-t="gw_company"></span></div>
+      <div class="gw-kv"><em>職業</em><span data-t="gw_job"></span></div>
+      <div class="gw-kv"><em>經驗</em><span data-t="gw_exp"></span></div>
+      <div class="gw-kv"><em>地點</em><span data-t="gw_location"></span></div>
     </div>
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i c">👤</div><h3>個人資訊</h3></div>
-      <ul>
-        <li>家人：父 退休代書、計程車；母 家管；弟 直播經紀、經營直播設備販售｜孩子：無｜寵物：無</li>
-        <li>業餘愛好：重訓、公益義整推廣體驗會</li>
-        <li>感興趣的活動：手作課程工作坊、體驗會活動</li>
-        <li>居住地：新北市板橋區</li>
-      </ul>
+      <ul data-l="gw_personal"></ul>
     </div>
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i o">✨</div><h3>綜合資訊 ＆ 願景</h3></div>
       <div class="sub-h">不為人知的秘密</div>
-      <ul>
-        <li>國小每學期開學第一天，都會緊張到拉肚子、頭痛，然後就回家了</li>
-        <li>天生 i 人、內向，大學為了挑戰自我跑去金融實習，順便考了產壽險，還以第 2 名完成實習，但也更確認……我真的無法</li>
-        <li>大學在爭鮮打工當壽司師傅，也當數學家教</li>
-        <li>在資訊業時，為了瞭解「人資」在做什麼跑去考證照，之後變得非常會面試，有面試機會幾乎等於錄取</li>
-        <li>熱愛健美，跑去當健美協會裁判、教練；董氏針灸第五代傳人</li>
-        <li>如此 i 的人，現在卻成為超共感的「能量療癒師」</li>
-      </ul>
+      <ul data-l="gw_secret"></ul>
       <div class="sub-h">我強烈的願望</div>
-      <p>2036 年之前，讓結構X獵人與武醫大健康理念傳遞全台 14 個區域，培養 108 位認同「身體平衡」理念的種子教練／夥伴，成為經銷商，一起推廣「足部是健康根基」的大健康教育；同時鈞衡舍品牌年營業額突破 1,000 萬，成為上班族／久坐族在身體平衡的第一品牌。</p>
+      <p data-t="gw_wish"></p>
     </div>
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i c">★</div><h3>我成功的關鍵</h3></div>
-      <ul>
-        <li>雖然是個 i 人，但卻以 e 人的方式享受世界，努力學習，永不自滿</li>
-        <li>凡事以好玩為出發，才能做得好、走的久</li>
-      </ul>
+      <ul data-l="gw_key"></ul>
     </div>
 
     <hr>
@@ -429,54 +392,25 @@
       <div class="gw-sec" id="gains-G">
         <div class="gw-h"><div class="gw-i o">◎</div><h3>Goals<small>目標</small></h3></div>
         <div class="sub-h">BNI 目標</div>
-        <ul>
-          <li>2026/10 前完成相關產業的 121</li>
-          <li>每週至少 2 場 121，送出 2 個引薦</li>
-          <li>2028 年開自己的身體平衡工作室，讓「鈞衡舍」品牌變成招牌事業</li>
-        </ul>
+        <ul data-l="gw_goal_bni"></ul>
         <div class="sub-h">1 年／3 年／10 年</div>
-        <ul>
-          <li>2026 年底前辦 10 場大健康體驗會，分享理念（已完成 4 場）</li>
-          <li>2027 年底前月入 20 萬，辦 100 場大健康體驗會，讓 20 位認同我們的人加入</li>
-          <li>2029 年底前月入 50 萬，讓 108 位認同我們的人加入</li>
-          <li>2036 年底前年收入 1,000 萬，和團隊每年舉辦 4 場跨國地區大健康理念推廣</li>
-        </ul>
+        <ul data-l="gw_goal_long"></ul>
       </div>
       <div class="gw-sec" id="gains-A">
         <div class="gw-h"><div class="gw-i c">🏆</div><h3>Accomplishments<small>成就</small></h3></div>
-        <ul>
-          <li>IFBB PRO 健美職業選手 蔡勇峰：賽前結構調整，改善代償問題，搭配足弓墊提升運動時重量表現，助攻上台狀態</li>
-          <li>台灣健康久久協會：公益義整合作單位，提供志工身體保養及專業技術支援，讓公益服務更到位</li>
-          <li>泰山三鐵工作室：三鐵選手賽前、賽後放鬆及提升運動表現</li>
-          <li>內湖炎洲集團：身體平衡調整、運動訓練員工福利優惠</li>
-        </ul>
+        <ul data-l="gw_a"></ul>
       </div>
       <div class="gw-sec" id="gains-I">
         <div class="gw-h"><div class="gw-i o">♥</div><h3>Interests<small>興趣愛好</small></h3></div>
-        <ul>
-          <li>運動訓練</li>
-          <li>藝文展覽</li>
-        </ul>
+        <ul data-l="gw_i"></ul>
       </div>
       <div class="gw-sec" id="gains-N">
         <div class="gw-h"><div class="gw-i c">👥</div><h3>Networks<small>人際關係</small></h3></div>
-        <ul>
-          <li>健身／健美圈：國家級健美裁判資格，認識選手、教練、賽事籌辦方</li>
-          <li>武醫／公益協會：北部分會執行長身分，連結師資與公益團體（如台灣健康久久協會）</li>
-          <li>醫護／運動社群：護理師、跑者聯盟成員</li>
-          <li>能量療癒：核心薩滿、頌缽、銅鑼、手碟、水晶開課師資、工作坊、培訓空間</li>
-        </ul>
+        <ul data-l="gw_n"></ul>
       </div>
       <div class="gw-sec" id="gains-S">
         <div class="gw-h"><div class="gw-i o">🔧</div><h3>Skills<small>技巧</small></h3></div>
-        <ul>
-          <li>統計程式證照：SPSS、SAS 初／進階</li>
-          <li>產壽險、全方位人力資源管理證照</li>
-          <li>資訊業專案／產品經理背景：專案管理、產品規劃、跨團隊溝通</li>
-          <li>健美協會裁判＆教練</li>
-          <li>運動按摩、結構調整</li>
-          <li>能量療癒（聖火靈氣／生物能頭薦骨）</li>
-        </ul>
+        <ul data-l="gw_s"></ul>
       </div>
     </div>
 
@@ -484,64 +418,33 @@
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i o">🏢</div><h3>最近的客戶</h3></div>
-      <ul>
-        <li><b>台灣健康久久協會</b> — 公益義整合作單位，提供志工身體保養及專業技術支援</li>
-        <li><b>健美職業選手 蔡勇峰</b> — 賽前結構調整，改善代償，搭配足弓墊提升重量表現</li>
-        <li><b>泰山三鐵工作室</b> — 三鐵選手運動前後、賽前後放鬆及提升運動表現</li>
-        <li><b>內湖炎洲集團</b> — 身體平衡調整、運動訓練員工福利優惠</li>
-      </ul>
+      <ul data-l="gw_client" data-pair="1"></ul>
     </div>
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i c">🤝</div><h3>引薦指南</h3></div>
       <div class="sub-h">好的引薦</div>
-      <ul>
-        <li>上班族／久坐族，常覺得身體不適、體態失衡，願意花時間調整改善的人</li>
-      </ul>
+      <ul data-l="gw_good"></ul>
       <div class="sub-h">不適合的引薦</div>
-      <ul>
-        <li>只想要「快速診斷、快速治療」、希望一次見效，不願意花時間了解身體根本問題的人，或只在意最低價格的人</li>
-      </ul>
+      <ul data-l="gw_bad"></ul>
       <div class="sub-h">最適合的客戶</div>
-      <ul>
-        <li>【夢幻】雙北市具規模企業的人資／福委會窗口、護理師、營養師：能促成員工健康講座或團體結構調整方案；或連鎖健身房／運動品牌的高層窗口：能促成長期異業合作及健康講座推廣</li>
-        <li>【理想】有場地、能號召人潮的社區管委會或工作室：我們可到場辦大健康體驗會</li>
-        <li>【一般】常覺得「站不久」、身體「緊、痠、痛、麻」的上班族／久坐族</li>
-      </ul>
+      <ul data-l="gw_best"></ul>
     </div>
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i o">👥</div><h3>業務人脈圈</h3></div>
-      <ul>
-        <li><b>身心靈產業</b> — 聯合辦「身心平衡工作坊」，對方顧心／能量端，我顧身體結構端，雙方互轉客戶</li>
-        <li><b>健身產業</b> — 教練把因代償／姿勢問題卡關的學員轉來調整；我調整完的客戶轉去重訓維持成果</li>
-        <li><b>按摩產業</b> — 按摩師轉介想解決根本問題的客戶；我轉介只需要單純放鬆的客戶，互為前後手</li>
-        <li><b>大健康產業</b> — 聯合辦理念推廣講座／體驗會，資源共享觸及對方客群，一起做大健康生態圈</li>
-        <li><b>按摩志工團體＆協會</b> — 透過公益義整活動增加曝光與信任，協會轉介需要專業服務的成員，我也回饋免費體驗給協會</li>
-      </ul>
+      <ul data-l="gw_circle" data-pair="1"></ul>
     </div>
 
     <div class="gw-sec">
       <div class="gw-h"><div class="gw-i c">📦</div><h3>DANCE CARD</h3></div>
-      <div class="gw-dance">「身體平衡找馬克，站得穩才走的久。」</div>
+      <div class="gw-dance" data-t="gw_dance"></div>
       <div class="sub-h">主要產品／服務：身體平衡方案</div>
-      <ul>
-        <li>結構調整、運動按摩、運動訓練</li>
-        <li>能量療癒（聖火靈氣／生物能頭薦骨）</li>
-        <li>足部力學分析、足弓墊支撐</li>
-      </ul>
+      <ul data-l="gw_product"></ul>
       <div class="sub-h">我的獨特銷售主張</div>
-      <ul>
-        <li>一樣是純徒手，但我不是用力揉、也不是喬骨頭，而是以極度輕柔卻深層的手法，調動 4 根腳趾頭就可以讓肩膀鬆一半</li>
-        <li>透過足部拓印圖，看見並找到身體卡住的關鍵點，輕輕轉一轉，引導並恢復平衡</li>
-        <li>以心法而非固定手法，因人而異找到最適合的調整方式，讓身體有「回到家」的均衡感，達到真正的身體、心靈平衡</li>
-      </ul>
+      <ul data-l="gw_usp"></ul>
       <div class="sub-h">怎麼幫我介紹</div>
-      <ul>
-        <li>「我認識一位做身體平衡調整的教練馬克，以極度輕柔卻深層的手法，調動 4 根腳趾頭就可以讓僵硬的肩膀鬆一半，你要不要試試看？」</li>
-        <li>「他可以透過足部拓印圖，看見並找到身體卡住的關鍵點，你去找他報我的名字，就可以免費體驗原價 $800 的足部力學檢測哦！」</li>
-        <li>「你有沒有 30 分鐘？他可以提供你一場快速有感的放鬆體驗，原價 $1,000，報我名字可以折 $200，一定要報我名字哦！」</li>
-      </ul>
+      <ul data-l="gw_script"></ul>
     </div>
 
     <hr>
@@ -551,6 +454,84 @@
 </div>
 
 <script>
+  /* 內容預設值；網頁打開時會改讀 Google 試算表「GAINS網頁內容」 */
+  var SHEET_ID = '11t61IDwRjk4cd4IbVi_m7FwPsrCvzbGssigez_8b_aU';
+  var DEFAULTS = {"brand": "鈞衡舍 ChunBalance", "name": "鄭鴻鈞", "nick": "馬克", "keyword": ["結構調整", "運動按摩", "運動訓練", "能量平衡", "足弓平衡"], "title_line": "身體結構平衡教練．武醫北部分會執行長", "chapter": "大恆白金分會．品味生活組", "slogan": "身體平衡找馬克，\n站得穩才走的久。", "slogan_sub": "先聽懂問題，再給解決方案和維持計畫。", "scroll_q": "你身邊有人常喊站不久、身體緊痠痛麻嗎？往下看", "ref": ["🪑｜上班族／久坐族｜「我同事每天都喊站不久、肩頸好緊…」｜常覺得「站不久」、身體「緊、痠、痛、麻」，願意花時間調整改善的人。｜好引薦", "🏠｜社區管委會／工作室｜「我們社區想辦一場健康活動…」｜有場地、能號召人潮，我們可以到場辦大健康體驗會。｜理想引薦", "🏢｜企業人資、福委會／連鎖健身房｜「公司想幫員工安排健康講座…」｜雙北具規模企業的人資、福委會窗口、護理師、營養師，或連鎖健身房、運動品牌高層，促成員工健康講座、團體結構調整或長期異業合作。｜夢幻引薦"], "about": ["我是**鈞衡舍 ChunBalance 創辦人**鄭鴻鈞 馬克，**身體結構平衡教練**。", "以前在資訊業做了 **10 年**，工作就是幫公司和客戶解決問題。", "大學開始就喜歡重訓，不過後來疫情停了訓練，身材走樣、身體也很多地方不舒服，肩緊腰酸酸痛樣樣找上我；後來重新回到訓練並重新結合飲食及休息慢慢一步一步調回來，也考取**國家級健美裁判、健身教練**，並規劃進入健康產業。", "當教練時學生常請假去按摩，因此我進修了**運動按摩**；後來發現很多問題是結構造成的，也補足了**結構調整**；到後來發覺身體跟心靈一樣重要，並心靈、能量進修了**靈氣、生物能頭薦骨**，也成為**董氏針灸第五代傳人**，透過穴位來保養自己並分享觀念。", "我是**武醫北部分會執行長**，透過公益方式來幫助需要幫助的人，並分享大健康理念。", "從解決系統的問題，變成解決人的問題。一切都沒有固定的方式，重要的只有心法。\n先了解你，再用適合你的方式處理你。\n**身體回到平衡這條路需要我們一起努力，調整我來，但維持需要你。**"], "num": ["10 年｜IT 解決問題經驗", "國家級｜健美裁判．教練", "第五代｜董氏針灸傳人"], "svc": ["★｜獨門絕活｜調整 4 根腳趾頭，身體就能鬆一半", "⚖｜結構調整｜身體歪了在代償，把結構調回平衡", "✋｜運動按摩｜放鬆緊繃的肌肉、筋膜", "🏋｜運動訓練｜國家健美教練帶你把身體練起來", "☯｜能量平衡｜靈氣、頭薦骨，照顧身心這一層", "👣｜足弓平衡｜從足底受力，找出身體哪裡痠緊累"], "process_sub": "調整我來，維持交給你", "step": ["聽懂｜先聽懂你哪裡不舒服、生活怎麼過", "找原因｜痛的地方，不一定是痛的原因", "處理｜從結構下手，讓身體回到平衡", "維護｜穿對鞋、改習慣、練起來"], "client": ["IFBB PRO 健美職業選手 蔡勇峰", "泰山三鐵工作室", "內湖炎洲集團 員工福利", "台灣健康久久協會", "武醫北部分會 公益義整"], "phone": "0928-058-314", "line_url": "https://line.me/R/ti/p/@chunbalance", "ig_url": "https://www.instagram.com/chunbalance", "fb_url": "https://www.facebook.com/chunbalance", "gw_company": "駐點：結構X獵人／品牌：鈞衡舍 ChunBalance", "gw_job": "武醫協會北部分會執行長／身體結構平衡教練／足弓墊經銷商／品牌創辦人", "gw_exp": "前一份工作：資訊業產品經理（10 年 IT，系統分析師 → 專案、產品經理）", "gw_location": "新北市板橋區", "gw_personal": ["家人：父 退休代書、計程車；母 家管；弟 直播經紀、經營直播設備販售｜孩子：無｜寵物：無", "業餘愛好：重訓、公益義整推廣體驗會", "感興趣的活動：手作課程工作坊、體驗會活動", "居住地：新北市板橋區"], "gw_secret": ["國小每學期開學第一天，都會緊張到拉肚子、頭痛，然後就回家了", "天生 i 人、內向，大學為了挑戰自我跑去金融實習，順便考了產壽險，還以第 2 名完成實習，但也更確認……我真的無法", "大學在爭鮮打工當壽司師傅，也當數學家教", "在資訊業時，為了瞭解「人資」在做什麼跑去考證照，之後變得非常會面試，有面試機會幾乎等於錄取", "熱愛健美，跑去當健美協會裁判、教練；董氏針灸第五代傳人", "如此 i 的人，現在卻成為超共感的「能量療癒師」"], "gw_wish": "2036 年之前，讓結構X獵人與武醫大健康理念傳遞全台 14 個區域，培養 108 位認同「身體平衡」理念的種子教練／夥伴，成為經銷商，一起推廣「足部是健康根基」的大健康教育；同時鈞衡舍 ChunBalance品牌年營業額突破 1,000 萬，成為上班族／久坐族在身體平衡的第一品牌。", "gw_key": ["雖然是個 i 人，但卻以 e 人的方式享受世界，努力學習，永不自滿", "凡事以好玩為出發，才能做得好、走的久"], "gw_goal_bni": ["2026/10 前完成相關產業的 121", "每週至少 2 場 121，送出 2 個引薦", "2028 年開自己的身體平衡工作室，讓「鈞衡舍 ChunBalance」品牌變成招牌事業"], "gw_goal_long": ["2026 年底前辦 10 場大健康體驗會，分享理念（已完成 4 場）", "2027 年底前月入 20 萬，辦 100 場大健康體驗會，讓 20 位認同我們的人加入", "2029 年底前月入 50 萬，讓 108 位認同我們的人加入", "2036 年底前年收入 1,000 萬，和團隊每年舉辦 4 場跨國地區大健康理念推廣"], "gw_a": ["IFBB PRO 健美職業選手 蔡勇峰：賽前結構調整，改善代償問題，搭配足弓墊提升運動時重量表現，助攻上台狀態", "台灣健康久久協會：公益義整合作單位，提供志工身體保養及專業技術支援，讓公益服務更到位", "泰山三鐵工作室：三鐵選手賽前、賽後放鬆及提升運動表現", "內湖炎洲集團：身體平衡調整、運動訓練員工福利優惠"], "gw_i": ["運動訓練", "藝文展覽"], "gw_n": ["健身／健美圈：國家級健美裁判資格，認識選手、教練、賽事籌辦方", "武醫／公益協會：北部分會執行長身分，連結師資與公益團體（如台灣健康久久協會）", "醫護／運動社群：護理師、跑者聯盟成員", "能量療癒：核心薩滿、頌缽、銅鑼、手碟、水晶開課師資、工作坊、培訓空間"], "gw_s": ["統計程式證照：SPSS、SAS 初／進階", "產壽險、全方位人力資源管理證照", "資訊業專案／產品經理背景：專案管理、產品規劃、跨團隊溝通", "健美協會裁判＆教練", "運動按摩、結構調整", "能量療癒（聖火靈氣／生物能頭薦骨）"], "gw_client": ["台灣健康久久協會｜公益義整合作單位，提供志工身體保養及專業技術支援", "健美職業選手 蔡勇峰｜賽前結構調整，改善代償，搭配足弓墊提升重量表現", "泰山三鐵工作室｜三鐵選手運動前後、賽前後放鬆及提升運動表現", "內湖炎洲集團｜身體平衡調整、運動訓練員工福利優惠"], "gw_good": ["上班族／久坐族，常覺得身體不適、體態失衡，願意花時間調整改善的人"], "gw_bad": ["只想要「快速診斷、快速治療」、希望一次見效，不願意花時間了解身體根本問題的人，或只在意最低價格的人"], "gw_best": ["【夢幻】雙北市具規模企業的人資／福委會窗口、護理師、營養師：能促成員工健康講座或團體結構調整方案；或連鎖健身房／運動品牌的高層窗口：能促成長期異業合作及健康講座推廣", "【理想】有場地、能號召人潮的社區管委會或工作室：我們可到場辦大健康體驗會", "【一般】常覺得「站不久」、身體「緊、痠、痛、麻」的上班族／久坐族"], "gw_circle": ["身心靈產業｜聯合辦「身心平衡工作坊」，對方顧心／能量端，我顧身體結構端，雙方互轉客戶", "健身產業｜教練把因代償／姿勢問題卡關的學員轉來調整；我調整完的客戶轉去重訓維持成果", "按摩產業｜按摩師轉介想解決根本問題的客戶；我轉介只需要單純放鬆的客戶，互為前後手", "大健康產業｜聯合辦理念推廣講座／體驗會，資源共享觸及對方客群，一起做大健康生態圈", "按摩志工團體＆協會｜透過公益義整活動增加曝光與信任，協會轉介需要專業服務的成員，我也回饋免費體驗給協會"], "gw_dance": "「身體平衡找馬克，站得穩才走的久。」", "gw_product": ["結構調整、運動按摩、運動訓練", "能量療癒（聖火靈氣／生物能頭薦骨）", "足部力學分析、足弓墊支撐"], "gw_usp": ["一樣是純徒手，但我不是用力揉、也不是喬骨頭，而是以極度輕柔卻深層的手法，調動 4 根腳趾頭就可以讓肩膀鬆一半", "透過足部拓印圖，看見並找到身體卡住的關鍵點，輕輕轉一轉，引導並恢復平衡", "以心法而非固定手法，因人而異找到最適合的調整方式，讓身體有「回到家」的均衡感，達到真正的身體、心靈平衡"], "gw_script": ["「我認識一位做身體平衡調整的教練馬克，以極度輕柔卻深層的手法，調動 4 根腳趾頭就可以讓僵硬的肩膀鬆一半，你要不要試試看？」", "「他可以透過足部拓印圖，看見並找到身體卡住的關鍵點，你去找他報我的名字，就可以免費體驗原價 $800 的足部力學檢測哦！」", "「你有沒有 30 分鐘？他可以提供你一場快速有感的放鬆體驗，原價 $1,000，報我名字可以折 $200，一定要報我名字哦！」"]};
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function fmt(s){ return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\r?\n/g, '<br>'); }
+  function parts(s){ return String(s).split('｜'); }
+  function each(sel, fn){ Array.prototype.forEach.call(document.querySelectorAll(sel), fn); }
+
+  function render(C){
+    each('[data-t]', function(el){ var v = C[el.getAttribute('data-t')]; if (v != null) el.innerHTML = fmt(v); });
+    each('[data-href]', function(el){ var v = C[el.getAttribute('data-href')]; if (v) el.href = v; });
+    each('[data-tel]', function(el){ var v = C[el.getAttribute('data-tel')]; if (v) el.href = 'tel:' + v.replace(/[^0-9+]/g, ''); });
+    each('ul[data-l]', function(el){
+      var pair = el.hasAttribute('data-pair');
+      el.innerHTML = (C[el.getAttribute('data-l')] || []).map(function(v){
+        if (pair){ var p = parts(v); return '<li><b>' + fmt(p[0]) + '</b>' + (p[1] ? ' — ' + fmt(p.slice(1).join('｜')) : '') + '</li>'; }
+        return '<li>' + fmt(v) + '</li>';
+      }).join('');
+    });
+    document.getElementById('kw').innerHTML = (C.keyword || []).map(function(v){ return '<span>' + fmt(v) + '</span>'; }).join('');
+    document.getElementById('ref').innerHTML = (C.ref || []).map(function(v){
+      var p = parts(v);
+      return '<div class="ref"><div class="ico">' + fmt(p[0] || '') + '</div><h3>' + fmt(p[1] || '') + '</h3>' +
+        (p[2] ? '<div class="q">' + fmt(p[2]) + '</div>' : '') + '<div class="d">' + fmt(p[3] || '') + '</div>' +
+        (p[4] ? '<span class="tag">' + fmt(p[4]) + '</span>' : '') + '</div>';
+    }).join('');
+    document.getElementById('about').innerHTML = (C.about || []).map(function(v){ return '<p>' + fmt(v) + '</p>'; }).join('');
+    document.getElementById('num').innerHTML = (C.num || []).map(function(v){
+      var p = parts(v); return '<div class="num"><strong>' + fmt(p[0]) + '</strong><span>' + fmt(p[1] || '') + '</span></div>';
+    }).join('');
+    document.getElementById('svc').innerHTML = (C.svc || []).map(function(v, i){
+      var p = parts(v);
+      return '<div class="svc' + (i === 0 ? ' star' : '') + '"><div class="ico">' + fmt(p[0] || '') + '</div><h3>' + fmt(p[1] || '') + '</h3><p>' + fmt(p[2] || '') + '</p></div>';
+    }).join('');
+    document.getElementById('step').innerHTML = (C.step || []).map(function(v, i){
+      var p = parts(v);
+      return '<div class="step"><div class="n">' + ('0' + (i + 1)).slice(-2) + '</div><div><h3>' + fmt(p[0]) + '</h3><p>' + fmt(p[1] || '') + '</p></div></div>';
+    }).join('');
+    document.getElementById('client').innerHTML = (C.client || []).map(function(v){ return '<span class="pill">' + fmt(v) + '</span>'; }).join('');
+  }
+
+  /* 讀試算表：A 代號、C 內容；同代號多列 = 清單 */
+  function parseCSV(t){
+    var rows = [], row = [], f = '', q = false;
+    for (var i = 0; i < t.length; i++){
+      var c = t[i];
+      if (q){ if (c === '"'){ if (t[i + 1] === '"'){ f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true;
+      else if (c === ','){ row.push(f); f = ''; }
+      else if (c === '\n'){ row.push(f); rows.push(row); row = []; f = ''; }
+      else if (c !== '\r') f += c;
+    }
+    if (f !== '' || row.length){ row.push(f); rows.push(row); }
+    return rows;
+  }
+  function fromSheet(rows){
+    var C = {}, seen = {};
+    rows.slice(1).forEach(function(r){
+      var k = (r[0] || '').trim(), v = r[2] == null ? '' : r[2];
+      if (!k || !(k in DEFAULTS)) return;
+      if (Array.isArray(DEFAULTS[k])){ if (!seen[k]){ C[k] = []; seen[k] = 1; } if (v.trim() !== '') C[k].push(v); }
+      else C[k] = v;
+    });
+    return C;
+  }
+
+  render(DEFAULTS);
+  fetch('https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&sheet=' + encodeURIComponent('內容') + '&headers=1&t=' + Date.now())
+    .then(function(r){ if (!r.ok) throw 0; return r.text(); })
+    .then(function(t){
+      if (t.indexOf('<') === 0) return;
+      var C = fromSheet(parseCSV(t)), M = {};
+      for (var k in DEFAULTS) M[k] = (k in C) ? C[k] : DEFAULTS[k];
+      render(M);
+    })
+    .catch(function(){});
+
   function openGains(){ document.getElementById('gains').classList.add('open'); document.body.classList.add('gw-lock'); }
   function closeGains(){ document.getElementById('gains').classList.remove('open'); document.body.classList.remove('gw-lock'); }
   function gwJump(k){
