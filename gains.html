@@ -122,22 +122,59 @@
   .icons a:hover{border-color:var(--coral);color:var(--coral);}
   .icons svg{width:24px;height:24px;fill:currentColor;}
 
-  /* GAINS modal */
-  .modal{position:fixed;inset:0;background:rgba(30,26,20,0.6);display:none;align-items:flex-start;justify-content:center;padding:30px 16px;z-index:50;overflow-y:auto;}
-  .modal.open{display:flex;}
-  .sheet{background:#fff;border-radius:22px;max-width:620px;width:100%;padding:30px 26px;position:relative;}
-  .sheet h3{font-size:24px;font-weight:900;text-align:center;}
-  .sheet .sub{text-align:center;color:var(--ink-soft);font-size:14px;margin-bottom:20px;}
-  .close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:none;background:var(--card);font-size:18px;cursor:pointer;}
-  .g-row{display:grid;grid-template-columns:56px 1fr;gap:14px;padding:16px 0;border-top:1px solid var(--line);}
-  .g-row .L{width:56px;height:56px;border-radius:16px;background:var(--grad);color:#fff;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;}
-  .g-row h4{font-size:17px;font-weight:900;}
-  .g-row h4 small{font-size:11px;letter-spacing:2px;color:var(--brown);margin-left:6px;}
-  .g-row ul{list-style:none;margin-top:4px;}
-  .g-row li{font-size:15px;color:var(--ink-soft);padding-left:14px;position:relative;}
-  .g-row li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--coral);}
-  .g-row li.todo{color:var(--brown);}
-  .g-row li.todo::before{background:none;border:1.5px dashed var(--brown);}
+  /* GAINS worksheet overlay */
+  .gw{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column;
+    transform:translateY(100%);visibility:hidden;transition:transform .35s ease,visibility 0s .35s;}
+  .gw.open{transform:translateY(0);visibility:visible;transition:transform .35s ease;}
+  body.gw-lock{overflow:hidden;}
+  .gw-top{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;
+    background:rgba(248,247,243,0.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .gw-top b{display:block;font-size:17px;font-weight:900;}
+  .gw-top span{font-size:13px;color:var(--ink-soft);}
+  .gw-x{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:18px;cursor:pointer;color:var(--ink);}
+  .gw-body{position:relative;flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .gw-in{max-width:672px;margin:0 auto;padding:26px 16px 30px;}
+  .gw-sec{margin-bottom:26px;}
+  .gw-h{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .gw-i{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:0 0 32px;}
+  .gw-i.o{background:rgba(79,87,64,0.12);color:var(--olive-dark);}
+  .gw-i.c{background:var(--coral-soft);color:var(--coral);}
+  .gw-h h3{font-size:16px;font-weight:900;line-height:1.3;}
+  .gw-h h3 small{display:block;font-size:12px;font-weight:400;color:var(--ink-soft);}
+  .gw-kv{font-size:15px;margin-bottom:6px;}
+  .gw-kv em{font-style:normal;font-size:12.5px;color:var(--ink-soft);background:var(--card);border-radius:6px;padding:1px 8px;margin-right:6px;}
+  .gw ul{list-style:none;}
+  .gw li{font-size:15px;padding-left:16px;position:relative;margin-bottom:5px;}
+  .gw li::before{content:"";position:absolute;left:2px;top:10px;width:6px;height:6px;border-radius:50%;background:var(--coral);}
+  .gw p{font-size:15px;margin-bottom:6px;}
+  .gw .sub-h{font-size:14px;font-weight:900;color:var(--coral);margin:12px 0 6px;}
+  .gw hr{border:none;border-top:1px solid var(--line);margin:28px 0;}
+  .todo-t{color:var(--brown);border:1.5px dashed var(--brown-c,#A89078);border-radius:10px;padding:8px 12px;font-size:14.5px;background:rgba(255,255,255,0.6);}
+  .gw li.todo-t{padding-left:12px;}
+  .gw li.todo-t::before{display:none;}
+  .gw-letters{display:flex;justify-content:center;gap:10px;margin:10px 0 24px;}
+  .gw-letters a{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;transition:transform .15s;}
+  .gw-letters a:nth-child(odd){background:var(--olive-dark);}
+  .gw-letters a:nth-child(even){background:var(--coral);}
+  .gw-letters a:hover{transform:scale(1.1);}
+  .gw-title{text-align:center;font-size:20px;font-weight:900;}
+  .gw-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 28px;}
+  .gw-grid .gw-sec{scroll-margin-top:10px;}
+  .gw-dance{font-weight:900;font-size:16px;margin-bottom:6px;}
+  .gw-print{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:12px;border:none;
+    background:var(--card);font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;}
+  .gw-foot{flex:0 0 auto;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:var(--bg);border-top:1px solid var(--line);}
+  .gw-close{display:block;max-width:672px;margin:0 auto;width:100%;height:52px;border:none;border-radius:12px;background:var(--grad);
+    color:#fff;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;}
+  .gw-close:hover{opacity:.9;}
+  .gw-close:active{transform:scale(0.98);}
+  @media (max-width:760px){ .gw-grid{grid-template-columns:1fr;} }
+  @media print{
+    body.gw-lock > *:not(.gw){display:none !important;}
+    .gw{position:static;transform:none;visibility:visible;}
+    .gw-top .gw-x,.gw-foot,.gw-print,.gw-letters{display:none !important;}
+    .gw-body{overflow:visible;}
+  }
 
   @media (max-width:760px){
     section{padding:56px 0;}
@@ -329,42 +366,146 @@
   </div>
 </section>
 
-<!-- GAINS sheet -->
-<div class="modal" id="gains" onclick="if(event.target===this)closeGains()">
-  <div class="sheet">
-    <button class="close" type="button" onclick="closeGains()" aria-label="關閉">✕</button>
-    <h3>GAINS 表</h3>
-    <div class="sub">鄭鴻鈞 馬克．身體結構平衡教練</div>
-    <div class="g-row"><div class="L">G</div><div><h4>目標<small>GOALS</small></h4><ul>
-      <li class="todo">待馬克補充</li>
-    </ul></div></div>
-    <div class="g-row"><div class="L">A</div><div><h4>成就<small>ACCOMPLISHMENTS</small></h4><ul>
-      <li>10 年 IT：系統分析師 → 專案、產品經理</li>
-      <li>國家級健美裁判</li>
-      <li>董氏針灸第五代傳人</li>
-      <li>中華武醫國際交流發展總會 北部分會執行長</li>
-    </ul></div></div>
-    <div class="g-row"><div class="L">I</div><div><h4>興趣<small>INTERESTS</small></h4><ul>
-      <li>重量訓練</li>
-      <li class="todo">其他興趣待馬克補充</li>
-    </ul></div></div>
-    <div class="g-row"><div class="L">N</div><div><h4>人脈<small>NETWORKS</small></h4><ul>
-      <li>BNI 大恆白金分會．品味生活組</li>
-      <li>武醫北部分會、武醫義整公益活動</li>
-      <li>結構X獵人</li>
-      <li>國家健美協會</li>
-    </ul></div></div>
-    <div class="g-row"><div class="L">S</div><div><h4>專長<small>SKILLS</small></h4><ul>
-      <li>結構調整、運動按摩、運動訓練</li>
-      <li>能量平衡（靈氣、頭薦骨）、足弓平衡</li>
-      <li>獨門絕活：調整 4 根腳趾頭</li>
-    </ul></div></div>
+<!-- GAINS worksheet -->
+<div class="gw" id="gains" role="dialog" aria-label="GAINS 工作表">
+  <div class="gw-top">
+    <div><b>GAINS 工作表</b><span>鄭鴻鈞 馬克 · BNI 大恆白金分會</span></div>
+    <button class="gw-x" type="button" onclick="closeGains()" aria-label="關閉">✕</button>
   </div>
+  <div class="gw-body" id="gwBody"><div class="gw-in">
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i o">💼</div><h3>商業資訊</h3></div>
+      <div class="gw-kv"><em>品牌</em>鈞衡舍 ＆ 結構X獵人</div>
+      <div class="gw-kv"><em>職業</em>身體結構平衡教練｜結構調整、運動按摩、運動訓練、能量平衡、足弓平衡</div>
+      <div class="gw-kv"><em>經驗</em>10 年 IT（系統分析師 → 專案、產品經理）、國家級健美裁判、董氏針灸第五代傳人、中華武醫國際交流發展總會 北部分會執行長</div>
+      <div class="gw-kv"><em>地點</em>板橋江子翠捷運站</div>
+    </div>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i c">👤</div><h3>個人資訊</h3></div>
+      <div class="todo-t">待馬克補充：在哪裡長大、住哪裡、家庭、休閒</div>
+    </div>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i o">✨</div><h3>綜合資訊 ＆ 願景</h3></div>
+      <p>從解決系統的問題，變成解決人的問題。</p>
+      <div class="todo-t">待馬克補充：不為人知的秘密、未來願景</div>
+    </div>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i c">★</div><h3>我成功的關鍵</h3></div>
+      <ul>
+        <li>先聽懂問題，再給解決方案和維持計畫</li>
+        <li>一切都沒有固定的方式，重要的只有心法</li>
+        <li>從肌肉、結構到身心能量，一層一層學上來</li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <div class="gw-title">GAINS 工作表</div>
+    <div class="gw-letters">
+      <a href="#gains-G" onclick="return gwJump('G')">G</a><a href="#gains-A" onclick="return gwJump('A')">A</a><a href="#gains-I" onclick="return gwJump('I')">I</a><a href="#gains-N" onclick="return gwJump('N')">N</a><a href="#gains-S" onclick="return gwJump('S')">S</a>
+    </div>
+    <div class="gw-grid">
+      <div class="gw-sec" id="gains-G">
+        <div class="gw-h"><div class="gw-i o">◎</div><h3>Goals<small>目標</small></h3></div>
+        <div class="todo-t">待馬克補充：1–3 年目標、5 年目標</div>
+      </div>
+      <div class="gw-sec" id="gains-A">
+        <div class="gw-h"><div class="gw-i c">🏆</div><h3>Accomplishments<small>成就</small></h3></div>
+        <ul>
+          <li>10 年 IT，從系統分析師做到專案、產品經理</li>
+          <li>國家級健美裁判</li>
+          <li>學會運動按摩、結構調整、靈氣、頭薦骨</li>
+          <li>董氏針灸第五代傳人</li>
+          <li>中華武醫國際交流發展總會 北部分會執行長，帶志工做武醫義整公益活動</li>
+        </ul>
+      </div>
+      <div class="gw-sec" id="gains-I">
+        <div class="gw-h"><div class="gw-i o">♥</div><h3>Interests<small>興趣愛好</small></h3></div>
+        <ul>
+          <li>重量訓練</li>
+          <li class="todo-t">其他興趣待馬克補充</li>
+        </ul>
+      </div>
+      <div class="gw-sec" id="gains-N">
+        <div class="gw-h"><div class="gw-i c">👥</div><h3>Networks<small>人際關係</small></h3></div>
+        <ul>
+          <li>BNI 大恆白金分會．品味生活組</li>
+          <li>中華武醫國際交流發展總會 北部分會</li>
+          <li>結構X獵人</li>
+          <li>國家健美協會</li>
+        </ul>
+      </div>
+      <div class="gw-sec" id="gains-S">
+        <div class="gw-h"><div class="gw-i o">🔧</div><h3>Skills<small>技巧</small></h3></div>
+        <ul>
+          <li>結構調整、運動按摩、運動訓練</li>
+          <li>能量平衡（靈氣、頭薦骨）、足弓平衡</li>
+          <li>獨門絕活：調整 4 根腳趾頭，身體就能鬆一半</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i o">🏢</div><h3>最近的客戶</h3></div>
+      <div class="todo-t">待馬克補充：可以只寫職業和處理的問題，不寫名字</div>
+    </div>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i c">🤝</div><h3>引薦指南</h3></div>
+      <div class="sub-h">好的引薦</div>
+      <ul>
+        <li>坐著一定翹腳、站著三七步的上班族</li>
+        <li>下班常喊肩緊、腰痠、背痛的朋友</li>
+      </ul>
+      <div class="sub-h">不適合的引薦</div>
+      <div class="todo-t">待馬克補充</div>
+      <div class="sub-h">最適合的客戶</div>
+      <div class="todo-t">待馬克補充：【夢幻】【優質】【一般】</div>
+    </div>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i o">👥</div><h3>業務人脈圈</h3></div>
+      <div class="todo-t">待馬克補充：哪些行業的夥伴和你上下游合作</div>
+    </div>
+
+    <div class="gw-sec">
+      <div class="gw-h"><div class="gw-i c">📦</div><h3>DANCE CARD</h3></div>
+      <div class="gw-dance">「身體平衡找馬克，站得穩才走的久。」</div>
+      <div class="sub-h">主要服務</div>
+      <ul>
+        <li>結構調整、運動按摩、運動訓練、能量平衡、足弓平衡</li>
+      </ul>
+      <div class="sub-h">獨特銷售主張</div>
+      <ul>
+        <li>獨門絕活：調整 4 根腳趾頭，身體就能鬆一半</li>
+        <li>用 IT 解決問題的方法：聽懂 → 找原因 → 處理 → 維護</li>
+        <li>調整我來，維持交給你：穿對鞋、改習慣、練起來</li>
+      </ul>
+      <div class="sub-h">夢幻引薦</div>
+      <div class="todo-t">待馬克補充</div>
+    </div>
+
+    <hr>
+    <button class="gw-print" type="button" onclick="window.print()">⬇ 下載完整 GAINS 表（存成 PDF）</button>
+  </div></div>
+  <div class="gw-foot"><button class="gw-close" type="button" onclick="closeGains()">關閉 GAINS 表</button></div>
 </div>
 
 <script>
-  function openGains(){ document.getElementById('gains').classList.add('open'); }
-  function closeGains(){ document.getElementById('gains').classList.remove('open'); }
+  function openGains(){ document.getElementById('gains').classList.add('open'); document.body.classList.add('gw-lock'); }
+  function closeGains(){ document.getElementById('gains').classList.remove('open'); document.body.classList.remove('gw-lock'); }
+  function gwJump(k){
+    var box = document.getElementById('gwBody'), el = document.getElementById('gains-' + k);
+    box.scrollTo({top: el.offsetTop - 10, behavior: 'smooth'});
+    return false;
+  }
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeGains(); });
   function sharePage(){
     var url = location.href.split('#')[0].split('?')[0];
     if (navigator.share) {
