@@ -240,9 +240,10 @@
     .cta-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:340px;margin-left:auto;margin-right:auto;}
     .cta-row .btn-sub{min-width:0;padding:12px 6px;}
     .cta-row .btn-share{grid-column:1 / -1;}
-    .num strong{white-space:nowrap;}
-    .num{padding:14px 4px;min-width:0;}
-    .num span{display:block;font-size:min(12.5px,3.2vw);white-space:nowrap;line-height:1.5;}
+    .nums{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    .num{padding:14px 10px;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+    .num strong{font-size:19px;text-wrap:balance;}
+    .num span{display:block;font-size:13px;line-height:1.5;margin-top:4px;text-wrap:balance;}
   }
   @media (max-width:350px){
     .keywords{flex-wrap:wrap;}
