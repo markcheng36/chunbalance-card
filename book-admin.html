@@ -91,6 +91,12 @@
   .tag.new{border-color:var(--coral);color:var(--coral);}
   .form{display:none;margin-top:12px;background:var(--bg);border-radius:12px;padding:12px;}
   .form.show{display:block;}
+  .seg{display:flex;gap:6px;}
+  .seg button{flex:1;font:inherit;font-size:13px;padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;}
+  .seg button.on{border-color:var(--charcoal);background:var(--charcoal);color:#fff;}
+  .two{display:flex;gap:8px;align-items:center;}
+  .two>*{flex:1;min-width:0;}
+  .form input[type=date]{font:inherit;font-size:15px;padding:8px 6px;min-width:0;-webkit-appearance:none;appearance:none;border:1px solid var(--line);border-radius:10px;background:#fff;}
   .form label{display:block;font-size:13px;font-weight:700;margin:10px 0 4px;}
   .form label:first-child{margin-top:0;}
   .form select,.form input{width:100%;}
@@ -170,6 +176,18 @@
       <div class="mhead"><button id="m-prev" aria-label="上個月">‹</button><select id="m-sel"></select><button id="m-next" aria-label="下個月">›</button></div>
       <div class="mgrid" id="mgrid"></div>
       <div class="legend"><span><i style="border:1px solid var(--olive)"></i>開放</span><span><i style="background:var(--coral-soft);border:1px solid var(--coral)"></i>已預約</span><span><i style="border:1px solid var(--line)"></i>關閉</span><span><i style="border:1px dashed var(--olive-dark);background:#EEF1E6"></i>進修</span></div>
+      <button class="sm" id="st-open">＋ 設定進修區間</button>
+      <div class="form" id="st-form">
+        <label>日期</label>
+        <div class="two"><input type="date" id="st-from"><span style="flex:0 0 auto">到</span><input type="date" id="st-to"></div>
+        <label>時間</label>
+        <div class="seg" id="st-all"><button data-v="1" class="on">整天</button><button data-v="0">選時間</button></div>
+        <div class="two" id="st-time" style="display:none;margin-top:8px"><span id="st-s"></span><span style="flex:0 0 auto">到</span><span id="st-e"></span></div>
+        <label>客人看到</label>
+        <div class="seg" id="st-lab"><button data-v="studyFull" class="on">滿</button><button data-v="study">進修</button></div>
+        <button class="go" id="st-go">套用</button>
+        <button class="x" id="st-clear" style="margin-top:10px;width:100%;padding:8px">取消這段日期的進修</button>
+      </div>
       <div id="cal" class="dayp"></div>
     </div>
     <div class="box">
@@ -356,6 +374,23 @@
       it.appendChild(x);$('blist').appendChild(it);
     });
   }
+
+  // ===== 進修區間 =====
+  $('st-s').innerHTML=sel('09:00','st-start');$('st-e').innerHTML=sel('18:00','st-end');
+  function seg(id){const b=$(id);b.querySelectorAll('button').forEach(x=>x.onclick=()=>{b.querySelectorAll('button').forEach(y=>y.classList.toggle('on',y===x));if(id==='st-all')$('st-time').style.display=x.dataset.v==='1'?'none':'flex';});}
+  seg('st-all');seg('st-lab');
+  const segV=id=>$(id).querySelector('button.on').dataset.v;
+  $('st-open').onclick=()=>{const f=$('st-form');f.classList.toggle('show');if(!$('st-from').value){$('st-from').value=PICK;$('st-to').value=PICK;}};
+  $('st-from').onchange=()=>{if(!$('st-to').value||$('st-to').value<$('st-from').value)$('st-to').value=$('st-from').value;};
+  function studyRange(state){
+    const o={a:'studyRange',from:$('st-from').value,to:$('st-to').value,state};
+    if(!o.from) return toast('請選日期');
+    if(segV('st-all')==='0'){o.start=$('st-start').value;o.end=$('st-end').value;}
+    return post(o).then(r=>{toast((state==='clear'?'已取消 ':'已設定 ')+r.count+' 個時段'+(r.skipped?'，'+r.skipped+' 個已有人約沒動':''));$('st-form').classList.remove('show');load();})
+      .catch(e=>toast(/不明/.test(e.message)?'程式要先更新到 v7':e.message));
+  }
+  $('st-go').onclick=()=>studyRange(segV('st-lab'));
+  twoTap($('st-clear'),'取消這段日期的進修',()=>studyRange('clear'));
 
   // ===== 需求單 =====
   function planUrl(id){return BOOK+'?plan='+id;}
