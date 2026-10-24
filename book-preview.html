@@ -82,6 +82,10 @@
   .qc .go{background:var(--coral);}
   .sec-sub{font-size:13px;color:var(--ink-soft);}
 
+  .home{display:none;margin-top:12px;background:var(--bg);border-radius:14px;padding:14px;font-size:14.5px;}
+  .home.show{display:block;}
+  .home b{color:var(--coral);}
+  .line-btn{display:block;text-align:center;margin-top:12px;padding:12px;border-radius:12px;background:#06C755;color:#fff;font-weight:700;text-decoration:none;}
   .done{display:none;text-align:center;}
   .done.show{display:block;}
   .done .ok{font-size:44px;color:var(--olive);}
@@ -114,10 +118,12 @@
       <label class="q">多說一點（多久了、什麼時候最痛）</label>
       <textarea placeholder="例：右肩卡卡半年，打球後特別痛"></textarea>
 
-      <label class="q">想去哪裡？</label>
-      <div class="chips single">
-        <button>板橋</button><button>泰山</button><button>三重</button><button>都可以</button>
+      <label class="q">在哪裡做？</label>
+      <div class="chips single loc">
+        <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
       </div>
+      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先跟馬克確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="studio">
 
       <label class="q">方便的時間</label>
       <div class="chips multi">
@@ -130,6 +136,7 @@
       <input type="tel" placeholder="09xxxxxxxx">
 
       <button class="go" data-done="d-new">送出需求單</button>
+      </div>
     </div>
     <div class="box done" id="d-new">
       <div class="ok">✓</div>
@@ -170,11 +177,12 @@
       <div class="svc"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
       <div class="svc"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
 
-      <h2 style="margin-top:22px">2. 選地點</h2>
-      <div class="chips single" style="margin-top:8px">
-        <button class="on">板橋</button><button>泰山</button><button>三重</button>
+      <h2 style="margin-top:22px">2. 在哪裡做？</h2>
+      <div class="chips single loc" style="margin-top:8px">
+        <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
       </div>
-
+      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先跟馬克確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="studio">
       <h2 style="margin-top:22px">3. 選時間</h2>
       <div class="days" id="days"></div>
       <div class="slots" id="slots"></div>
@@ -185,6 +193,7 @@
       <input type="tel" placeholder="09xxxxxxxx">
 
       <button class="go" data-done="d-old">確認預約</button>
+      </div>
     </div>
     <div class="box done" id="d-old">
       <div class="ok">✓</div>
@@ -208,6 +217,12 @@
     const b=e.target.closest('button'); if(!b) return;
     if(g.classList.contains('single')) g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
     else b.classList.toggle('on');
+  }));
+  // 到府：改成加 LINE 討論
+  document.querySelectorAll('.chips.loc').forEach(g=>g.addEventListener('click',()=>{
+    const home=!!g.querySelector('button.on[data-home]'), box=g.closest('.box');
+    box.querySelector('.home').classList.toggle('show',home);
+    box.querySelector('.studio').hidden=home;
   }));
   document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s)));
   // 假時段
