@@ -65,11 +65,20 @@
   .svc small{display:block;font-size:12.5px;color:var(--ink-soft);}
   .svc .p{font-weight:900;color:var(--coral);white-space:nowrap;}
 
-  .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
-  .days button{flex:0 0 auto;font:inherit;font-size:13px;width:62px;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;line-height:1.3;}
-  .days button b{display:block;font-size:17px;}
-  .days button.none{color:#bbb;}
-  .days button.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  .mhead{display:flex;align-items:center;gap:8px;margin:8px 0 8px;}
+  .mhead button{font:inherit;font-size:18px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--charcoal);cursor:pointer;}
+  .mhead button:disabled{opacity:.3;cursor:default;}
+  .mhead b{flex:1;text-align:center;font-size:16px;}
+  .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .mgrid .wh{text-align:center;font-size:12px;color:var(--ink-soft);padding:2px 0;}
+  .mgrid .wh:nth-child(7n+1),.mgrid .wh:nth-child(7n){color:var(--coral);}
+  .mc{aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;color:var(--ink);}
+  .mc i{width:5px;height:5px;border-radius:50%;background:var(--olive);margin-top:3px;}
+  .mc.blank{visibility:hidden;}
+  .mc:disabled{color:#ccc;border-color:#eee;background:transparent;cursor:default;font-weight:400;}
+  .mc:disabled i{display:none;}
+  .mc.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  .mc.on i{background:#fff;}
   .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
   .slots button{font:inherit;font-size:14px;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;}
   .slots button.full{color:#bbb;text-decoration:line-through;cursor:default;}
@@ -126,65 +135,12 @@
   <div class="slogan"><div class="q">“</div><h1>讓平衡，<br>成為身體最自在的<b>歸屬</b></h1><p class="sig">鈞衡舍 ChunBalance</p></div>
 
   <div class="tabs">
-    <button class="on" data-tab="new">第一次來<small>先說說你的狀況</small></button>
-    <button data-tab="old">老朋友<small>直接選時間</small></button>
+    <button class="on" data-tab="new">第一次來<small>歡迎認識鈞衡舍</small></button>
+    <button data-tab="old">老朋友<small>歡迎回來</small></button>
   </div>
 
-  <!-- 新朋友：需求單 -->
-  <section id="tab-new">
-    <div class="box">
-      <h2>需求單</h2>
-      <p class="hint">先了解你，教練再回你一張專屬方案卡。</p>
-
-      <label class="q">教練</label>
-      <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
-      <label class="q">想做什麼？</label>
-      <div class="chips single kind">
-        <button class="on">調整身體</button><button data-train>運動訓練</button>
-      </div>
-      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
-      <div class="body-part">
-      <label class="q">想調整的方向</label>
-      <div class="chips multi" id="r-dirs">
-        <button>放鬆紓壓</button><button>體態平衡</button><button>足部平衡</button><button>運動表現</button><button>日常保養</button><button>其他</button>
-      </div>
-
-      <label class="q">想多說的（生活習慣、運動習慣）</label>
-      <textarea id="r-text" maxlength="300" placeholder="例：久坐上班族，每週打兩次球"></textarea>
-
-      <label class="q">在哪裡做？</label>
-      <div class="chips single loc">
-        <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
-      </div>
-      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
-      <div class="studio">
-      <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
-
-      <label class="q">方便的時間</label>
-      <div class="chips multi" id="r-when">
-        <button>平日白天</button><button>平日晚上</button><button>週末</button><button>都可以</button>
-      </div>
-
-      <label class="q">怎麼稱呼你</label>
-      <input id="r-name" maxlength="30" placeholder="名字">
-      <label class="q">手機</label>
-      <input id="r-phone" type="tel" inputmode="numeric" placeholder="09xxxxxxxx">
-
-      <button class="go" id="r-go">送出需求單</button>
-      <p class="err" id="r-err"></p>
-      </div>
-      </div>
-    </div>
-    <div class="box done" id="d-new">
-      <div class="ok">✓</div>
-      <h2>收到了</h2>
-      <p class="hint">教練看完會回你一張方案卡連結，請留意簡訊或 LINE。</p>
-    </div>
-
-  </section>
-
   <!-- 老朋友：直接預約 -->
-  <section id="tab-old" hidden>
+  <section id="tab-old">
     <div class="box">
       <h2>1. 選教練</h2>
       <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
@@ -192,7 +148,7 @@
       <div class="svc on" data-id="b30"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
       <div class="svc" data-id="b60"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
       <div class="svc" data-id="s60"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
-      <div class="svc" data-id="pkg"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
+      <div class="svc" data-id="pkg" id="svc-pkg" style="display:none"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
       <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
       <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       <div class="body-part">
@@ -205,7 +161,8 @@
       <div class="studio">
       <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
       <h2 style="margin-top:22px">4. 選時間</h2>
-      <div class="days" id="days"></div>
+      <div class="mhead"><button id="m-prev" aria-label="上個月">‹</button><b id="m-title"></b><button id="m-next" aria-label="下個月">›</button></div>
+      <div class="mgrid" id="mgrid"></div>
       <div class="slots" id="slots"><p class="empty">讀取中…</p></div>
 
       <label class="q">名字</label>
@@ -258,11 +215,14 @@
 </div>
 
 <script>
+  let FIRST=true;
   // 分頁
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-    document.getElementById('tab-new').hidden=b.dataset.tab!=='new';
-    document.getElementById('tab-old').hidden=b.dataset.tab!=='old';
+    // 第一次來／老朋友都直接選時間；只差在老朋友可以用多堂方案
+    FIRST=b.dataset.tab==='new';
+    const pkg=document.getElementById('svc-pkg');pkg.style.display=FIRST?'none':'';
+    if(FIRST&&pkg.classList.contains('on')){pkg.classList.remove('on');document.querySelector('.svc').click();}
   });
   // 選項
   document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{
@@ -307,68 +267,60 @@
   function phoneOk(p){return /^09\d{8}$/.test(p.replace(/[\s-]/g,''));}
   function done(id){const d=$(id);d.classList.add('show');d.scrollIntoView({behavior:'smooth',block:'center'});}
 
-  // 老朋友：時段
-  let days=[], dayIdx=0, slotPick='';
-  function drawDays(){
-    const box=$('days');box.innerHTML='';
-    days.forEach((d,i)=>{
-      const p=d.date.split('-'), b=document.createElement('button');
-      b.innerHTML=`週${d.w}<b>${+p[1]}/${+p[2]}</b>`;
-      if(!d.slots.length) b.classList.add('none');
-      if(i===dayIdx) b.classList.add('on');
-      b.onclick=()=>{dayIdx=i;slotPick='';drawDays();};
-      box.appendChild(b);
-    });
-    const d=days[dayIdx];
-    $('slots').innerHTML=!d?'<p class="empty">目前沒有可預約的時段，請加官方 LINE 詢問。</p>':
-      (d.slots.length||(d.blocked||[]).length)?
+  // 選時間：月曆
+  let days=[], pick='', slotPick='', YM='';
+  const ymOf=ds=>ds.slice(0,7);
+  function months(){return [...new Set(days.map(d=>ymOf(d.date)))];}
+  function drawCal(){
+    const map={};days.forEach(d=>map[d.date]=d);
+    const ms=months(), i=ms.indexOf(YM), [y,m]=YM.split('-').map(Number);
+    $('m-title').textContent=y+' 年 '+m+' 月';
+    $('m-prev').disabled=i<=0;$('m-next').disabled=i>=ms.length-1;
+    const n=new Date(Date.UTC(y,m,0)).getUTCDate(), first=new Date(Date.UTC(y,m-1,1)).getUTCDay();
+    let h=[...'日一二三四五六'].map(w=>'<div class="wh">'+w+'</div>').join('')+'<div class="mc blank"></div>'.repeat(first);
+    for(let k=1;k<=n;k++){
+      const ds=YM+'-'+String(k).padStart(2,'0'), d=map[ds], has=d&&(d.slots.length||(d.blocked||[]).length);
+      h+='<button class="mc'+(ds===pick?' on':'')+'" data-d="'+ds+'"'+(has?'':' disabled')+'>'+k+(d&&d.slots.length?'<i></i>':'')+'</button>';
+    }
+    $('mgrid').innerHTML=h;
+    const d=map[pick];
+    $('slots').innerHTML=!days.some(x=>x.slots.length||(x.blocked||[]).length)?'<p class="empty">目前沒有可預約的時段，請加官方 LINE 詢問。</p>':
+      !d?'<p class="empty">請先選日期。</p>':
         // 可約的時段＋教練設成「滿／進修」的時段，照時間排
         [...d.slots.map(t=>({t})),...(d.blocked||[]).map(x=>({t:x.time,l:x.label}))].sort((a,b)=>a.t<b.t?-1:1)
           .map(x=>x.l?`<button class="blk" disabled>${x.t}<small>${x.l}</small></button>`:`<button class="${x.t===slotPick?'on':''}">${x.t}</button>`).join('')+
-          (d.slots.length?'':'<p class="empty" style="grid-column:1/-1">這天已經約滿了，請選其他天。</p>')
-        :'<p class="empty">這天沒有可預約的時段，請選其他天。</p>';
+          (d.slots.length?'':'<p class="empty" style="grid-column:1/-1">這天已經約滿了，請選其他天。</p>');
   }
-  $('slots').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;slotPick=b.textContent;drawDays();});
+  $('mgrid').addEventListener('click',e=>{const b=e.target.closest('button.mc');if(!b||b.disabled)return;pick=b.dataset.d;slotPick='';drawCal();});
+  $('m-prev').onclick=()=>{const ms=months();YM=ms[Math.max(0,ms.indexOf(YM)-1)];drawCal();};
+  $('m-next').onclick=()=>{const ms=months();YM=ms[Math.min(ms.length-1,ms.indexOf(YM)+1)];drawCal();};
+  $('slots').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;slotPick=b.textContent;drawCal();});
   function loadSlots(){
     get({a:'slots'}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
-      days=r.days; dayIdx=Math.max(0,days.findIndex(d=>d.slots.length)); drawDays();
+      days=r.days; const f=days.find(d=>d.slots.length); pick=f?f.date:''; YM=ymOf(f?f.date:days[0].date); drawCal();
     }).catch(()=>{$('slots').innerHTML='<p class="empty">時段讀取失敗，請重新整理，或加官方 LINE 預約。</p>';});
   }
 
   $('b-go').onclick=()=>{
-    const svc=document.querySelector('.svc.on'), name=$('b-name').value.trim(), phone=$('b-phone').value.trim(), d=days[dayIdx];
+    const svc=document.querySelector('.svc.on'), name=$('b-name').value.trim(), phone=$('b-phone').value.trim(), d=days.find(x=>x.date===pick);
     if(!svc||!svc.dataset.id) return err('b-err','請選服務');
     if(!d||!slotPick) return err('b-err','請選時間');
     if(!name) return err('b-err','請填名字');
     if(!phoneOk(phone)) return err('b-err','手機請填 09 開頭的 10 碼');
     err('b-err');busy($('b-go'),true,'預約中…');
-    post({a:'book',service:svc.dataset.id,date:d.date,time:slotPick,name,phone}).then(r=>{
+    post({a:'book',service:svc.dataset.id,date:d.date,time:slotPick,name,phone,first:FIRST}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
-      notify(`新預約｜${fmt(r.date,d.w,r.time)}｜${svc.querySelector('b')?svc.querySelector('b').textContent:svc.dataset.id}｜${mask(name)}`);
+      notify(`新預約｜${FIRST?'第一次來｜':''}${fmt(r.date,d.w,r.time)}｜${svc.querySelector('b')?svc.querySelector('b').textContent:svc.dataset.id}｜${mask(name)}`);
       $('b-done').textContent=`${fmt(r.date,d.w,r.time)} 板橋，鈞衡舍等你。`;
       $('b-go').hidden=true; done('d-old');
     }).catch(e=>{err('b-err',e.message||'送出失敗，請再試一次');busy($('b-go'),false,'確認預約');slotPick='';loadSlots();});
   };
 
-  // 新朋友：需求單
-  $('r-go').onclick=()=>{
-    const name=$('r-name').value.trim(), phone=$('r-phone').value.trim(), dirs=picked('r-dirs');
-    if(!dirs.length) return err('r-err','請選想調整的方向');
-    if(!name) return err('r-err','請填名字');
-    if(!phoneOk(phone)) return err('r-err','手機請填 09 開頭的 10 碼');
-    err('r-err');busy($('r-go'),true,'送出中…');
-    post({a:'request',dirs,text:$('r-text').value.trim(),place:'板橋',when:picked('r-when'),name,phone}).then(r=>{
-      if(!r.ok) throw new Error(r.msg);
-      notify(`新需求單｜${mask(name)}｜${dirs.join('、')}`);
-      $('r-go').hidden=true; done('d-new');
-    }).catch(e=>{err('r-err',e.message||'送出失敗，請再試一次');busy($('r-go'),false,'送出需求單');});
-  };
-
   // 方案卡
   const planId=new URLSearchParams(location.search).get('plan');
   if(planId){
-    document.querySelector('.tabs').style.display='none';$('tab-new').hidden=true;$('tab-old').hidden=true;$('tab-plan').hidden=false;
+    document.querySelector('.tabs').style.display='none';$('tab-old').hidden=true;$('tab-plan').hidden=false;
     get({a:'plan',id:planId}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
       $('p-loading').hidden=true;$('p-body').hidden=false;
