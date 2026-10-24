@@ -291,6 +291,14 @@
   const fmt=(ds,w,t)=>{const p=ds.split('-');return `${+p[1]}/${+p[2]}（${w}）${t}`;};
   function get(q){return fetch(API+'?'+new URLSearchParams(q)).then(r=>r.json());}
   function post(o){return fetch(API,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());}
+  // 通知教練：送一筆到「鈞衡舍預約通知」Google 表單，表單會寄信給教練（不帶手機，名字遮一字）
+  const FORM='__FORM__', ENTRY='__ENTRY__';
+  const mask=n=>n.length<2?n:n[0]+'○'+n.slice(2);
+  function notify(txt){
+    if(FORM.startsWith('__')) return;
+    const f=new URLSearchParams();f.append(ENTRY,txt);
+    fetch(FORM,{method:'POST',mode:'no-cors',body:f}).catch(()=>{});
+  }
   function picked(id){return [...document.querySelectorAll('#'+id+' button.on')].map(b=>b.textContent);}
   function busy(btn,on,txt){btn.disabled=on;if(txt)btn.textContent=txt;}
   function err(id,m){const e=$(id);e.textContent=m||'';e.classList.toggle('show',!!m);}
@@ -330,6 +338,7 @@
     err('b-err');busy($('b-go'),true,'預約中…');
     post({a:'book',service:svc.dataset.id,date:d.date,time:slotPick,name,phone}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
+      notify(`新預約｜${fmt(r.date,d.w,r.time)}｜${svc.querySelector('b')?svc.querySelector('b').textContent:svc.dataset.id}｜${mask(name)}`);
       $('b-done').textContent=`${fmt(r.date,d.w,r.time)} 板橋，鈞衡舍等你。`;
       $('b-go').hidden=true; done('d-old');
     }).catch(e=>{err('b-err',e.message||'送出失敗，請再試一次');busy($('b-go'),false,'確認預約');slotPick='';loadSlots();});
@@ -344,6 +353,7 @@
     err('r-err');busy($('r-go'),true,'送出中…');
     post({a:'request',dirs,text:$('r-text').value.trim(),place:'板橋',when:picked('r-when'),name,phone}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
+      notify(`新需求單｜${mask(name)}｜${dirs.join('、')}`);
       $('r-go').hidden=true; done('d-new');
     }).catch(e=>{err('r-err',e.message||'送出失敗，請再試一次');busy($('r-go'),false,'送出需求單');});
   };
@@ -366,6 +376,7 @@
         busy($('p-go'),true,'預約中…');
         post({a:'acceptPlan',id:planId}).then(x=>{
           if(!x.ok) throw new Error(x.msg);
+          if(!x.already) notify(`方案卡已預約｜${fmt(r.date,r.w,r.time)}｜${r.plan}｜${mask(r.name)}`);
           $('p-go').hidden=true;$('p-done').textContent=`${fmt(r.date,r.w,r.time)} 板橋，鈞衡舍等你。`;done('d-plan');
         }).catch(e=>{err('p-err',e.message||'送出失敗，請再試一次');busy($('p-go'),false,'預約這個方案');});
       };
