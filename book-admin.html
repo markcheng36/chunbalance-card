@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>教練後台｜鈞衡舍 ChunBalance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  /* 配色同 book-preview.html */
+  :root{
+    --charcoal:#4A4441;
+    --olive:#7E9150;
+    --olive-dark:#5E6E3A;
+    --coral:#D4554B;
+    --coral-soft:rgba(212,85,75,0.1);
+    --bg:#F7F3EC;
+    --line:#DCD2C1;
+    --ink:#2E2A27;
+    --ink-soft:#6E665D;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  body{background:var(--bg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);line-height:1.6;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px 60px;}
+  .demo{background:var(--charcoal);color:#fff;text-align:center;font-size:13px;padding:6px 12px;}
+  .top{display:flex;align-items:center;gap:10px;padding:16px 0 4px;}
+  .top img{height:34px;}
+  .top b{font-size:16px;color:var(--charcoal);}
+  .top span{margin-left:auto;font-size:13px;color:var(--ink-soft);}
+
+  .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 0 4px;}
+  .tabs button{font:inherit;font-size:14px;font-weight:700;padding:10px 4px;border-radius:12px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;position:relative;}
+  .tabs button.on{border-color:var(--coral);color:var(--coral);background:var(--coral-soft);}
+  .tabs .n{position:absolute;top:-7px;right:-4px;background:var(--coral);color:#fff;font-size:11px;border-radius:999px;padding:0 6px;}
+
+  .box{background:#fff;border-radius:18px;padding:18px;margin-top:12px;box-shadow:0 8px 24px rgba(60,50,30,0.07);}
+  .box h2{font-size:16px;font-weight:900;color:var(--charcoal);}
+  .hint{font-size:13px;color:var(--ink-soft);}
+
+  /* 日曆 */
+  .days{display:flex;gap:8px;overflow-x:auto;padding:10px 0 4px;}
+  .days button{flex:0 0 auto;font:inherit;font-size:12.5px;width:60px;padding:7px 0;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;line-height:1.3;}
+  .days button b{display:block;font-size:16px;}
+  .days button i{display:block;font-style:normal;font-size:11px;color:var(--olive-dark);}
+  .days button.off i{color:#bbb;}
+  .days button.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  .days button.on i{color:#fff;}
+  .dayhead{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+  .dayhead b{font-size:15px;}
+  .sw{display:flex;align-items:center;gap:8px;font-size:13.5px;cursor:pointer;}
+  .sw input{display:none;}
+  .sw span{width:40px;height:24px;border-radius:999px;background:#ccc;position:relative;transition:.2s;}
+  .sw span::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s;}
+  .sw input:checked+span{background:var(--olive);}
+  .sw input:checked+span::after{left:19px;}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+  .slot{font:inherit;font-size:14px;padding:9px 0;border-radius:10px;border:1px solid var(--olive);background:#fff;color:var(--olive-dark);cursor:pointer;line-height:1.3;}
+  .slot small{display:block;font-size:11px;}
+  .slot.closed{border-color:var(--line);color:#bbb;text-decoration:line-through;}
+  .slot.booked{border-color:var(--coral);background:var(--coral-soft);color:var(--coral);cursor:default;}
+  .add{font:inherit;font-size:14px;padding:9px 0;border-radius:10px;border:1px dashed var(--line);background:none;color:var(--ink-soft);cursor:pointer;}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-soft);margin-top:12px;flex-wrap:wrap;}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;}
+  .dayoff{display:none;text-align:center;color:var(--ink-soft);font-size:14px;padding:18px 0 6px;}
+
+  /* 每週固定 */
+  .wk{display:grid;grid-template-columns:48px 44px 1fr;gap:10px;align-items:center;padding:10px 0;border-top:1px dashed var(--line);font-size:14px;}
+  .wk:first-of-type{border-top:0;}
+  .wk b{font-size:15px;}
+  .wk .t{display:flex;gap:6px;align-items:center;color:var(--ink-soft);min-width:0;}
+  .wk .t.dim{opacity:.35;}
+  select,input[type=time],input[type=text],input[type=number]{font:inherit;font-size:15px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px dashed var(--line);font-size:14px;}
+
+  /* 需求單 */
+  .req{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;}
+  .req .h{display:flex;justify-content:space-between;align-items:baseline;}
+  .req .h b{font-size:15px;}
+  .req .h small{color:var(--ink-soft);font-size:12px;}
+  .req p{font-size:13.5px;color:var(--ink-soft);margin-top:4px;}
+  .tag{display:inline-block;font-size:12px;padding:1px 10px;border-radius:999px;border:1px solid var(--olive);color:var(--olive-dark);margin:6px 4px 0 0;}
+  .tag.new{border-color:var(--coral);color:var(--coral);}
+  .form{display:none;margin-top:12px;background:var(--bg);border-radius:12px;padding:12px;}
+  .form.show{display:block;}
+  .form label{display:block;font-size:13px;font-weight:700;margin:10px 0 4px;}
+  .form label:first-child{margin-top:0;}
+  .form select,.form input{width:100%;}
+  .go{display:block;width:100%;margin-top:14px;font:inherit;font-size:15px;font-weight:700;padding:12px;border:0;border-radius:12px;background:var(--charcoal);color:#fff;cursor:pointer;}
+  .go.coral{background:var(--coral);}
+  .sm{font:inherit;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid var(--coral);background:#fff;color:var(--coral);cursor:pointer;margin-top:10px;}
+  .login{text-align:center;padding:30px 0;}
+  .login input{width:100%;margin-top:12px;}
+  .list .it{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px dashed var(--line);padding:10px 0;font-size:14px;}
+  .list .it:first-of-type{border-top:0;}
+  .list .it small{display:block;color:var(--ink-soft);font-size:12.5px;}
+  .x{font:inherit;font-size:12.5px;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;white-space:nowrap;}
+  .x.sure{border-color:var(--coral);background:var(--coral);color:#fff;}
+  .link{margin-top:10px;font-size:13px;word-break:break-all;background:#fff;border:1px dashed var(--olive);border-radius:10px;padding:8px 10px;}
+  .btns{display:flex;gap:8px;margin-top:8px;}
+  .btns a,.btns button{flex:1;text-align:center;font:inherit;font-size:14px;font-weight:700;padding:9px;border-radius:10px;border:0;cursor:pointer;text-decoration:none;}
+  .btns .l{background:#06C755;color:#fff;}
+  .btns .c{background:var(--charcoal);color:#fff;}
+  .addrow{display:flex;gap:8px;margin-top:10px;align-items:center;}
+  .cday{border-top:1px solid var(--line);padding:12px 0;}
+  .cday.today .dt b{color:var(--coral);}
+  .cday .dt{display:flex;align-items:center;justify-content:space-between;}
+  .cday .dt b{font-size:15px;}
+  .cday .dt small{font-size:12px;color:var(--ink-soft);margin-left:6px;}
+  .cday.off .dt b{color:#aaa;}
+  .cday .slots{margin-top:8px;grid-template-columns:repeat(4,1fr);gap:6px;}
+  .cday .slot{font-size:13px;padding:7px 0;}
+  .cday .slot small{font-size:10.5px;}
+  .cday .add{font-size:13px;padding:7px 0;}
+  .cday .addrow{margin-top:8px;}
+  .wkline{margin:14px 0 2px;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--olive-dark);}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--charcoal);color:#fff;font-size:14px;padding:10px 18px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><img src="images/logo.png" alt=""><b>教練後台</b><span id="who"></span></div>
+
+  <div class="box login" id="login" hidden>
+    <h2>請輸入後台密碼</h2>
+    <input type="password" id="pw" placeholder="密碼">
+    <button class="go" id="pw-go">進入</button>
+  </div>
+
+  <div id="app" hidden>
+  <div class="tabs">
+    <button class="on" data-tab="cal">時段</button>
+    <button data-tab="req">需求單<span class="n" id="req-n" hidden></span></button>
+    <button data-tab="wk">每週固定</button>
+  </div>
+
+  <section id="tab-cal">
+    <div class="box">
+      <h2>行事曆</h2>
+      <p class="hint">點時段就能開／關，點已預約的看客人資料。</p>
+      <div class="legend"><span><i style="border:1px solid var(--olive)"></i>開放</span><span><i style="background:var(--coral-soft);border:1px solid var(--coral)"></i>已預約</span><span><i style="border:1px solid var(--line)"></i>關閉</span></div>
+      <div id="cal"></div>
+    </div>
+    <div class="box">
+      <h2>接下來的預約</h2>
+      <div class="list" id="blist"></div>
+    </div>
+  </section>
+
+  <section id="tab-req" hidden>
+    <div class="box">
+      <h2>需求單</h2>
+      <p class="hint">填好方案按送出，會產生方案卡連結，用 LINE 或簡訊傳給客人。</p>
+      <div id="rlist"></div>
+    </div>
+  </section>
+
+  <section id="tab-wk" hidden>
+    <div class="box">
+      <h2>每週固定時段</h2>
+      <p class="hint">設定一次，之後每週自動開。臨時有事再到「時段」關掉那一格。</p>
+      <div id="wk"></div>
+      <button class="go" id="wk-go">儲存每週時段</button>
+    </div>
+    <div class="box">
+      <h2>其他設定</h2>
+      <div class="row"><span>每格多久</span><select id="step"><option value="30">30 分鐘</option><option value="60">60 分鐘</option><option value="90">90 分鐘</option><option value="120">120 分鐘</option></select></div>
+      <div class="row"><span>最多開放幾天後</span><select id="ndays"><option>7</option><option>14</option><option>21</option><option>30</option></select></div>
+      <div class="row"><span>最晚幾小時前要預約</span><select id="lead"><option value="0">不限</option><option value="1">1 小時</option><option value="3">3 小時</option><option value="12">12 小時</option><option value="24">前一天</option></select></div>
+      <button class="go" id="set-go">儲存設定</button>
+    </div>
+  </section>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const API='__API__';
+  const BOOK='https://markcheng36.github.io/chunbalance-card/book.html';
+  const WN='一二三四五六日';
+  const $=id=>document.getElementById(id);
+  let K='', D=null, cur=0;
+  try{K=new URLSearchParams(location.search).get('k')||localStorage.getItem('chunBookKey')||'';}catch(e){}
+
+  function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
+  function get(q){return fetch(API+'?'+new URLSearchParams(q)).then(r=>r.json());}
+  function post(o){o.k=K;return fetch(API,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json()).then(r=>{if(!r.ok)throw new Error(r.msg);return r;});}
+  const md=ds=>{const p=ds.split('-');return (+p[1])+'/'+(+p[2]);};
+  const toMin=t=>{const p=t.split(':');return +p[0]*60+ +p[1];};
+  const toTime=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  function sel(v,id){let h='<select'+(id?' id="'+id+'"':'')+'>';for(let m=7*60;m<=23*60;m+=30){const t=toTime(m);h+='<option'+(t===v?' selected':'')+'>'+t+'</option>';}return h+'</select>';}
+  // 兩下確認（網頁不能跳確認框）
+  function twoTap(b,label,fn){b.onclick=()=>{if(b.classList.contains('sure')){fn();return;}b.classList.add('sure');b.textContent='再按一次確認';setTimeout(()=>{b.classList.remove('sure');b.textContent=label;},3000);};}
+
+  function load(){
+    return get({a:'admin',k:K}).then(r=>{
+      if(!r.ok){if(/密碼/.test(r.msg)){showLogin();return;}throw new Error(r.msg);}
+      try{localStorage.setItem('chunBookKey',K);}catch(e){}
+      D=r;$('login').hidden=true;$('app').hidden=false;$('who').textContent='馬克';
+      drawCal();drawReq();drawWeek();
+    }).catch(e=>toast(e.message||'讀取失敗'));
+  }
+  function showLogin(){$('app').hidden=true;$('login').hidden=false;}
+  $('pw-go').onclick=()=>{K=$('pw').value.trim();load();};
+
+  document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+    ['cal','req','wk'].forEach(t=>$('tab-'+t).hidden=t!==b.dataset.tab);
+  });
+
+  // ===== 時段 =====
+  function drawCal(){
+    const box=$('cal');box.innerHTML='';
+    D.days.forEach((d,i)=>{
+      if(i===0||d.w==='一') box.insertAdjacentHTML('beforeend','<p class="wkline">'+(i===0?'這週':md(d.date)+' 起')+'</p>');
+      const el=document.createElement('div');el.className='cday'+(i===0?' today':'')+(d.dayOff?' off':'');
+      const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
+      el.innerHTML='<div class="dt"><div><b>'+md(d.date)+'（'+d.w+'）</b><small>'+(d.dayOff?'休息':!d.slots.length?'沒開，可按＋加':(bk?bk+' 約・':'')+op+' 空')+'</small></div>'+
+        '<label class="sw"><input type="checkbox"'+(d.dayOff?'':' checked')+'><span></span></label></div>';
+      el.querySelector('input').onchange=e=>post({a:'toggleDay',date:d.date,off:!e.target.checked}).then(load).catch(er=>toast(er.message));
+      if(!d.dayOff){
+        const sb=document.createElement('div');sb.className='slots';
+        d.slots.forEach(s=>{
+          const b=document.createElement('button');
+          b.className='slot'+(s.state==='booked'?' booked':s.state==='closed'?' closed':'');
+          b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':'');
+          b.onclick=()=>{
+            if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
+            post({a:'toggleSlot',date:d.date,time:s.time}).then(load).catch(e=>toast(e.message));
+          };
+          sb.appendChild(b);
+        });
+        const a=document.createElement('button');a.className='add';a.textContent='＋';
+        a.onclick=()=>{
+          if(el.querySelector('.addrow')) return;
+          const r=document.createElement('div');r.className='addrow';r.innerHTML=sel('19:00')+'<button class="sm" style="margin:0">加這個時段</button>';
+          r.querySelector('button').onclick=()=>post({a:'addSlot',date:d.date,time:r.querySelector('select').value}).then(()=>{toast('已加時段');load();}).catch(e=>toast(e.message));
+          el.appendChild(r);
+        };
+        sb.appendChild(a);el.appendChild(sb);
+      }
+      box.appendChild(el);
+    });
+    // 預約清單
+    const list=[];D.days.forEach(x=>x.slots.forEach(s=>{if(s.state==='booked')list.push({d:x,s});}));
+    $('blist').innerHTML=list.length?'':'<p class="hint">還沒有預約</p>';
+    list.forEach(({d,s})=>{
+      const it=document.createElement('div');it.className='it';
+      it.innerHTML='<div><b>'+md(d.date)+'（'+d.w+'）'+s.time+'　'+s.name+'</b><small>'+s.service+'｜<a href="tel:'+s.phone+'">'+s.phone+'</a></small></div>';
+      const x=document.createElement('button');x.className='x';x.textContent='取消';
+      twoTap(x,'取消',()=>post({a:'cancel',id:s.id}).then(()=>{toast('已取消');load();}).catch(e=>toast(e.message)));
+      it.appendChild(x);$('blist').appendChild(it);
+    });
+  }
+
+  // ===== 需求單 =====
+  function planUrl(id){return BOOK+'?plan='+id;}
+  function drawReq(){
+    const n=D.requests.filter(r=>r.status==='待回覆').length;
+    $('req-n').hidden=!n;$('req-n').textContent=n;
+    const box=$('rlist');box.innerHTML=D.requests.length?'':'<p class="hint" style="margin-top:10px">目前沒有需求單</p>';
+    const free=[];(D.available||[]).forEach(d=>d.slots.forEach(t=>free.push({date:d.date,w:d.w,time:t})));
+    D.requests.forEach(r=>{
+      const el=document.createElement('div');el.className='req';
+      const tags=(r.dirs?r.dirs.split('、'):[]).map(t=>'<span class="tag">'+t+'</span>').join('')+(r.when?'<span class="tag">'+r.when+'</span>':'');
+      const opts=free.map(f=>'<option value="'+f.date+' '+f.time+'"'+(r.date===f.date&&r.time===f.time?' selected':'')+'>'+md(f.date)+'（'+f.w+'）'+f.time+'</option>').join('');
+      const keep=r.date&&!free.some(f=>f.date===r.date&&f.time===r.time)?'<option value="'+r.date+' '+r.time+'" selected>'+md(r.date)+' '+r.time+'（已送出）</option>':'';
+      el.innerHTML='<div class="h"><b>'+r.name+'</b><small>'+r.at.slice(5)+'</small></div>'+
+        '<span class="tag new">'+(r.status==='待回覆'?'待回覆':'已回方案，等客人按')+'</span>'+tags+
+        (r.text?'<p>'+r.text.replace(/</g,'&lt;')+'</p>':'')+
+        '<p><a href="tel:'+r.phone+'">'+r.phone+'</a></p>'+
+        '<button class="sm">'+(r.status==='待回覆'?'回方案卡':'看／改方案卡')+'</button>'+
+        '<div class="form"><label>方案</label><select class="f-plan">'+D.services.filter(s=>s.price).map(s=>'<option data-p="'+s.price+'"'+(r.plan===s.name?' selected':'')+'>'+s.name+'</option>').join('')+'</select>'+
+        '<label>價格</label><input type="number" class="f-price" value="'+(r.price||'')+'">'+
+        '<label>時間（從你開放的時段選）</label><select class="f-time">'+keep+opts+'</select>'+
+        '<label>加購</label><select class="f-addon"><option value="">不加購</option><option'+(r.addon?' selected':'')+'>足弓墊（現場評估）</option></select>'+
+        '<label>給客人的一句話</label><input type="text" class="f-note" maxlength="100" value="'+(r.note||'').replace(/"/g,'&quot;')+'">'+
+        '<button class="go coral f-go">送出方案卡</button><div class="f-out"></div>'+
+        '<button class="x f-close" style="margin-top:10px">不用回了，收起來</button></div>';
+      const f=el.querySelector('.form'), ps=el.querySelector('.f-plan'), pr=el.querySelector('.f-price');
+      el.querySelector('.sm').onclick=()=>f.classList.toggle('show');
+      if(!pr.value) pr.value=ps.selectedOptions[0]?ps.selectedOptions[0].dataset.p:'';
+      ps.onchange=()=>{pr.value=ps.selectedOptions[0].dataset.p;};
+      if(r.status==='已回方案') showLink(el,r);
+      el.querySelector('.f-go').onclick=()=>{
+        const tv=el.querySelector('.f-time').value;
+        if(!tv) return toast('目前沒有開放的時段，先去「時段」開');
+        const [date,time]=tv.split(' ');
+        post({a:'sendPlan',id:r.id,plan:ps.value,price:pr.value,date,time,addon:el.querySelector('.f-addon').value,note:el.querySelector('.f-note').value})
+          .then(()=>{toast('方案卡已產生');showLink(el,r);}).catch(e=>toast(e.message));
+      };
+      twoTap(el.querySelector('.f-close'),'不用回了，收起來',()=>post({a:'closeRequest',id:r.id}).then(load).catch(e=>toast(e.message)));
+      box.appendChild(el);
+    });
+  }
+  function showLink(el,r){
+    const url=planUrl(r.id), msg=r.name+' 你好，這是鈞衡舍為你準備的方案卡，確認後按「預約這個方案」就完成預約：\n'+url;
+    el.querySelector('.f-out').innerHTML='<div class="link">'+url+'</div><div class="btns"><a class="l" href="https://line.me/R/share?text='+encodeURIComponent(msg)+'" target="_blank" rel="noopener">用 LINE 傳</a><a class="c" href="sms:'+r.phone+'?&body='+encodeURIComponent(msg)+'">用簡訊傳</a><button class="c f-copy">複製</button></div>';
+    el.querySelector('.f-copy').onclick=()=>{navigator.clipboard.writeText(msg).then(()=>toast('已複製'),()=>toast('複製失敗，請長按連結'));};
+  }
+
+  // ===== 每週固定 =====
+  function drawWeek(){
+    const box=$('wk');box.innerHTML='';
+    D.week.forEach((w,n)=>{
+      const r=document.createElement('div');r.className='wk';
+      r.innerHTML='<b>週'+WN[n]+'</b><label class="sw"><input type="checkbox"'+(w.open?' checked':'')+'><span></span></label><div class="t'+(w.open?'':' dim')+'">'+sel(w.start)+' – '+sel(w.end)+'</div>';
+      const cb=r.querySelector('input');cb.onchange=()=>r.querySelector('.t').classList.toggle('dim',!cb.checked);
+      box.appendChild(r);
+    });
+    $('step').value=String(D.settings.step);$('ndays').value=String(D.settings.days);$('lead').value=String(D.settings.lead);
+  }
+  $('wk-go').onclick=()=>{
+    const week=[...document.querySelectorAll('#wk .wk')].map(r=>{const s=r.querySelectorAll('select');return {open:r.querySelector('input').checked,start:s[0].value,end:s[1].value};});
+    if(week.some(w=>w.open&&toMin(w.end)<=toMin(w.start))) return toast('結束時間要比開始晚');
+    post({a:'setWeek',week}).then(()=>{toast('已儲存');load();}).catch(e=>toast(e.message));
+  };
+  $('set-go').onclick=()=>post({a:'setSettings',step:$('step').value,days:$('ndays').value,lead:$('lead').value}).then(()=>{toast('已儲存');load();}).catch(e=>toast(e.message));
+
+  if(K) load(); else showLogin();
+</script>
+</body>
+</html>

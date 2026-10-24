@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="鈞衡舍 ChunBalance 線上預約｜讓平衡，成為身體最自在的歸屬">
+<meta property="og:title" content="線上預約｜鈞衡舍 ChunBalance">
+<meta property="og:description" content="讓平衡，成為身體最自在的歸屬">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<title>線上預約｜鈞衡舍 ChunBalance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<style>
+  /* 配色同 gains.html */
+  :root{
+    --charcoal:#4A4441;
+    --olive:#7E9150;
+    --olive-dark:#5E6E3A;
+    --coral:#D4554B;
+    --coral-soft:rgba(212,85,75,0.1);
+    --bg:#F7F3EC;
+    --card:#fff;
+    --line:#DCD2C1;
+    --ink:#2E2A27;
+    --ink-soft:#6E665D;
+    --serif:"Noto Serif TC","Songti TC",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  body{background:var(--bg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);line-height:1.7;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px 60px;}
+  .demo{background:var(--charcoal);color:#fff;text-align:center;font-size:13px;padding:6px 12px;}
+  .top{display:flex;align-items:center;gap:10px;padding:18px 0 4px;}
+  .top img{height:38px;}
+  .top span{font-size:14px;font-weight:700;letter-spacing:2px;color:var(--charcoal);}
+  /* 品牌開頭：置中 logo + 標語卡 */
+  .brand{text-align:center;padding:30px 0 0;}
+  .brand img{height:86px;}
+  .brand .en{font-size:11px;letter-spacing:5px;font-weight:700;color:var(--olive-dark);margin-top:6px;}
+  .brand .dots{margin:14px auto 0;width:60px;height:6px;background:radial-gradient(circle,var(--coral) 2.4px,transparent 3px) left center/12px 6px repeat-x;}
+  .slogan{margin-top:16px;background:#fff;border-radius:20px;padding:22px 20px 20px;box-shadow:0 8px 24px rgba(60,50,30,.07);text-align:center;}
+  .slogan .q{font-family:var(--serif);font-size:44px;line-height:.6;color:var(--coral);}
+  .slogan h1{font-family:var(--serif);font-size:24px;font-weight:900;line-height:1.6;letter-spacing:2px;color:var(--charcoal);}
+  .slogan h1 b{color:var(--coral);}
+  .slogan .sig{font-size:13px;letter-spacing:4px;color:#B3AAA0;margin-top:12px;}
+
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0 6px;}
+  .tabs button{font:inherit;font-size:15px;font-weight:700;padding:12px 8px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;line-height:1.35;}
+  .tabs button small{display:block;font-size:12px;font-weight:400;}
+  .tabs button.on{border-color:var(--coral);color:var(--coral);background:var(--coral-soft);}
+
+  .box{background:var(--card);border-radius:20px;padding:20px;margin-top:14px;box-shadow:0 8px 24px rgba(60,50,30,0.07);}
+  .box h2{font-size:17px;font-weight:900;color:var(--charcoal);}
+  .box .hint{font-size:13px;color:var(--ink-soft);}
+  label.q{display:block;font-size:14px;font-weight:700;margin:16px 0 6px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chips button{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+  .chips button.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  textarea,input{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+  textarea{min-height:84px;resize:vertical;}
+
+  .svc{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;margin-top:8px;cursor:pointer;}
+  .svc.on{border-color:var(--coral);background:var(--coral-soft);}
+  .svc b{font-size:15px;}
+  .svc small{display:block;font-size:12.5px;color:var(--ink-soft);}
+  .svc .p{font-weight:900;color:var(--coral);white-space:nowrap;}
+
+  .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
+  .days button{flex:0 0 auto;font:inherit;font-size:13px;width:62px;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;line-height:1.3;}
+  .days button b{display:block;font-size:17px;}
+  .days button.none{color:#bbb;}
+  .days button.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+  .slots button{font:inherit;font-size:14px;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;}
+  .slots button.full{color:#bbb;text-decoration:line-through;cursor:default;}
+  .slots button.on{border-color:var(--coral);background:var(--coral);color:#fff;}
+
+  .go{display:block;width:100%;margin-top:20px;font:inherit;font-size:16px;font-weight:700;padding:14px;border:0;border-radius:14px;background:var(--charcoal);color:#fff;cursor:pointer;}
+
+  /* 方案卡 */
+  .sec-title{margin-top:34px;font-size:13px;letter-spacing:3px;font-weight:700;color:var(--olive-dark);}
+  .qc{background:#fff;border-radius:22px;padding:20px;margin-top:10px;box-shadow:0 8px 24px rgba(60,50,30,0.07);border-top:5px solid var(--coral);}
+  .qc .lab{font-size:12px;letter-spacing:3px;color:var(--coral);font-weight:700;}
+  .qc .who{display:flex;gap:12px;align-items:center;margin-top:10px;}
+  .qc .who img{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:top;}
+  .qc .who b{font-size:16px;}
+  .qc .who small{display:block;font-size:12.5px;color:var(--ink-soft);}
+  .qc .need{margin-top:14px;font-size:13.5px;background:var(--bg);border-radius:12px;padding:10px 12px;color:var(--ink-soft);}
+  .qc .price{font-size:34px;font-weight:900;margin-top:12px;color:var(--charcoal);}
+  .row{display:flex;justify-content:space-between;gap:12px;border-top:1px dashed var(--line);padding:10px 0;font-size:14.5px;}
+  .row span:first-child{color:var(--ink-soft);white-space:nowrap;}
+  .row span:last-child{text-align:right;font-weight:700;}
+  .note{font-size:14px;margin-top:6px;border-left:3px solid var(--coral);padding-left:10px;}
+  .qc .go{background:var(--coral);}
+  .sec-sub{font-size:13px;color:var(--ink-soft);}
+
+  .home{display:none;margin-top:12px;background:var(--bg);border-radius:14px;padding:14px;font-size:14.5px;}
+  .home.show{display:block;}
+  .home b{color:var(--coral);}
+  .line-btn{display:block;text-align:center;margin-top:12px;padding:12px;border-radius:12px;background:#06C755;color:#fff;font-weight:700;text-decoration:none;}
+  .place{display:flex;gap:14px;align-items:center;margin-top:12px;border:1px solid var(--line);border-radius:14px;padding:14px;}
+  .place .t{font-size:12px;letter-spacing:2px;font-weight:700;color:var(--olive-dark);}
+  .place b{display:block;font-size:15.5px;color:var(--charcoal);}
+  .place small{display:block;font-size:13px;color:var(--ink-soft);line-height:1.6;}
+  .place a{display:inline-block;margin-top:6px;font-size:13px;font-weight:700;color:var(--coral);}
+  .place img{width:64px;flex:0 0 auto;opacity:.85;}
+  .coach{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1.5px solid var(--coral);background:var(--coral-soft);border-radius:14px;margin-top:8px;}
+  .coach img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top;}
+  .coach b{font-size:15px;}
+  .coach small{display:block;font-size:12.5px;color:var(--ink-soft);}
+  .done{display:none;text-align:center;}
+  .done.show{display:block;}
+  .done .ok{font-size:44px;color:var(--olive);}
+  .err{display:none;margin-top:12px;color:var(--coral);font-size:14px;font-weight:700;}
+  .err.show{display:block;}
+  .go:disabled{opacity:.5;}
+  .empty{font-size:14px;color:var(--ink-soft);padding:10px 0;}
+  footer{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:36px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><img src="images/logo.png" alt="鈞衡舍 ChunBalance"><div class="en">CALIBRATE. BALANCE.</div><div class="dots"></div></div>
+  <div class="slogan"><div class="q">“</div><h1>讓平衡，<br>成為身體最自在的<b>歸屬</b></h1><p class="sig">鈞衡舍 ChunBalance</p></div>
+
+  <div class="tabs">
+    <button class="on" data-tab="new">第一次來<small>先說說你的狀況</small></button>
+    <button data-tab="old">老朋友<small>直接選時間</small></button>
+  </div>
+
+  <!-- 新朋友：需求單 -->
+  <section id="tab-new">
+    <div class="box">
+      <h2>需求單</h2>
+      <p class="hint">先了解你，教練再回你一張專屬方案卡。</p>
+
+      <label class="q">教練</label>
+      <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
+      <label class="q">想做什麼？</label>
+      <div class="chips single kind">
+        <button class="on">調整身體</button><button data-train>運動訓練</button>
+      </div>
+      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="body-part">
+      <label class="q">想調整的方向</label>
+      <div class="chips multi" id="r-dirs">
+        <button>放鬆紓壓</button><button>體態平衡</button><button>足部平衡</button><button>運動表現</button><button>日常保養</button><button>其他</button>
+      </div>
+
+      <label class="q">想多說的（生活習慣、運動習慣）</label>
+      <textarea id="r-text" maxlength="300" placeholder="例：久坐上班族，每週打兩次球"></textarea>
+
+      <label class="q">在哪裡做？</label>
+      <div class="chips single loc">
+        <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
+      </div>
+      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="studio">
+      <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
+
+      <label class="q">方便的時間</label>
+      <div class="chips multi" id="r-when">
+        <button>平日白天</button><button>平日晚上</button><button>週末</button><button>都可以</button>
+      </div>
+
+      <label class="q">怎麼稱呼你</label>
+      <input id="r-name" maxlength="30" placeholder="名字">
+      <label class="q">手機</label>
+      <input id="r-phone" type="tel" inputmode="numeric" placeholder="09xxxxxxxx">
+
+      <button class="go" id="r-go">送出需求單</button>
+      <p class="err" id="r-err"></p>
+      </div>
+      </div>
+    </div>
+    <div class="box done" id="d-new">
+      <div class="ok">✓</div>
+      <h2>收到了</h2>
+      <p class="hint">教練看完會回你一張方案卡連結，請留意簡訊或 LINE。</p>
+    </div>
+
+  </section>
+
+  <!-- 老朋友：直接預約 -->
+  <section id="tab-old" hidden>
+    <div class="box">
+      <h2>1. 選教練</h2>
+      <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
+      <h2 style="margin-top:22px">2. 選服務</h2>
+      <div class="svc on" data-id="b30"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
+      <div class="svc" data-id="b60"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
+      <div class="svc" data-id="s60"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
+      <div class="svc" data-id="pkg"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
+      <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
+      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="body-part">
+
+      <h2 style="margin-top:22px">3. 在哪裡做？</h2>
+      <div class="chips single loc" style="margin-top:8px">
+        <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
+      </div>
+      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="studio">
+      <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
+      <h2 style="margin-top:22px">4. 選時間</h2>
+      <div class="days" id="days"></div>
+      <div class="slots" id="slots"><p class="empty">讀取中…</p></div>
+
+      <label class="q">名字</label>
+      <input id="b-name" maxlength="30" placeholder="名字">
+      <label class="q">手機</label>
+      <input id="b-phone" type="tel" inputmode="numeric" placeholder="09xxxxxxxx">
+
+      <button class="go" id="b-go">確認預約</button>
+      <p class="err" id="b-err"></p>
+      </div>
+      </div>
+    </div>
+    <div class="box done" id="d-old">
+      <div class="ok">✓</div>
+      <h2>預約完成</h2>
+      <p class="hint" id="b-done"></p>
+    </div>
+  </section>
+
+  <!-- 方案卡（?plan=編號） -->
+  <section id="tab-plan" hidden>
+    <div class="qc" id="plan-card">
+      <div class="lab">PLAN CARD</div>
+      <div class="who">
+        <img src="images/logo.png" alt="" style="object-fit:contain;background:var(--bg);padding:6px">
+        <div><b>鈞衡舍 ChunBalance</b><small>教練：馬克｜身體結構平衡教練</small></div>
+      </div>
+      <p class="empty" id="p-loading">讀取中…</p>
+      <div id="p-body" hidden>
+        <div class="need" id="p-need"></div>
+        <div class="price" id="p-price"></div>
+        <div class="row"><span>建議方案</span><span id="p-plan"></span></div>
+        <div class="row"><span>時間</span><span id="p-time"></span></div>
+        <div class="row"><span>地點</span><span>板橋．結構X獵人駐點<br><small style="font-weight:400;color:var(--ink-soft)">文化路二段182巷3弄81號19樓</small></span></div>
+        <div class="row" id="p-addon-row"><span>加購</span><span id="p-addon"></span></div>
+        <p class="note" id="p-note"></p>
+        <a class="place" style="text-decoration:none;color:inherit" href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><span style="font-size:13px;font-weight:700;color:var(--coral)">Google 地圖 ›</span></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></a>
+        <button class="go" id="p-go">預約這個方案</button>
+        <p class="err" id="p-err"></p>
+      </div>
+    </div>
+    <div class="box done" id="d-plan">
+      <div class="ok">✓</div>
+      <h2>預約完成</h2>
+      <p class="hint" id="p-done"></p>
+    </div>
+  </section>
+
+  <footer>鈞衡舍 ChunBalance｜讓平衡，成為身體最自在的歸屬</footer>
+</div>
+
+<script>
+  // 分頁
+  document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+    document.getElementById('tab-new').hidden=b.dataset.tab!=='new';
+    document.getElementById('tab-old').hidden=b.dataset.tab!=='old';
+  });
+  // 選項
+  document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    if(g.classList.contains('single')) g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    else b.classList.toggle('on');
+  }));
+  // 到府：改成加 LINE 討論
+  document.querySelectorAll('.chips.loc').forEach(g=>g.addEventListener('click',()=>{
+    const home=!!g.querySelector('button.on[data-home]'), box=g.closest('.box');
+    box.querySelector('.home:not(.train)').classList.toggle('show',home);
+    box.querySelector('.studio').hidden=home;
+  }));
+  // 運動訓練：改成加 LINE 討論
+  function setTrain(box,on){
+    box.querySelector('.train').classList.toggle('show',on);
+    box.querySelector('.body-part').hidden=on;
+  }
+  document.querySelectorAll('.chips.kind').forEach(g=>g.addEventListener('click',()=>setTrain(g.closest('.box'),!!g.querySelector('button.on[data-train]'))));
+  document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>{
+    document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s));
+    setTrain(s.closest('.box'),s.hasAttribute('data-train'));
+  });
+  // ===== 接後台 =====
+  const API='__API__';
+  const W='一二三四五六日';
+  const $=id=>document.getElementById(id);
+  const fmt=(ds,w,t)=>{const p=ds.split('-');return `${+p[1]}/${+p[2]}（${w}）${t}`;};
+  function get(q){return fetch(API+'?'+new URLSearchParams(q)).then(r=>r.json());}
+  function post(o){return fetch(API,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());}
+  function picked(id){return [...document.querySelectorAll('#'+id+' button.on')].map(b=>b.textContent);}
+  function busy(btn,on,txt){btn.disabled=on;if(txt)btn.textContent=txt;}
+  function err(id,m){const e=$(id);e.textContent=m||'';e.classList.toggle('show',!!m);}
+  function phoneOk(p){return /^09\d{8}$/.test(p.replace(/[\s-]/g,''));}
+  function done(id){const d=$(id);d.classList.add('show');d.scrollIntoView({behavior:'smooth',block:'center'});}
+
+  // 老朋友：時段
+  let days=[], dayIdx=0, slotPick='';
+  function drawDays(){
+    const box=$('days');box.innerHTML='';
+    days.forEach((d,i)=>{
+      const p=d.date.split('-'), b=document.createElement('button');
+      b.innerHTML=`週${d.w}<b>${+p[1]}/${+p[2]}</b>`;
+      if(!d.slots.length) b.classList.add('none');
+      if(i===dayIdx) b.classList.add('on');
+      b.onclick=()=>{dayIdx=i;slotPick='';drawDays();};
+      box.appendChild(b);
+    });
+    const d=days[dayIdx];
+    $('slots').innerHTML=!d?'<p class="empty">目前沒有可預約的時段，請加官方 LINE 詢問。</p>':
+      d.slots.length?d.slots.map(t=>`<button class="${t===slotPick?'on':''}">${t}</button>`).join(''):'<p class="empty">這天沒有可預約的時段，請選其他天。</p>';
+  }
+  $('slots').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;slotPick=b.textContent;drawDays();});
+  function loadSlots(){
+    get({a:'slots'}).then(r=>{
+      if(!r.ok) throw new Error(r.msg);
+      days=r.days; dayIdx=Math.max(0,days.findIndex(d=>d.slots.length)); drawDays();
+    }).catch(()=>{$('slots').innerHTML='<p class="empty">時段讀取失敗，請重新整理，或加官方 LINE 預約。</p>';});
+  }
+
+  $('b-go').onclick=()=>{
+    const svc=document.querySelector('.svc.on'), name=$('b-name').value.trim(), phone=$('b-phone').value.trim(), d=days[dayIdx];
+    if(!svc||!svc.dataset.id) return err('b-err','請選服務');
+    if(!d||!slotPick) return err('b-err','請選時間');
+    if(!name) return err('b-err','請填名字');
+    if(!phoneOk(phone)) return err('b-err','手機請填 09 開頭的 10 碼');
+    err('b-err');busy($('b-go'),true,'預約中…');
+    post({a:'book',service:svc.dataset.id,date:d.date,time:slotPick,name,phone}).then(r=>{
+      if(!r.ok) throw new Error(r.msg);
+      $('b-done').textContent=`${fmt(r.date,d.w,r.time)} 板橋，鈞衡舍等你。`;
+      $('b-go').hidden=true; done('d-old');
+    }).catch(e=>{err('b-err',e.message||'送出失敗，請再試一次');busy($('b-go'),false,'確認預約');slotPick='';loadSlots();});
+  };
+
+  // 新朋友：需求單
+  $('r-go').onclick=()=>{
+    const name=$('r-name').value.trim(), phone=$('r-phone').value.trim(), dirs=picked('r-dirs');
+    if(!dirs.length) return err('r-err','請選想調整的方向');
+    if(!name) return err('r-err','請填名字');
+    if(!phoneOk(phone)) return err('r-err','手機請填 09 開頭的 10 碼');
+    err('r-err');busy($('r-go'),true,'送出中…');
+    post({a:'request',dirs,text:$('r-text').value.trim(),place:'板橋',when:picked('r-when'),name,phone}).then(r=>{
+      if(!r.ok) throw new Error(r.msg);
+      $('r-go').hidden=true; done('d-new');
+    }).catch(e=>{err('r-err',e.message||'送出失敗，請再試一次');busy($('r-go'),false,'送出需求單');});
+  };
+
+  // 方案卡
+  const planId=new URLSearchParams(location.search).get('plan');
+  if(planId){
+    document.querySelector('.tabs').style.display='none';$('tab-new').hidden=true;$('tab-old').hidden=true;$('tab-plan').hidden=false;
+    get({a:'plan',id:planId}).then(r=>{
+      if(!r.ok) throw new Error(r.msg);
+      $('p-loading').hidden=true;$('p-body').hidden=false;
+      $('p-need').textContent=`${r.name} 你好｜你的方向：${r.dirs}${r.text?'｜'+r.text:''}`;
+      $('p-price').textContent=r.price&&+r.price?'NT$ '+(+r.price).toLocaleString():'';
+      $('p-plan').textContent=r.plan;
+      $('p-time').textContent=fmt(r.date,r.w,r.time);
+      $('p-addon').textContent=r.addon;$('p-addon-row').style.display=r.addon?'':'none';
+      $('p-note').textContent=r.note;$('p-note').hidden=!r.note;
+      if(r.taken){$('p-go').hidden=true;$('p-done').textContent=`${fmt(r.date,r.w,r.time)} 板橋，鈞衡舍等你。`;done('d-plan');}
+      $('p-go').onclick=()=>{
+        busy($('p-go'),true,'預約中…');
+        post({a:'acceptPlan',id:planId}).then(x=>{
+          if(!x.ok) throw new Error(x.msg);
+          $('p-go').hidden=true;$('p-done').textContent=`${fmt(r.date,r.w,r.time)} 板橋，鈞衡舍等你。`;done('d-plan');
+        }).catch(e=>{err('p-err',e.message||'送出失敗，請再試一次');busy($('p-go'),false,'預約這個方案');});
+      };
+    }).catch(e=>{$('p-loading').textContent=(e.message||'讀取失敗')+'，請加官方 LINE 詢問。';});
+  } else {
+    loadSlots();
+  }
+</script>
+</body>
+</html>
