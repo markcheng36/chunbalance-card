@@ -285,17 +285,17 @@
     setTrain(s.closest('.box'),s.hasAttribute('data-train'));
   });
   // ===== 接後台 =====
-  const API='__API__';
+  const API='https://script.google.com/macros/s/AKfycbwnbrXXw1kLhc--aVYD8hCJ2bObvyO0M5l4V5BDz3WmKyimXQYxrVk-SOzRSkjoumKJzQ/exec';
   const W='一二三四五六日';
   const $=id=>document.getElementById(id);
   const fmt=(ds,w,t)=>{const p=ds.split('-');return `${+p[1]}/${+p[2]}（${w}）${t}`;};
   function get(q){return fetch(API+'?'+new URLSearchParams(q)).then(r=>r.json());}
   function post(o){return fetch(API,{method:'POST',body:JSON.stringify(o)}).then(r=>r.json());}
   // 通知教練：送一筆到「鈞衡舍預約通知」Google 表單，表單會寄信給教練（不帶手機，名字遮一字）
-  const FORM='__FORM__', ENTRY='__ENTRY__';
+  const FORM='https://docs.google.com/forms/d/e/1FAIpQLSc7oOPeyYDxK8Ld_7iwc1k3crsT_Mnn_3y40rOgqa_G3D_yjw/formResponse', ENTRY='__ENTRY__';
   const mask=n=>n.length<2?n:n[0]+'○'+n.slice(2);
   function notify(txt){
-    if(FORM.startsWith('__')) return;
+    if(ENTRY.startsWith('__')) return;
     const f=new URLSearchParams();f.append(ENTRY,txt);
     fetch(FORM,{method:'POST',mode:'no-cors',body:f}).catch(()=>{});
   }
