@@ -59,6 +59,13 @@
   .slot{font:inherit;font-size:14px;padding:9px 0;border-radius:10px;border:1px solid var(--olive);background:#fff;color:var(--olive-dark);cursor:pointer;line-height:1.3;}
   .slot small{display:block;font-size:11px;}
   .slot.closed{border-color:var(--line);color:#bbb;text-decoration:line-through;}
+  .slot.study{border-style:dashed;border-color:var(--olive-dark);background:#EEF1E6;color:var(--olive-dark);}
+  .slot.studyFull{border-style:dashed;border-color:var(--ink-soft);background:#EFEAE2;color:var(--ink-soft);}
+  .act{margin-top:10px;background:var(--bg);border-radius:12px;padding:10px;}
+  .act p{font-size:13px;font-weight:700;margin-bottom:8px;}
+  .act .g{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+  .act button{font:inherit;font-size:13px;padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;}
+  .act button.on{border-color:var(--charcoal);background:var(--charcoal);color:#fff;}
   .slot.booked{border-color:var(--coral);background:var(--coral-soft);color:var(--coral);cursor:default;}
   .add{font:inherit;font-size:14px;padding:9px 0;border-radius:10px;border:1px dashed var(--line);background:none;color:var(--ink-soft);cursor:pointer;}
   .legend{display:flex;gap:14px;font-size:12px;color:var(--ink-soft);margin-top:12px;flex-wrap:wrap;}
@@ -162,7 +169,7 @@
       <p class="hint">點日期，下面就能開／關那天的時段；點已預約的看客人資料。</p>
       <div class="mhead"><button id="m-prev" aria-label="上個月">‹</button><select id="m-sel"></select><button id="m-next" aria-label="下個月">›</button></div>
       <div class="mgrid" id="mgrid"></div>
-      <div class="legend"><span><i style="border:1px solid var(--olive)"></i>開放</span><span><i style="background:var(--coral-soft);border:1px solid var(--coral)"></i>已預約</span><span><i style="border:1px solid var(--line)"></i>關閉</span></div>
+      <div class="legend"><span><i style="border:1px solid var(--olive)"></i>開放</span><span><i style="background:var(--coral-soft);border:1px solid var(--coral)"></i>已預約</span><span><i style="border:1px solid var(--line)"></i>關閉</span><span><i style="border:1px dashed var(--olive-dark);background:#EEF1E6"></i>進修</span></div>
       <div id="cal" class="dayp"></div>
     </div>
     <div class="box">
@@ -203,7 +210,7 @@
   const BOOK='https://markcheng36.github.io/chunbalance-card/book.html';
   const WN='一二三四五六日';
   const $=id=>document.getElementById(id);
-  let K='', D=null, cur=0, YM='', PICK='';
+  let K='', D=null, cur=0, YM='', PICK='', ACT='';
   try{K=new URLSearchParams(location.search).get('k')||localStorage.getItem('chunBookKey')||'';}catch(e){}
 
   function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
@@ -297,15 +304,29 @@
       const sb=document.createElement('div');sb.className='slots';
       d.slots.forEach(s=>{
         const b=document.createElement('button');
-        b.className='slot'+(s.state==='booked'?' booked':s.state==='closed'?' closed':'');
-        b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':'');
+        b.className='slot'+(s.state==='booked'?' booked':s.state==='open'?'':' '+s.state);
+        b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':s.state==='study'?'<small>進修</small>':s.state==='studyFull'?'<small>進修・顯示滿</small>':'');
         b.onclick=()=>{
           if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
-          s.state=s.state==='open'?'closed':'open';drawCal();
-          post({a:'toggleSlot',date:d.date,time:s.time}).then(load).catch(e=>{toast(e.message);load();});
+          ACT=ACT===d.date+' '+s.time?'':d.date+' '+s.time;drawCal();
         };
         sb.appendChild(b);
       });
+      // 點時段後出現的選項：開放／關閉／進修（客人看到「滿」或「進修」）
+      const ac=d.slots.find(s=>ACT===d.date+' '+s.time&&s.state!=='booked');
+      let box2=null;
+      if(ac){
+        box2=document.createElement('div');box2.className='act';
+        box2.innerHTML='<p>'+ac.time+' 要怎麼設？</p><div class="g">'+
+          [['open','開放'],['closed','關閉（客人看不到）'],['studyFull','進修，客人看到「滿」'],['study','進修，客人看到「進修」']]
+            .map(([k,l])=>'<button data-k="'+k+'"'+(ac.state===k?' class="on"':'')+'>'+l+'</button>').join('')+'</div>';
+        box2.querySelectorAll('button').forEach(x=>x.onclick=()=>{
+          const st=x.dataset.k;ACT='';
+          if(st===ac.state){drawCal();return;}
+          ac.state=st;drawCal();
+          post({a:'setSlot',date:d.date,time:ac.time,state:st}).then(load).catch(e=>{toast(/不明/.test(e.message)?'程式要先更新到 v6':e.message);load();});
+        });
+      }
       const a=document.createElement('button');a.className='add';a.textContent='＋';
       a.onclick=()=>{
         if(el.querySelector('.addrow')) return;
@@ -318,7 +339,7 @@
         };
         el.appendChild(r);
       };
-      sb.appendChild(a);el.appendChild(sb);
+      sb.appendChild(a);el.appendChild(sb);if(box2)el.appendChild(box2);
     }
     box.appendChild(el);
   }
