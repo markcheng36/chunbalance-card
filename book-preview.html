@@ -116,6 +116,12 @@
       <h2>需求單</h2>
       <p class="hint">先了解問題，馬克再回你一張方案卡。</p>
 
+      <label class="q">想做什麼？</label>
+      <div class="chips single kind">
+        <button class="on">調整身體</button><button data-train>運動訓練</button>
+      </div>
+      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟馬克討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="body-part">
       <label class="q">哪裡不舒服？</label>
       <div class="chips multi">
         <button>肩頸</button><button>下背</button><button>膝蓋</button><button>腳底／足弓</button><button>姿勢（烏龜頸、駝背）</button><button>運動傷害</button><button>其他</button>
@@ -143,6 +149,7 @@
       <input type="tel" placeholder="09xxxxxxxx">
 
       <button class="go" data-done="d-new">送出需求單</button>
+      </div>
       </div>
     </div>
     <div class="box done" id="d-new">
@@ -183,6 +190,9 @@
       <div class="svc"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
       <div class="svc"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
       <div class="svc"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
+      <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
+      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟馬克討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="body-part">
 
       <h2 style="margin-top:22px">2. 在哪裡做？</h2>
       <div class="chips single loc" style="margin-top:8px">
@@ -201,6 +211,7 @@
       <input type="tel" placeholder="09xxxxxxxx">
 
       <button class="go" data-done="d-old">確認預約</button>
+      </div>
       </div>
     </div>
     <div class="box done" id="d-old">
@@ -229,10 +240,19 @@
   // 到府：改成加 LINE 討論
   document.querySelectorAll('.chips.loc').forEach(g=>g.addEventListener('click',()=>{
     const home=!!g.querySelector('button.on[data-home]'), box=g.closest('.box');
-    box.querySelector('.home').classList.toggle('show',home);
+    box.querySelector('.home:not(.train)').classList.toggle('show',home);
     box.querySelector('.studio').hidden=home;
   }));
-  document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s)));
+  // 運動訓練：改成加 LINE 討論
+  function setTrain(box,on){
+    box.querySelector('.train').classList.toggle('show',on);
+    box.querySelector('.body-part').hidden=on;
+  }
+  document.querySelectorAll('.chips.kind').forEach(g=>g.addEventListener('click',()=>setTrain(g.closest('.box'),!!g.querySelector('button.on[data-train]'))));
+  document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>{
+    document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s));
+    setTrain(s.closest('.box'),s.hasAttribute('data-train'));
+  });
   // 假時段
   const W='日一二三四五六', days=document.getElementById('days'), slots=document.getElementById('slots');
   const times=['10:00','11:30','14:00','15:30','17:00','18:30','20:00'];
