@@ -114,6 +114,26 @@
   .cday .slot small{font-size:10.5px;}
   .cday .add{font-size:13px;padding:7px 0;}
   .cday .addrow{margin-top:8px;}
+  .mhead{display:flex;align-items:center;gap:8px;margin:6px 0 10px;}
+  .mhead button{font:inherit;font-size:18px;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--charcoal);cursor:pointer;}
+  .mhead select{flex:1;font:inherit;font-size:16px;font-weight:700;text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;}
+  .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .mgrid .wh{text-align:center;font-size:12px;color:var(--ink-soft);padding:2px 0;}
+  .mgrid .wh:nth-child(n+6){color:var(--coral);}
+  .mc{aspect-ratio:1/1.1;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;}
+  .mc b{font-size:15px;line-height:1;}
+  .mc small{font-size:10px;line-height:1.1;color:var(--ink-soft);}
+  .mc .dots{display:flex;gap:2px;height:6px;}
+  .mc .dots i{width:6px;height:6px;border-radius:50%;}
+  .mc .dots .o{background:var(--olive);}
+  .mc .dots .b{background:var(--coral);}
+  .mc.blank{visibility:hidden;}
+  .mc.past{opacity:.35;cursor:default;}
+  .mc.off{background:#EFEAE2;}
+  .mc.today b{color:var(--coral);}
+  .mc.pick{outline:2px solid var(--charcoal);outline-offset:-1px;}
+  .mc.na{opacity:.35;cursor:default;}
+  .dayp{margin-top:14px;}
   .wkline{margin:14px 0 2px;font-size:12px;letter-spacing:2px;font-weight:700;color:var(--olive-dark);}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--charcoal);color:#fff;font-size:14px;padding:10px 18px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;}
   .toast.show{opacity:1;}
@@ -139,9 +159,11 @@
   <section id="tab-cal">
     <div class="box">
       <h2>行事曆</h2>
-      <p class="hint">點時段就能開／關，點已預約的看客人資料。</p>
+      <p class="hint">點日期，下面就能開／關那天的時段；點已預約的看客人資料。</p>
+      <div class="mhead"><button id="m-prev" aria-label="上個月">‹</button><select id="m-sel"></select><button id="m-next" aria-label="下個月">›</button></div>
+      <div class="mgrid" id="mgrid"></div>
       <div class="legend"><span><i style="border:1px solid var(--olive)"></i>開放</span><span><i style="background:var(--coral-soft);border:1px solid var(--coral)"></i>已預約</span><span><i style="border:1px solid var(--line)"></i>關閉</span></div>
-      <div id="cal"></div>
+      <div id="cal" class="dayp"></div>
     </div>
     <div class="box">
       <h2>接下來的預約</h2>
@@ -181,7 +203,7 @@
   const BOOK='https://markcheng36.github.io/chunbalance-card/book.html';
   const WN='一二三四五六日';
   const $=id=>document.getElementById(id);
-  let K='', D=null, cur=0;
+  let K='', D=null, cur=0, YM='', PICK='';
   try{K=new URLSearchParams(location.search).get('k')||localStorage.getItem('chunBookKey')||'';}catch(e){}
 
   function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800);}
@@ -195,7 +217,9 @@
   function twoTap(b,label,fn){b.onclick=()=>{if(b.classList.contains('sure')){fn();return;}b.classList.add('sure');b.textContent='再按一次確認';setTimeout(()=>{b.classList.remove('sure');b.textContent=label;},3000);};}
 
   function load(){
-    return get({a:'admin',k:K}).then(r=>{
+    if(!YM){const t=new Date(Date.now()+8*3600e3).toISOString();YM=t.slice(0,7);PICK=t.slice(0,10);}
+    const [y,m]=YM.split('-').map(Number), n=new Date(Date.UTC(y,m,0)).getUTCDate();
+    return get({a:'admin',k:K,from:YM+'-01',n}).then(r=>{
       if(!r.ok){if(/密碼/.test(r.msg)){showLogin();return;}throw new Error(r.msg);}
       try{localStorage.setItem('chunBookKey',K);}catch(e){}
       D=r;$('login').hidden=true;$('app').hidden=false;$('who').textContent='馬克';
@@ -211,44 +235,81 @@
   });
 
   // ===== 時段 =====
+  // ===== 時段（月曆） =====
+  const today=()=>D&&D.today||new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
+  function ymAdd(ym,k){let [y,m]=ym.split('-').map(Number);m+=k;while(m<1){m+=12;y--;}while(m>12){m-=12;y++;}return y+'-'+String(m).padStart(2,'0');}
+  function goMonth(ym){YM=ym;PICK=ym===today().slice(0,7)?today():ym+'-01';load();}
+  $('m-prev').onclick=()=>goMonth(ymAdd(YM,-1));
+  $('m-next').onclick=()=>goMonth(ymAdd(YM,1));
+  $('m-sel').onchange=e=>goMonth(e.target.value);
   function drawCal(){
-    const box=$('cal');box.innerHTML='';
-    D.days.forEach((d,i)=>{
-      if(i===0||d.w==='一') box.insertAdjacentHTML('beforeend','<p class="wkline">'+(i===0?'這週':md(d.date)+' 起')+'</p>');
-      const el=document.createElement('div');el.className='cday'+(i===0?' today':'')+(d.dayOff?' off':'');
-      const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
-      el.innerHTML='<div class="dt"><div><b>'+md(d.date)+'（'+d.w+'）</b><small>'+(d.dayOff?'休息':!d.slots.length?'沒開，可按＋加':(bk?bk+' 約・':'')+op+' 空')+'</small></div>'+
-        '<label class="sw"><input type="checkbox"'+(d.dayOff?'':' checked')+'><span></span></label></div>';
-      el.querySelector('input').onchange=e=>post({a:'toggleDay',date:d.date,off:!e.target.checked}).then(load).catch(er=>toast(er.message));
-      if(!d.dayOff){
-        const sb=document.createElement('div');sb.className='slots';
-        d.slots.forEach(s=>{
-          const b=document.createElement('button');
-          b.className='slot'+(s.state==='booked'?' booked':s.state==='closed'?' closed':'');
-          b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':'');
-          b.onclick=()=>{
-            if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
-            post({a:'toggleSlot',date:d.date,time:s.time}).then(load).catch(e=>toast(e.message));
-          };
-          sb.appendChild(b);
-        });
-        const a=document.createElement('button');a.className='add';a.textContent='＋';
-        a.onclick=()=>{
-          if(el.querySelector('.addrow')) return;
-          const r=document.createElement('div');r.className='addrow';r.innerHTML=sel('19:00')+'<button class="sm" style="margin:0">加這個時段</button>';
-          r.querySelector('button').onclick=()=>post({a:'addSlot',date:d.date,time:r.querySelector('select').value}).then(()=>{toast('已加時段');load();}).catch(e=>toast(e.message));
-          el.appendChild(r);
-        };
-        sb.appendChild(a);el.appendChild(sb);
+    // 年月下拉：今年起往前 2 個月、往後 12 個月
+    const base=today().slice(0,7);let opt='';
+    for(let k=-2;k<=12;k++){const v=ymAdd(base,k);opt+='<option value="'+v+'"'+(v===YM?' selected':'')+'>'+v.slice(0,4)+' 年 '+(+v.slice(5))+' 月</option>';}
+    $('m-sel').innerHTML=opt;
+    const map={};D.days.forEach(d=>map[d.date]=d);
+    const [y,m]=YM.split('-').map(Number), n=new Date(Date.UTC(y,m,0)).getUTCDate();
+    const first=(new Date(Date.UTC(y,m-1,1)).getUTCDay()+6)%7; // 0=一
+    const g=$('mgrid');g.innerHTML=[...WN].map(w=>'<div class="wh">'+w+'</div>').join('')+'<div class="mc blank"></div>'.repeat(first);
+    const td=today();
+    for(let i=1;i<=n;i++){
+      const ds=YM+'-'+String(i).padStart(2,'0'), d=map[ds], c=document.createElement('button');
+      let cls='mc', info='';
+      if(ds<td) cls+=' past';
+      else if(!d) cls+=' na';
+      else{
+        const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
+        if(d.dayOff){cls+=' off';info='<small>休息</small>';}
+        else info='<span class="dots">'+(bk?'<i class="b"></i>':'')+(op?'<i class="o"></i>':'')+'</span><small>'+(bk?bk+'約':op?op+'空':'')+'</small>';
       }
-      box.appendChild(el);
-    });
-    // 預約清單
-    const list=[];D.days.forEach(x=>x.slots.forEach(s=>{if(s.state==='booked')list.push({d:x,s});}));
+      if(ds===td) cls+=' today';
+      if(ds===PICK) cls+=' pick';
+      c.className=cls;c.innerHTML='<b>'+i+'</b>'+info;
+      if(d&&ds>=td) c.onclick=()=>{PICK=ds;drawCal();};
+      g.appendChild(c);
+    }
+    drawDay(map[PICK]&&PICK>=td?map[PICK]:null);
+    drawList();
+  }
+  function drawDay(d){
+    const box=$('cal');box.innerHTML='';
+    if(!d){box.innerHTML='<p class="hint">'+(D.today?'點上面的日期來調整時段。':'程式還沒更新到新版，暫時只能看最近兩週。')+'</p>';return;}
+    const el=document.createElement('div');el.className='cday'+(d.dayOff?' off':'');
+    const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
+    el.innerHTML='<div class="dt"><div><b>'+md(d.date)+'（'+d.w+'）</b><small>'+(d.dayOff?'休息':!d.slots.length?'沒開，可按＋加':(bk?bk+' 約・':'')+op+' 空')+'</small></div>'+
+      '<label class="sw"><input type="checkbox"'+(d.dayOff?'':' checked')+'><span></span></label></div>';
+    el.querySelector('input').onchange=e=>post({a:'toggleDay',date:d.date,off:!e.target.checked}).then(load).catch(er=>toast(er.message));
+    if(!d.dayOff){
+      const sb=document.createElement('div');sb.className='slots';
+      d.slots.forEach(s=>{
+        const b=document.createElement('button');
+        b.className='slot'+(s.state==='booked'?' booked':s.state==='closed'?' closed':'');
+        b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':'');
+        b.onclick=()=>{
+          if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
+          post({a:'toggleSlot',date:d.date,time:s.time}).then(load).catch(e=>toast(e.message));
+        };
+        sb.appendChild(b);
+      });
+      const a=document.createElement('button');a.className='add';a.textContent='＋';
+      a.onclick=()=>{
+        if(el.querySelector('.addrow')) return;
+        const r=document.createElement('div');r.className='addrow';r.innerHTML=sel('19:00')+'<button class="sm" style="margin:0">加這個時段</button>';
+        r.querySelector('button').onclick=()=>post({a:'addSlot',date:d.date,time:r.querySelector('select').value}).then(()=>{toast('已加時段');load();}).catch(e=>toast(e.message));
+        el.appendChild(r);
+      };
+      sb.appendChild(a);el.appendChild(sb);
+    }
+    box.appendChild(el);
+  }
+  function drawList(){
+    // 接下來的預約（新版程式給全部；舊版只看得到這次拿到的日子）
+    let list=D.upcoming;
+    if(!list){list=[];D.days.forEach(x=>x.slots.forEach(s=>{if(s.state==='booked')list.push(Object.assign({date:x.date,w:x.w},s));}));}
     $('blist').innerHTML=list.length?'':'<p class="hint">還沒有預約</p>';
-    list.forEach(({d,s})=>{
+    list.forEach(s=>{
       const it=document.createElement('div');it.className='it';
-      it.innerHTML='<div><b>'+md(d.date)+'（'+d.w+'）'+s.time+'　'+s.name+'</b><small>'+s.service+'｜<a href="tel:'+s.phone+'">'+s.phone+'</a></small></div>';
+      it.innerHTML='<div><b>'+md(s.date)+'（'+s.w+'）'+s.time+'　'+s.name+'</b><small>'+s.service+'｜<a href="tel:'+s.phone+'">'+s.phone+'</a></small></div>';
       const x=document.createElement('button');x.className='x';x.textContent='取消';
       twoTap(x,'取消',()=>post({a:'cancel',id:s.id}).then(()=>{toast('已取消');load();}).catch(e=>toast(e.message)));
       it.appendChild(x);$('blist').appendChild(it);
