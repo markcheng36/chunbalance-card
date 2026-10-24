@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>預約馬克｜鈞衡舍 ChunBalance（預覽）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+<style>
+  /* 配色同 gains.html */
+  :root{
+    --charcoal:#4A4441;
+    --olive:#7E9150;
+    --olive-dark:#5E6E3A;
+    --coral:#D4554B;
+    --coral-soft:rgba(212,85,75,0.1);
+    --bg:#F7F3EC;
+    --card:#fff;
+    --line:#DCD2C1;
+    --ink:#2E2A27;
+    --ink-soft:#6E665D;
+    --serif:"Noto Serif TC","Songti TC",serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+  body{background:var(--bg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);line-height:1.7;}
+  .wrap{max-width:480px;margin:0 auto;padding:0 16px 60px;}
+  .demo{background:var(--charcoal);color:#fff;text-align:center;font-size:13px;padding:6px 12px;}
+  .top{display:flex;align-items:center;gap:10px;padding:18px 0 4px;}
+  .top img{height:38px;}
+  .top span{font-size:14px;font-weight:700;letter-spacing:2px;color:var(--charcoal);}
+  h1{font-family:var(--serif);font-size:30px;font-weight:900;color:var(--charcoal);margin-top:14px;}
+  .sub{color:var(--ink-soft);font-size:15px;}
+
+  .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0 6px;}
+  .tabs button{font:inherit;font-size:15px;font-weight:700;padding:12px 8px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;line-height:1.35;}
+  .tabs button small{display:block;font-size:12px;font-weight:400;}
+  .tabs button.on{border-color:var(--coral);color:var(--coral);background:var(--coral-soft);}
+
+  .box{background:var(--card);border-radius:20px;padding:20px;margin-top:14px;box-shadow:0 8px 24px rgba(60,50,30,0.07);}
+  .box h2{font-size:17px;font-weight:900;color:var(--charcoal);}
+  .box .hint{font-size:13px;color:var(--ink-soft);}
+  label.q{display:block;font-size:14px;font-weight:700;margin:16px 0 6px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chips button{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+  .chips button.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  textarea,input{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;}
+  textarea{min-height:84px;resize:vertical;}
+
+  .svc{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;margin-top:8px;cursor:pointer;}
+  .svc.on{border-color:var(--coral);background:var(--coral-soft);}
+  .svc b{font-size:15px;}
+  .svc small{display:block;font-size:12.5px;color:var(--ink-soft);}
+  .svc .p{font-weight:900;color:var(--coral);white-space:nowrap;}
+
+  .days{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;}
+  .days button{flex:0 0 auto;font:inherit;font-size:13px;width:62px;padding:8px 0;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;line-height:1.3;}
+  .days button b{display:block;font-size:17px;}
+  .days button.on{border-color:var(--olive);background:var(--olive);color:#fff;}
+  .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+  .slots button{font:inherit;font-size:14px;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;}
+  .slots button.full{color:#bbb;text-decoration:line-through;cursor:default;}
+  .slots button.on{border-color:var(--coral);background:var(--coral);color:#fff;}
+
+  .go{display:block;width:100%;margin-top:20px;font:inherit;font-size:16px;font-weight:700;padding:14px;border:0;border-radius:14px;background:var(--charcoal);color:#fff;cursor:pointer;}
+
+  /* 方案卡 */
+  .sec-title{margin-top:34px;font-size:13px;letter-spacing:3px;font-weight:700;color:var(--olive-dark);}
+  .qc{background:#fff;border-radius:22px;padding:20px;margin-top:10px;box-shadow:0 8px 24px rgba(60,50,30,0.07);border-top:5px solid var(--coral);}
+  .qc .lab{font-size:12px;letter-spacing:3px;color:var(--coral);font-weight:700;}
+  .qc .who{display:flex;gap:12px;align-items:center;margin-top:10px;}
+  .qc .who img{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:top;}
+  .qc .who b{font-size:16px;}
+  .qc .who small{display:block;font-size:12.5px;color:var(--ink-soft);}
+  .qc .need{margin-top:14px;font-size:13.5px;background:var(--bg);border-radius:12px;padding:10px 12px;color:var(--ink-soft);}
+  .qc .price{font-size:34px;font-weight:900;margin-top:12px;color:var(--charcoal);}
+  .row{display:flex;justify-content:space-between;gap:12px;border-top:1px dashed var(--line);padding:10px 0;font-size:14.5px;}
+  .row span:first-child{color:var(--ink-soft);white-space:nowrap;}
+  .row span:last-child{text-align:right;font-weight:700;}
+  .note{font-size:14px;margin-top:6px;border-left:3px solid var(--coral);padding-left:10px;}
+  .qc .go{background:var(--coral);}
+  .sec-sub{font-size:13px;color:var(--ink-soft);}
+
+  .done{display:none;text-align:center;}
+  .done.show{display:block;}
+  .done .ok{font-size:44px;color:var(--olive);}
+  footer{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:36px;}
+</style>
+</head>
+<body>
+<div class="demo">預覽版：只看樣子，送出不會真的預約</div>
+<div class="wrap">
+  <div class="top"><img src="images/logo.png" alt=""><span>鈞衡舍 ChunBalance</span></div>
+  <h1>預約馬克</h1>
+  <p class="sub">站得穩，才走的久。</p>
+
+  <div class="tabs">
+    <button class="on" data-tab="new">第一次來<small>先說說你的狀況</small></button>
+    <button data-tab="old">老朋友<small>直接選時間</small></button>
+  </div>
+
+  <!-- 新朋友：需求單 -->
+  <section id="tab-new">
+    <div class="box">
+      <h2>需求單</h2>
+      <p class="hint">先了解問題，馬克再回你一張方案卡。</p>
+
+      <label class="q">哪裡不舒服？</label>
+      <div class="chips multi">
+        <button>肩頸</button><button>下背</button><button>膝蓋</button><button>腳底／足弓</button><button>姿勢（烏龜頸、駝背）</button><button>運動傷害</button><button>其他</button>
+      </div>
+
+      <label class="q">多說一點（多久了、什麼時候最痛）</label>
+      <textarea placeholder="例：右肩卡卡半年，打球後特別痛"></textarea>
+
+      <label class="q">想去哪裡？</label>
+      <div class="chips single">
+        <button>板橋</button><button>泰山</button><button>三重</button><button>都可以</button>
+      </div>
+
+      <label class="q">方便的時間</label>
+      <div class="chips multi">
+        <button>平日白天</button><button>平日晚上</button><button>週末</button><button>都可以</button>
+      </div>
+
+      <label class="q">怎麼稱呼你</label>
+      <input placeholder="名字">
+      <label class="q">手機</label>
+      <input type="tel" placeholder="09xxxxxxxx">
+
+      <button class="go" data-done="d-new">送出需求單</button>
+    </div>
+    <div class="box done" id="d-new">
+      <div class="ok">✓</div>
+      <h2>收到了</h2>
+      <p class="hint">馬克看完會回你一張方案卡，請留意簡訊或 LINE。</p>
+    </div>
+
+    <p class="sec-title">馬克回覆後，客人會收到這張 ↓</p>
+    <p class="sec-sub">（範例，內容由你填）</p>
+    <div class="qc">
+      <div class="lab">PLAN CARD</div>
+      <div class="who">
+        <img src="images/headshot.jpg" alt="">
+        <div><b>馬克｜身體結構平衡教練</b><small>鈞衡舍 ChunBalance</small></div>
+      </div>
+      <div class="need">你的需求：右肩卡卡半年，打球後特別痛</div>
+      <div class="price">NT$ 1,800</div>
+      <div class="row"><span>建議方案</span><span>身體平衡 60 分鐘（完整體驗）</span></div>
+      <div class="row"><span>時間</span><span>11/4（二）19:00</span></div>
+      <div class="row"><span>地點</span><span>板橋（江子翠站）</span></div>
+      <div class="row"><span>加購</span><span>足弓墊（現場評估）</span></div>
+      <p class="note">先看站姿和腳，再處理肩膀。調整我來，維持交給你。</p>
+      <button class="go" data-done="d-plan">預約這個方案</button>
+    </div>
+    <div class="box done" id="d-plan">
+      <div class="ok">✓</div>
+      <h2>預約完成</h2>
+      <p class="hint">11/4（二）19:00 板橋，馬克等你。</p>
+    </div>
+  </section>
+
+  <!-- 老朋友：直接預約 -->
+  <section id="tab-old" hidden>
+    <div class="box">
+      <h2>1. 選服務</h2>
+      <div class="svc on"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
+      <div class="svc"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
+      <div class="svc"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
+      <div class="svc"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
+
+      <h2 style="margin-top:22px">2. 選地點</h2>
+      <div class="chips single" style="margin-top:8px">
+        <button class="on">板橋</button><button>泰山</button><button>三重</button>
+      </div>
+
+      <h2 style="margin-top:22px">3. 選時間</h2>
+      <div class="days" id="days"></div>
+      <div class="slots" id="slots"></div>
+
+      <label class="q">名字</label>
+      <input placeholder="名字">
+      <label class="q">手機</label>
+      <input type="tel" placeholder="09xxxxxxxx">
+
+      <button class="go" data-done="d-old">確認預約</button>
+    </div>
+    <div class="box done" id="d-old">
+      <div class="ok">✓</div>
+      <h2>預約完成</h2>
+      <p class="hint">馬克等你。</p>
+    </div>
+  </section>
+
+  <footer>鈞衡舍 ChunBalance｜身體平衡找馬克</footer>
+</div>
+
+<script>
+  // 分頁
+  document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+    document.getElementById('tab-new').hidden=b.dataset.tab!=='new';
+    document.getElementById('tab-old').hidden=b.dataset.tab!=='old';
+  });
+  // 選項
+  document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    if(g.classList.contains('single')) g.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    else b.classList.toggle('on');
+  }));
+  document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s)));
+  // 假時段
+  const W='日一二三四五六', days=document.getElementById('days'), slots=document.getElementById('slots');
+  const times=['10:00','11:30','14:00','15:30','17:00','18:30','20:00'];
+  function showSlots(seed){
+    slots.innerHTML=times.map((t,i)=>`<button class="${(i*7+seed)%3===0?'full':''}">${t}</button>`).join('');
+  }
+  slots.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b||b.classList.contains('full')) return;
+    slots.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  });
+  const d0=new Date();
+  for(let i=1;i<=10;i++){
+    const d=new Date(d0); d.setDate(d0.getDate()+i);
+    const b=document.createElement('button');
+    b.innerHTML=`週${W[d.getDay()]}<b>${d.getMonth()+1}/${d.getDate()}</b>`;
+    b.onclick=()=>{days.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));showSlots(i);};
+    if(i===1) b.classList.add('on');
+    days.appendChild(b);
+  }
+  showSlots(1);
+  // 送出（預覽）
+  document.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>{
+    const d=document.getElementById(b.dataset.done); d.classList.add('show'); d.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+</script>
+</body>
+</html>
