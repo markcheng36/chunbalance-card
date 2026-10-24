@@ -30,10 +30,16 @@
   .top{display:flex;align-items:center;gap:10px;padding:18px 0 4px;}
   .top img{height:38px;}
   .top span{font-size:14px;font-weight:700;letter-spacing:2px;color:var(--charcoal);}
-  .hero{margin-top:22px;padding:4px 0 6px 16px;border-left:4px solid var(--coral);}
-  .hero h1{font-family:var(--serif);font-size:clamp(32px,9vw,42px);font-weight:900;line-height:1.35;letter-spacing:2px;color:var(--charcoal);}
-  .hero h1 em{font-style:normal;color:var(--coral);}
-  .kicker{display:inline-block;margin-top:16px;font-size:13px;letter-spacing:4px;font-weight:700;color:#fff;background:var(--olive-dark);padding:4px 14px;border-radius:999px;}
+  /* 品牌開頭：置中 logo + 標語卡 */
+  .brand{text-align:center;padding:30px 0 0;}
+  .brand img{height:86px;}
+  .brand .en{font-size:11px;letter-spacing:5px;font-weight:700;color:var(--olive-dark);margin-top:6px;}
+  .brand .dots{margin:14px auto 0;width:60px;height:6px;background:radial-gradient(circle,var(--coral) 2.4px,transparent 3px) left center/12px 6px repeat-x;}
+  .slogan{margin-top:16px;background:#fff;border-radius:20px;padding:22px 20px 20px;box-shadow:0 8px 24px rgba(60,50,30,.07);text-align:center;}
+  .slogan .q{font-family:var(--serif);font-size:44px;line-height:.6;color:var(--coral);}
+  .slogan h1{font-family:var(--serif);font-size:24px;font-weight:900;line-height:1.6;letter-spacing:2px;color:var(--charcoal);}
+  .slogan h1 b{color:var(--coral);}
+  .slogan .sig{font-size:13px;letter-spacing:4px;color:#B3AAA0;margin-top:12px;}
 
   .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0 6px;}
   .tabs button{font:inherit;font-size:15px;font-weight:700;padding:12px 8px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;line-height:1.35;}
@@ -107,11 +113,8 @@
 <body>
 <div class="demo">預覽版：只看樣子，送出不會真的預約</div>
 <div class="wrap">
-  <div class="top"><img src="images/logo.png" alt=""><span>鈞衡舍 ChunBalance</span></div>
-  <div class="hero">
-    <h1>讓平衡，<br>成為身體<br>最自在的<em>歸屬</em></h1>
-  </div>
-  <span class="kicker">線上預約</span>
+  <div class="brand"><img src="images/logo.png" alt="鈞衡舍 ChunBalance"><div class="en">CALIBRATE. BALANCE.</div><div class="dots"></div></div>
+  <div class="slogan"><div class="q">“</div><h1>讓平衡，<br>成為身體最自在的<b>歸屬</b></h1><p class="sig">鈞衡舍 ChunBalance</p></div>
 
   <div class="tabs">
     <button class="on" data-tab="new">第一次來<small>先說說你的狀況</small></button>
