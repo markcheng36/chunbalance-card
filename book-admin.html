@@ -119,7 +119,7 @@
   .mhead select{flex:1;font:inherit;font-size:16px;font-weight:700;text-align:center;padding:8px;border:1px solid var(--line);border-radius:10px;background:#fff;}
   .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
   .mgrid .wh{text-align:center;font-size:12px;color:var(--ink-soft);padding:2px 0;}
-  .mgrid .wh:nth-child(n+6){color:var(--coral);}
+  .mgrid .wh:nth-child(7n+1),.mgrid .wh:nth-child(7n){color:var(--coral);}
   .mc{aspect-ratio:1/1.1;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;}
   .mc b{font-size:15px;line-height:1;}
   .mc small{font-size:10px;line-height:1.1;color:var(--ink-soft);}
@@ -216,14 +216,22 @@
   // 兩下確認（網頁不能跳確認框）
   function twoTap(b,label,fn){b.onclick=()=>{if(b.classList.contains('sure')){fn();return;}b.classList.add('sure');b.textContent='再按一次確認';setTimeout(()=>{b.classList.remove('sure');b.textContent=label;},3000);};}
 
+  // 每個月的資料先存起來，切換月份直接用；前後月份先在背景讀好
+  let CACHE={}, LOADING=false;
+  function fetchMonth(ym){
+    const [y,m]=ym.split('-').map(Number), n=new Date(Date.UTC(y,m,0)).getUTCDate();
+    return get({a:'admin',k:K,from:ym+'-01',n}).then(r=>{if(r.ok)CACHE[ym]=r;return r;});
+  }
+  function prefetch(){[-1,1].forEach(k=>{const v=ymAdd(YM,k);if(!CACHE[v])fetchMonth(v).catch(()=>{});});}
   function load(){
     if(!YM){const t=new Date(Date.now()+8*3600e3).toISOString();YM=t.slice(0,7);PICK=t.slice(0,10);}
-    const [y,m]=YM.split('-').map(Number), n=new Date(Date.UTC(y,m,0)).getUTCDate();
-    return get({a:'admin',k:K,from:YM+'-01',n}).then(r=>{
+    const ym=YM;CACHE={};
+    return fetchMonth(ym).then(r=>{
       if(!r.ok){if(/密碼/.test(r.msg)){showLogin();return;}throw new Error(r.msg);}
       try{localStorage.setItem('chunBookKey',K);}catch(e){}
-      D=r;$('login').hidden=true;$('app').hidden=false;$('who').textContent='馬克';
-      drawCal();drawReq();drawWeek();
+      $('login').hidden=true;$('app').hidden=false;$('who').textContent='馬克';
+      if(ym===YM){D=r;LOADING=false;drawCal();}
+      drawReq();drawWeek();prefetch();
     }).catch(e=>toast(e.message||'讀取失敗'));
   }
   function showLogin(){$('app').hidden=true;$('login').hidden=false;}
@@ -238,7 +246,12 @@
   // ===== 時段（月曆） =====
   const today=()=>D&&D.today||new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
   function ymAdd(ym,k){let [y,m]=ym.split('-').map(Number);m+=k;while(m<1){m+=12;y--;}while(m>12){m-=12;y++;}return y+'-'+String(m).padStart(2,'0');}
-  function goMonth(ym){YM=ym;PICK=ym===today().slice(0,7)?today():ym+'-01';load();}
+  function goMonth(ym){
+    YM=ym;PICK=ym===today().slice(0,7)?today():ym+'-01';
+    if(CACHE[ym]){D=CACHE[ym];LOADING=false;drawCal();prefetch();return;}
+    LOADING=true;drawCal();
+    fetchMonth(ym).then(r=>{if(ym!==YM)return;if(!r.ok)throw new Error(r.msg);D=r;LOADING=false;drawCal();prefetch();}).catch(e=>toast(e.message||'讀取失敗'));
+  }
   $('m-prev').onclick=()=>goMonth(ymAdd(YM,-1));
   $('m-next').onclick=()=>goMonth(ymAdd(YM,1));
   $('m-sel').onchange=e=>goMonth(e.target.value);
@@ -247,10 +260,10 @@
     const base=today().slice(0,7);let opt='';
     for(let k=-2;k<=12;k++){const v=ymAdd(base,k);opt+='<option value="'+v+'"'+(v===YM?' selected':'')+'>'+v.slice(0,4)+' 年 '+(+v.slice(5))+' 月</option>';}
     $('m-sel').innerHTML=opt;
-    const map={};D.days.forEach(d=>map[d.date]=d);
+    const map={};if(!LOADING)D.days.forEach(d=>map[d.date]=d);
     const [y,m]=YM.split('-').map(Number), n=new Date(Date.UTC(y,m,0)).getUTCDate();
-    const first=(new Date(Date.UTC(y,m-1,1)).getUTCDay()+6)%7; // 0=一
-    const g=$('mgrid');g.innerHTML=[...WN].map(w=>'<div class="wh">'+w+'</div>').join('')+'<div class="mc blank"></div>'.repeat(first);
+    const first=new Date(Date.UTC(y,m-1,1)).getUTCDay(); // 0=日
+    const g=$('mgrid');g.innerHTML=[...'日一二三四五六'].map(w=>'<div class="wh">'+w+'</div>').join('')+'<div class="mc blank"></div>'.repeat(first);
     const td=today();
     for(let i=1;i<=n;i++){
       const ds=YM+'-'+String(i).padStart(2,'0'), d=map[ds], c=document.createElement('button');
@@ -273,12 +286,13 @@
   }
   function drawDay(d){
     const box=$('cal');box.innerHTML='';
+    if(LOADING){box.innerHTML='<p class="hint">讀取中…</p>';return;}
     if(!d){box.innerHTML='<p class="hint">'+(D.today?'點上面的日期來調整時段。':'程式還沒更新到新版，暫時只能看最近兩週。')+'</p>';return;}
     const el=document.createElement('div');el.className='cday'+(d.dayOff?' off':'');
     const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
     el.innerHTML='<div class="dt"><div><b>'+md(d.date)+'（'+d.w+'）</b><small>'+(d.dayOff?'休息':!d.slots.length?'沒開，可按＋加':(bk?bk+' 約・':'')+op+' 空')+'</small></div>'+
       '<label class="sw"><input type="checkbox"'+(d.dayOff?'':' checked')+'><span></span></label></div>';
-    el.querySelector('input').onchange=e=>post({a:'toggleDay',date:d.date,off:!e.target.checked}).then(load).catch(er=>toast(er.message));
+    el.querySelector('input').onchange=e=>{d.dayOff=!e.target.checked;drawCal();post({a:'toggleDay',date:d.date,off:d.dayOff}).then(load).catch(er=>{toast(er.message);load();});};
     if(!d.dayOff){
       const sb=document.createElement('div');sb.className='slots';
       d.slots.forEach(s=>{
@@ -287,7 +301,8 @@
         b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':'');
         b.onclick=()=>{
           if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
-          post({a:'toggleSlot',date:d.date,time:s.time}).then(load).catch(e=>toast(e.message));
+          s.state=s.state==='open'?'closed':'open';drawCal();
+          post({a:'toggleSlot',date:d.date,time:s.time}).then(load).catch(e=>{toast(e.message);load();});
         };
         sb.appendChild(b);
       });
@@ -295,7 +310,12 @@
       a.onclick=()=>{
         if(el.querySelector('.addrow')) return;
         const r=document.createElement('div');r.className='addrow';r.innerHTML=sel('19:00')+'<button class="sm" style="margin:0">加這個時段</button>';
-        r.querySelector('button').onclick=()=>post({a:'addSlot',date:d.date,time:r.querySelector('select').value}).then(()=>{toast('已加時段');load();}).catch(e=>toast(e.message));
+        r.querySelector('button').onclick=()=>{
+          const t=r.querySelector('select').value;
+          if(!d.slots.some(x=>x.time===t)){d.slots.push({time:t,state:'open'});d.slots.sort((x,y)=>x.time<y.time?-1:1);}
+          d.dayOff=false;drawCal();toast('已加時段');
+          post({a:'addSlot',date:d.date,time:t}).then(load).catch(e=>{toast(e.message);load();});
+        };
         el.appendChild(r);
       };
       sb.appendChild(a);el.appendChild(sb);
