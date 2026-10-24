@@ -30,8 +30,10 @@
   .top{display:flex;align-items:center;gap:10px;padding:18px 0 4px;}
   .top img{height:38px;}
   .top span{font-size:14px;font-weight:700;letter-spacing:2px;color:var(--charcoal);}
-  h1{font-family:var(--serif);font-size:30px;font-weight:900;color:var(--charcoal);margin-top:14px;}
-  .sub{color:var(--ink-soft);font-size:15px;}
+  .hero{margin-top:22px;padding:4px 0 6px 16px;border-left:4px solid var(--coral);}
+  .hero h1{font-family:var(--serif);font-size:clamp(32px,9vw,42px);font-weight:900;line-height:1.35;letter-spacing:2px;color:var(--charcoal);}
+  .hero h1 em{font-style:normal;color:var(--coral);}
+  .kicker{display:inline-block;margin-top:16px;font-size:13px;letter-spacing:4px;font-weight:700;color:#fff;background:var(--olive-dark);padding:4px 14px;border-radius:999px;}
 
   .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0 6px;}
   .tabs button{font:inherit;font-size:15px;font-weight:700;padding:12px 8px;border-radius:14px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);cursor:pointer;line-height:1.35;}
@@ -106,8 +108,10 @@
 <div class="demo">預覽版：只看樣子，送出不會真的預約</div>
 <div class="wrap">
   <div class="top"><img src="images/logo.png" alt=""><span>鈞衡舍 ChunBalance</span></div>
-  <h1>線上預約</h1>
-  <p class="sub">讓平衡，成為身體最自在的歸屬。</p>
+  <div class="hero">
+    <h1>讓平衡，<br>成為身體<br>最自在的<em>歸屬</em></h1>
+  </div>
+  <span class="kicker">線上預約</span>
 
   <div class="tabs">
     <button class="on" data-tab="new">第一次來<small>先說說你的狀況</small></button>
