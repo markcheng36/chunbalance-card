@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>預約馬克｜鈞衡舍 ChunBalance（預覽）</title>
+<title>線上預約｜鈞衡舍 ChunBalance（預覽）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <style>
@@ -92,6 +92,10 @@
   .place small{display:block;font-size:13px;color:var(--ink-soft);line-height:1.6;}
   .place a{display:inline-block;margin-top:6px;font-size:13px;font-weight:700;color:var(--coral);}
   .place img{width:64px;flex:0 0 auto;opacity:.85;}
+  .coach{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1.5px solid var(--coral);background:var(--coral-soft);border-radius:14px;margin-top:8px;}
+  .coach img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:top;}
+  .coach b{font-size:15px;}
+  .coach small{display:block;font-size:12.5px;color:var(--ink-soft);}
   .done{display:none;text-align:center;}
   .done.show{display:block;}
   .done .ok{font-size:44px;color:var(--olive);}
@@ -102,7 +106,7 @@
 <div class="demo">預覽版：只看樣子，送出不會真的預約</div>
 <div class="wrap">
   <div class="top"><img src="images/logo.png" alt=""><span>鈞衡舍 ChunBalance</span></div>
-  <h1>預約馬克</h1>
+  <h1>線上預約</h1>
   <p class="sub">站得穩，才走的久。</p>
 
   <div class="tabs">
@@ -114,27 +118,29 @@
   <section id="tab-new">
     <div class="box">
       <h2>需求單</h2>
-      <p class="hint">先了解問題，馬克再回你一張方案卡。</p>
+      <p class="hint">先了解你，教練再回你一張專屬方案卡。</p>
 
+      <label class="q">教練</label>
+      <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
       <label class="q">想做什麼？</label>
       <div class="chips single kind">
         <button class="on">調整身體</button><button data-train>運動訓練</button>
       </div>
-      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟馬克討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       <div class="body-part">
-      <label class="q">哪裡不舒服？</label>
+      <label class="q">想調整的方向</label>
       <div class="chips multi">
-        <button>肩頸</button><button>下背</button><button>膝蓋</button><button>腳底／足弓</button><button>姿勢（烏龜頸、駝背）</button><button>運動傷害</button><button>其他</button>
+        <button>放鬆紓壓</button><button>體態平衡</button><button>足部平衡</button><button>運動表現</button><button>日常保養</button><button>其他</button>
       </div>
 
-      <label class="q">多說一點（多久了、什麼時候最痛）</label>
-      <textarea placeholder="例：右肩卡卡半年，打球後特別痛"></textarea>
+      <label class="q">想多說的（生活習慣、運動習慣）</label>
+      <textarea placeholder="例：久坐上班族，每週打兩次球"></textarea>
 
       <label class="q">在哪裡做？</label>
       <div class="chips single loc">
         <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
       </div>
-      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先跟馬克確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       <div class="studio">
       <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
 
@@ -155,53 +161,55 @@
     <div class="box done" id="d-new">
       <div class="ok">✓</div>
       <h2>收到了</h2>
-      <p class="hint">馬克看完會回你一張方案卡，請留意簡訊或 LINE。</p>
+      <p class="hint">教練看完會回你一張方案卡，請留意簡訊或 LINE。</p>
     </div>
 
-    <p class="sec-title">馬克回覆後，客人會收到這張 ↓</p>
+    <p class="sec-title">教練回覆後，客人會收到這張 ↓</p>
     <p class="sec-sub">（範例，內容由你填）</p>
     <div class="qc">
       <div class="lab">PLAN CARD</div>
       <div class="who">
-        <img src="images/headshot.jpg" alt="">
-        <div><b>馬克｜身體結構平衡教練</b><small>鈞衡舍 ChunBalance</small></div>
+        <img src="images/logo.png" alt="" style="object-fit:contain;background:var(--bg);padding:6px">
+        <div><b>鈞衡舍 ChunBalance</b><small>教練：馬克｜身體結構平衡教練</small></div>
       </div>
-      <div class="need">你的需求：右肩卡卡半年，打球後特別痛</div>
+      <div class="need">你的方向：體態平衡｜久坐上班族，每週打兩次球</div>
       <div class="price">NT$ 1,800</div>
       <div class="row"><span>建議方案</span><span>身體平衡 60 分鐘（完整體驗）</span></div>
       <div class="row"><span>時間</span><span>11/4（二）19:00</span></div>
       <div class="row"><span>地點</span><span>板橋．結構X獵人駐點<br><small style="font-weight:400;color:var(--ink-soft)">文化路二段182巷3弄81號19樓</small></span></div>
       <div class="row"><span>加購</span><span>足弓墊（現場評估）</span></div>
-      <p class="note">先看站姿和腳，再處理肩膀。調整我來，維持交給你。</p>
+      <p class="note">先看站姿和足部，再從結構調回平衡。調整我來，維持交給你。</p>
       <button class="go" data-done="d-plan">預約這個方案</button>
     </div>
     <div class="box done" id="d-plan">
       <div class="ok">✓</div>
       <h2>預約完成</h2>
-      <p class="hint">11/4（二）19:00 板橋，馬克等你。</p>
+      <p class="hint">11/4（二）19:00 板橋，鈞衡舍等你。</p>
     </div>
   </section>
 
   <!-- 老朋友：直接預約 -->
   <section id="tab-old" hidden>
     <div class="box">
-      <h2>1. 選服務</h2>
+      <h2>1. 選教練</h2>
+      <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
+      <h2 style="margin-top:22px">2. 選服務</h2>
       <div class="svc on"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
       <div class="svc"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
       <div class="svc"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
       <div class="svc"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
       <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
-      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟馬克討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       <div class="body-part">
 
-      <h2 style="margin-top:22px">2. 在哪裡做？</h2>
+      <h2 style="margin-top:22px">3. 在哪裡做？</h2>
       <div class="chips single loc" style="margin-top:8px">
         <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
       </div>
-      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先跟馬克確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       <div class="studio">
       <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
-      <h2 style="margin-top:22px">3. 選時間</h2>
+      <h2 style="margin-top:22px">4. 選時間</h2>
       <div class="days" id="days"></div>
       <div class="slots" id="slots"></div>
 
@@ -217,11 +225,11 @@
     <div class="box done" id="d-old">
       <div class="ok">✓</div>
       <h2>預約完成</h2>
-      <p class="hint">馬克等你。</p>
+      <p class="hint">鈞衡舍等你。</p>
     </div>
   </section>
 
-  <footer>鈞衡舍 ChunBalance｜身體平衡找馬克</footer>
+  <footer>鈞衡舍 ChunBalance｜站得穩，才走的久</footer>
 </div>
 
 <script>
