@@ -199,7 +199,7 @@
       <div class="chips single loc" style="margin-top:8px">
         <button class="on">板橋（江子翠站）</button><button data-home>雙北到府</button>
       </div>
-      <div class="home"><b>雙北到府</b>：車馬費 NT$300–600，依距離另計。<br>到府要先確認時間和地址，請加官方 LINE 討論。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="home visit"><b>雙北到府一定要先加官方 LINE</b><br>車馬費 NT$300–600，依距離另計。<br>時間、地址和車馬費要在 LINE 跟教練確認後，才算預約完成。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 約到府</a></div>
       <div class="studio">
       <div class="place"><div><div class="t">鈞衡舍 板橋據點</div><b>駐點於 結構X獵人</b><small>新北市板橋區文化路二段182巷3弄81號19樓<br>江子翠捷運站</small><a href="https://maps.app.goo.gl/w91ezkPBkSAUnWy56" target="_blank" rel="noopener">Google 地圖 ›</a></div><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
       <h2 style="margin-top:22px">4. 選時間</h2>
@@ -301,7 +301,7 @@
   // 到府：改成加 LINE 討論
   document.querySelectorAll('.chips.loc').forEach(g=>g.addEventListener('click',()=>{
     const home=!!g.querySelector('button.on[data-home]'), box=g.closest('.box');
-    box.querySelector('.home:not(.train)').classList.toggle('show',home);
+    box.querySelector('.home.visit').classList.toggle('show',home);
     box.querySelector('.studio').hidden=home;
   }));
   // 運動訓練：改成加 LINE 討論
