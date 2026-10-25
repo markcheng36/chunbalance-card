@@ -311,11 +311,14 @@ function drawPerson(k,hp,t,over){
   if(!PH){
   k.strokeStyle=sk.ink;k.lineWidth=3;k.fillStyle=gender==='f'?'#3a2a22':'#2d2420';
   k.beginPath();
-  if(gender==='f'){k.moveTo(C.x-rx-6,C.y+10);k.bezierCurveTo(C.x-rx-14,C.y-180,C.x+rx+14,C.y-180,C.x+rx+6,C.y+10);
-    k.quadraticCurveTo(C.x+rx-10,C.y-60,C.x+40,C.y-92);k.quadraticCurveTo(C.x,C.y-70,C.x-30,C.y-95);k.quadraticCurveTo(C.x-rx,C.y-70,C.x-rx-6,C.y+10);}
+  if(gender==='f'){ // full crown so no scalp shows, side-swept bangs
+    k.moveTo(C.x-rx-10,C.y+40);k.bezierCurveTo(C.x-rx-22,C.y-215,C.x+rx+22,C.y-215,C.x+rx+10,C.y+40);
+    k.quadraticCurveTo(C.x+rx-4,C.y-30,C.x+rx-26,C.y-62);k.quadraticCurveTo(C.x+40,C.y-62,C.x-18,C.y-98);
+    k.quadraticCurveTo(C.x-70,C.y-60,C.x-rx+4,C.y-18);k.quadraticCurveTo(C.x-rx-2,C.y+10,C.x-rx-10,C.y+40);}
   else{k.moveTo(C.x-rx+2,C.y-40);k.bezierCurveTo(C.x-rx-10,C.y-175,C.x+rx+10,C.y-175,C.x+rx-2,C.y-40);
     k.quadraticCurveTo(C.x+60,C.y-100,C.x+20,C.y-92);k.lineTo(C.x+5,C.y-110);k.lineTo(C.x-15,C.y-90);k.quadraticCurveTo(C.x-70,C.y-105,C.x-rx+2,C.y-40);}
   k.closePath();k.fill();k.stroke();
+  if(gender==='f'){k.strokeStyle='rgba(255,255,255,.22)';k.lineWidth=4;k.beginPath();k.arc(C.x,C.y-20,rx-6,Math.PI*1.18,Math.PI*1.42);k.stroke();}
   }
   // bumps (they bulge over hair/face edges = 腫來腫去)
   for(const b of F.bumps)drawBump(k,b,t);
