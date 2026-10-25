@@ -99,6 +99,35 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 #best{font-size:13px;color:var(--muted);margin:0}
 @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.card{animation:none}}
+
+/* result, dex and share overlays */
+.overlay{position:fixed;inset:0;z-index:20;display:grid;place-items:center;overflow-y:auto;background:rgba(23,60,58,.38);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:calc(16px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px))}
+.card .sub{margin:-6px 0 0;color:var(--muted);font-size:15px}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+.ba figure{margin:0;display:flex;flex-direction:column;gap:4px}
+.ba img{width:100%;aspect-ratio:268/380;object-fit:cover;border-radius:14px;background:var(--tile);border:3px solid #fff;box-shadow:0 2px 8px rgba(23,60,58,.12)}
+.ba figcaption{font-size:13px;color:var(--muted)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.grid4 div{background:var(--tile);border-radius:12px;padding:6px 2px;display:flex;flex-direction:column;min-width:0}
+.grid4 span{font-size:11px;color:var(--muted);white-space:nowrap}
+.grid4 b{font-family:var(--f-num);font-size:20px;font-variant-numeric:tabular-nums}
+.panel{background:var(--card);border-radius:24px;padding:16px;width:min(440px,100%);display:flex;flex-direction:column;gap:12px;
+  box-shadow:0 14px 34px rgba(23,60,58,.22)}
+.panelHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.panelHead h2{margin:0;font-size:24px}
+.dexSub{margin:0;color:var(--muted);font-size:14px;text-align:center}
+.dexGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dexcard{background:var(--tile);border-radius:16px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}
+.dexcard canvas{width:72px;height:72px}
+.dexcard b{font-size:17px}
+.dexcard p{margin:0;font-size:12px;color:var(--muted);line-height:1.45}
+.dexcard span{font-size:12px;color:var(--accent-deep)}
+.dexcard.locked b{color:var(--muted)}
+#shareImg{width:100%;border-radius:14px;box-shadow:0 2px 10px rgba(23,60,58,.15)}
+.linkbtn{display:block;text-align:center;text-decoration:none}
+.small.center{align-self:center}
 </style>
 
 </head>
@@ -109,6 +138,15 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <p>選一張臉，把粉刺和黑頭通通擠乾淨</p>
   </div>
   <div class="mirror"><canvas id="pv" aria-label="角色預覽"></canvas></div>
+  <div class="opts">
+    <div class="opt">
+      <div class="opt-label">模式</div>
+      <div class="row" id="optM">
+        <button class="chip" id="m-level" data-m="level" aria-pressed="true">闖關</button>
+        <button class="chip" id="m-timed" data-m="timed" aria-pressed="false">60 秒挑戰</button>
+      </div>
+    </div>
+  </div>
   <button class="go" id="lib">上傳圖片</button>
   <p class="or">或選一個卡通人物</p>
   <div class="opts">
@@ -129,6 +167,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     </div>
   </div>
   <button class="go alt" id="start">用卡通人物開始</button>
+  <button class="small center" id="dexBtn">痘痘圖鑑</button>
 </section>
 
 <section id="align" class="screen" hidden>
@@ -149,34 +188,62 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 
 <section id="game" class="screen" hidden>
   <div class="hud">
-    <div class="stat"><span>剩下</span><b id="left">0</b></div>
+    <div class="stat"><span id="lab1">剩下</span><b id="left">0</b></div>
     <div class="stat"><span>分數</span><b id="score">0</b></div>
-    <div class="stat"><span>時間</span><b id="time">0:00</b></div>
+    <div class="stat"><span id="lab3">時間</span><b id="time">0:00</b></div>
   </div>
   <div class="mirror" id="stage">
     <canvas id="cv" aria-label="遊戲畫面：按住痘痘不放把它擠出來"></canvas>
-    <div id="result" hidden>
-      <div class="card">
-        <h2 id="rTitle">臉乾淨了！</h2>
-        <div class="stars" id="rStars">★★★</div>
-        <div class="grid">
-          <div><span>用時</span><b id="rTime">0:00</b></div>
-          <div><span>分數</span><b id="rScore">0</b></div>
-          <div><span>最高連擊</span><b id="rCombo">0</b></div>
-          <div><span>手太重</span><b id="rOuch">0</b></div>
-        </div>
-        <p id="best"></p>
-        <button class="go" id="again">再擠一次</button>
-        <button class="small" id="change2">換角色</button>
-      </div>
-    </div>
   </div>
   <div class="foot">
-    <div id="tip">按住痘痘不放，擠到爆！黑頭多半躲在鼻子上</div>
+    <div id="tip">按住痘痘不放，擠到爆！</div>
     <button class="small" id="mute">音效：開</button>
     <button class="small" id="change">換角色</button>
   </div>
 </section>
+
+<div id="result" class="overlay" hidden>
+  <div class="card">
+    <h2 id="rTitle">第 1 關完成！</h2>
+    <div class="stars" id="rStars">★★★</div>
+    <p class="sub" id="rSub"></p>
+    <div class="ba">
+      <figure><img id="rBefore" alt="擠之前的臉"><figcaption>擠之前</figcaption></figure>
+      <figure><img id="rAfter" alt="擠之後的臉"><figcaption>擠之後</figcaption></figure>
+    </div>
+    <div class="grid4">
+      <div><span id="rL1">分數</span><b id="rV1">0</b></div>
+      <div><span id="rL2">完美</span><b id="rV2">0</b></div>
+      <div><span id="rL3">最高連擊</span><b id="rV3">0</b></div>
+      <div><span id="rL4">手太重</span><b id="rV4">0</b></div>
+    </div>
+    <p id="best"></p>
+    <button class="go" id="again">下一關</button>
+    <button class="go alt" id="shareBtn">分享戰績圖</button>
+    <div class="row">
+      <button class="small grow" id="dexBtn2">痘痘圖鑑</button>
+      <button class="small grow" id="change2">換角色</button>
+    </div>
+  </div>
+</div>
+
+<div id="dex" class="overlay" hidden>
+  <div class="panel">
+    <div class="panelHead"><h2>痘痘圖鑑</h2><button class="small" id="dexClose">關閉</button></div>
+    <p class="dexSub" id="dexSub"></p>
+    <div class="dexGrid" id="dexGrid"></div>
+    <p class="privacy">遊戲而已，真的痘痘請交給專業處理，別自己亂擠喔</p>
+  </div>
+</div>
+
+<div id="shareBox" class="overlay" hidden>
+  <div class="panel">
+    <div class="panelHead"><h2>戰績圖</h2><button class="small" id="shareClose">關閉</button></div>
+    <img id="shareImg" alt="擠痘痘大作戰戰績圖">
+    <p class="dexSub">長按圖片可以儲存或分享</p>
+    <a class="go linkbtn" id="lineShare" href="https://line.me/R/share" target="_blank" rel="noopener">把遊戲連結分享到 LINE</a>
+  </div>
+</div>
 
 <script>
 (()=>{
@@ -266,11 +333,29 @@ function makeChar(){
 }
 
 /* ---------- spots ---------- */
+const TYPES={
+  bh:{name:'黑頭粉刺',pts:10,desc:'毛孔裡的油脂氧化變黑，鼻子上最多。'},
+  wh:{name:'白頭粉刺',pts:25,desc:'毛孔堵住、表面封起來，擠出來像一小條牙膏。'},
+  deep:{name:'膿包',pts:40,desc:'發炎比較深，常常要擠兩次才乾淨。'},
+  boss:{name:'大爆痘',pts:80,desc:'又紅又腫的大顆，擠爆最紓壓。'},
+  cyst:{name:'粉瘤',pts:120,desc:'皮膚底下的小囊袋，要擠三次，出來白白一大條。'}
+};
+const TORDER=['bh','wh','deep','boss','cyst'];
+const RAD={bh:[2.6,3.7],wh:[4.6,6.4],deep:[6,7.2],boss:[8.4,9],cyst:[9.4,10.2]};
 const Z={nose:[200,298,14,24],noseL:[179,318,8,8],noseR:[221,318,8,8],fore:[200,180,62,20],chL:[132,328,26,26],chR:[268,328,26,26],
-  chin:[200,410,26,10],jawL:[116,370,12,12],jawR:[284,370,12,12]};
+  chin:[200,410,26,10],jawL:[116,370,12,12],jawR:[284,370,12,12],upL:[118,292,12,12],upR:[282,292,12,12],tmpL:[124,202,14,12],tmpR:[276,202,14,12]};
+const ZONES={bh:['nose','nose','nose','noseL','noseR','chin','fore','chL','chR'],
+  wh:['fore','chL','chR','chin','jawL','jawR','upL','upR','tmpL','tmpR'],
+  deep:['chL','chR','chin','fore','jawL','jawR'],boss:['chL','chR','fore','chin'],cyst:['chL','chR','fore','jawL','jawR']};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
 function mkSpot(type,x,y,r){
-  return {type,x,y,r,p:0,state:'idle',t:0,ang:rnd(-.55,.55),
-    hold:type==='bh'?rnd(.5,.75):type==='boss'?2.1:rnd(.85,1.25)};
+  const s={type,x,y,r,p:0,state:'idle',t:0,ang:rnd(-.55,.55),grow:1,len:0,worm:null,seed:rnd(0,6),wa:rnd(-.7,.7),stage:0};
+  if(type==='bh'){s.hold=rnd(.45,.7);s.stages=1;}
+  else if(type==='wh'){s.hold=rnd(.55,.85);s.stages=1;s.targets=[rnd(12,18)];s.rate=22;}
+  else if(type==='deep'){s.hold=rnd(.8,1.1);s.stages=2;s.targets=[rnd(7,10),rnd(13,18)];s.rate=19;}
+  else if(type==='boss'){s.hold=1.5;s.stages=1;s.targets=[rnd(30,38)];s.rate=26;}
+  else{s.hold=1.2;s.stages=3;s.targets=[rnd(10,13),rnd(12,16),rnd(18,24)];s.rate=17;}
+  return s;
 }
 function okPos(c,x,y,r,list){
   const P=c.paths;
@@ -283,19 +368,22 @@ function okPos(c,x,y,r,list){
   for(const o of list){ if(Math.hypot(o.x-x,o.y-y)<(o.r+r)*1.5+7)return false; }
   return true;
 }
-function place(c,list,zone,type){
-  for(let i=0;i<80;i++){
+function place(c,list,type){
+  for(let i=0;i<120;i++){
+    const zone=Z[pick(ZONES[type])];
     const a=Math.random()*6.283,rr=Math.sqrt(Math.random());
     const x=zone[0]+Math.cos(a)*rr*zone[2],y=zone[1]+Math.sin(a)*rr*zone[3];
-    const r=type==='bh'?rnd(2.6,3.7):type==='boss'?8.5:rnd(4.6,6.6);
-    if(okPos(c,x,y,r,list)){list.push(mkSpot(type,x,y,r));return;}
+    const r=rnd(RAD[type][0],RAD[type][1]);
+    if(okPos(c,x,y,r,list)){const s=mkSpot(type,x,y,r);list.push(s);return s;}
   }
+  return null;
 }
-function genSpots(c){
-  const L=[],pick=a=>a[Math.floor(Math.random()*a.length)];
-  place(c,L,pick([Z.chL,Z.chR,Z.fore,Z.chin]),'boss');
-  for(const z of [Z.fore,Z.fore,Z.chL,Z.chR,pick([Z.chL,Z.chR]),Z.chin,pick([Z.jawL,Z.jawR])]) place(c,L,z,'ph');
-  for(const z of [Z.nose,Z.nose,Z.nose,Z.nose,Z.noseL,Z.noseR,Z.chin,Z.fore]) place(c,L,z,'bh');
+function levelPlan(n){
+  return {bh:Math.min(14,4+2*n),wh:Math.min(9,3+n),deep:n>=2?Math.min(4,n-1):0,boss:n>=3?2:1,cyst:n>=4?(n>=7?2:1):0};
+}
+function genSpots(c,n=1){
+  const L=[],P=levelPlan(n);
+  for(const t of ['cyst','boss','deep','wh','bh'])for(let i=0;i<P[t];i++)place(c,L,t);
   return L;
 }
 
@@ -365,10 +453,18 @@ function drawMouth(ctx,T,f,wince){
 }
 
 function drawSpot(ctx,s,T){
-  const k=s.p,x=s.x,y=s.y;
+  if(s.grow<=0)return;
+  ctx.save();
+  if(s.grow<1){ctx.globalAlpha=s.grow;ctx.translate(s.x,s.y);ctx.scale(s.grow,s.grow);ctx.translate(-s.x,-s.y);}
+  drawSpotInner(ctx,s,T);
+  ctx.restore();
+}
+function drawSpotInner(ctx,s,T){
+  const x=s.x,y=s.y;
   let jx=0,jy=0;
-  if(s.state==='pressing'&&k>.55&&!reduce){const a=(k-.55)*2.4;jx=rnd(-a,a);jy=rnd(-a,a);}
+  if(s.state==='pressing'&&s.p>.55&&!reduce){const a=(s.p-.55)*2.4;jx=rnd(-a,a);jy=rnd(-a,a);}
   if(s.type==='bh'){
+    const k=s.p;
     if(s.state==='popped'){
       const a=Math.max(0,1-s.t/4);
       if(a>0)glow(ctx,x,y,s.r*2.6,T.red,.3*a);
@@ -383,24 +479,63 @@ function drawSpot(ctx,s,T){
     ctx.fillStyle='rgba(255,255,255,.3)';circle(ctx,x+jx-s.r*.3,y+jy-rise*.6-s.r*.35,s.r*.26);
     return;
   }
-  const big=s.type==='boss';
+  const big=s.type==='boss'||s.type==='cyst',cyst=s.type==='cyst',deep=s.type==='deep';
   if(s.state==='popped'){
     const a=Math.max(.1,1-s.t/5);
     glow(ctx,x,y,s.r*2.5,T.red,.55*a);
     ctx.fillStyle=rgba(T.scab,.65*a+.12);circle(ctx,x,y,s.r*.32);
     return;
   }
-  const sc=1+k*(big?.5:.38);
-  glow(ctx,x,y,s.r*2.7*sc,T.red,Math.min(.95,.5+.4*k));
+  const oozing=s.state==='oozing';
+  const q=oozing?Math.min(1,s.len/s.targets[s.stage]):0;
+  const k=oozing?1-q*.55:s.p;
+  if(oozing&&!reduce){jx=Math.sin(s.len*1.7)*.35;}
+  const sc=1+k*(big?.45:.36);
+  glow(ctx,x,y,s.r*(cyst?2.1:2.7)*sc,T.red,Math.min(.95,(cyst?.3:.5)+.4*k));
+  if(deep)glow(ctx,x,y,s.r*1.7*sc,T.scab,.35);
   ctx.fillStyle=rgba(T.deep,.2);ell(ctx,x+.8,y+1.7,s.r*1.15*sc,s.r*.9*sc);
   let g=ctx.createRadialGradient(x+jx-s.r*.35,y+jy-s.r*.45,.4,x+jx,y+jy,s.r*1.2*sc);
-  g.addColorStop(0,T.bumpHi);g.addColorStop(1,T.bump);
+  g.addColorStop(0,T.bumpHi);g.addColorStop(1,cyst?T.skin:T.bump);
   ctx.fillStyle=g;circle(ctx,x+jx,y+jy,s.r*1.1*sc);
-  const hr=s.r*(.48+k*.28)*sc;
-  g=ctx.createRadialGradient(x+jx-hr*.3,y+jy-hr*.35,0,x+jx,y+jy,hr);
-  g.addColorStop(0,'#fffcea');g.addColorStop(.7,'#f6e3a6');g.addColorStop(1,'#e6c77a');
-  ctx.fillStyle=g;circle(ctx,x+jx,y+jy,hr);
-  ctx.fillStyle='rgba(255,255,255,.75)';circle(ctx,x+jx-hr*.35,y+jy-hr*.4,hr*.28);
+  if(oozing){
+    ctx.fillStyle=rgba(T.scab,.8);circle(ctx,x+jx,y+jy,s.r*(.28+.12*q));
+    ctx.fillStyle='#f6e3a6';circle(ctx,x+jx,y+jy,s.r*.2);
+  }else if(cyst){
+    ctx.fillStyle='rgba(255,255,255,.35)';circle(ctx,x+jx-s.r*.3,y+jy-s.r*.35,s.r*.35);
+    ctx.fillStyle=rgba(T.deep,.75);circle(ctx,x+jx,y+jy,s.r*.16);
+  }else{
+    const hr=s.r*((deep?.36:.48)+k*.28)*sc;
+    g=ctx.createRadialGradient(x+jx-hr*.3,y+jy-hr*.35,0,x+jx,y+jy,hr);
+    if(deep){g.addColorStop(0,'#fff3c4');g.addColorStop(.7,'#eed27f');g.addColorStop(1,'#d9b25c');}
+    else{g.addColorStop(0,'#fffcea');g.addColorStop(.7,'#f6e3a6');g.addColorStop(1,'#e6c77a');}
+    ctx.fillStyle=g;circle(ctx,x+jx,y+jy,hr);
+    ctx.fillStyle='rgba(255,255,255,.75)';circle(ctx,x+jx-hr*.35,y+jy-hr*.4,hr*.28);
+  }
+  const left=s.stages-s.stage;
+  if(s.stages>1&&left>0){
+    for(let i=0;i<left;i++){
+      const px=x+(i-(left-1)/2)*4.2,py=y+s.r*1.25*sc+5;
+      ctx.fillStyle='rgba(255,255,255,.95)';circle(ctx,px,py,1.6);
+      ctx.fillStyle='#e2523e';circle(ctx,px,py,1.05);
+    }
+  }
+}
+const WORMC={wh:['#d8bd78','#fbf0c6'],deep:['#cdb565','#f0e2a0'],boss:['#d6b86c','#fbefc0'],cyst:['#d9ceb4','#fffaf0']};
+const wormWidth=s=>s.type==='boss'?4.2:s.type==='cyst'?4.6:s.type==='deep'?2.9:2.4;
+function drawWorm(ctx,pts,w,cols,alpha){
+  if(!pts||pts.length<2)return;
+  ctx.save();ctx.globalAlpha=alpha;ctx.lineCap='round';ctx.lineJoin='round';
+  const path=new Path2D();path.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length;i++)path.lineTo(pts[i].x,pts[i].y);
+  ctx.strokeStyle=cols[0];ctx.lineWidth=w+1.7;ctx.stroke(path);
+  ctx.strokeStyle=cols[1];ctx.lineWidth=w;ctx.stroke(path);
+  ctx.translate(-w*.22,-w*.14);ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=w*.28;ctx.stroke(path);
+  ctx.restore();
+}
+function sparkle(ctx,x,y,r,col){
+  ctx.fillStyle=col;ctx.beginPath();
+  ctx.moveTo(x,y-r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.quadraticCurveTo(x,y,x,y+r);ctx.quadraticCurveTo(x,y,x-r,y);ctx.quadraticCurveTo(x,y,x,y-r);
+  ctx.fill();
 }
 
 function drawFinger(ctx,ang){
@@ -517,7 +652,27 @@ function sndOuch(){
 }
 function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
 
+function tone(f,dur,type,gain,f2){
+  if(!ac||muted)return;
+  try{const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type=type||'sine';
+    o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(gain||.1,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+    o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur+.02);}catch(e){}
+}
+const sndTick=q=>tone(240+460*q,.035,'sine',.06);
+function sndDing(){tone(1180,.12,'triangle',.12);}
+function sndPerfect(){tone(880,.12,'triangle',.16);setTimeout(()=>tone(1320,.22,'triangle',.16),90);}
+function sndSquelch(){
+  if(!ac||muted)return;
+  try{const t=ac.currentTime,len=Math.floor(ac.sampleRate*.16),buf=ac.createBuffer(1,len,ac.sampleRate),d=buf.getChannelData(0);
+    for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/len);
+    const n=ac.createBufferSource();n.buffer=buf;const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(400,t);f.frequency.linearRampToValueAtTime(1200,t+.16);
+    const g=ac.createGain();g.gain.value=.35;n.connect(f).connect(g).connect(ac.destination);n.start(t);}catch(e){}
+}
+function sndClear(){[660,830,990,1320].forEach((f,i)=>setTimeout(()=>tone(f,.18,'triangle',.12),i*90));}
+
 /* ---------- state ---------- */
+const GAME_URL='https://markcheng36.github.io/chunbalance-card/pimple.html';
 let char=makeChar();
 let G=null;
 let screen='pick';
@@ -525,32 +680,67 @@ const pv=$('#pv'),pctx=pv.getContext('2d');
 const cv=$('#cv'),ctx=cv.getContext('2d');
 const tipEl=$('#tip');
 function setTip(t){tipEl.textContent=t;}
-function fmt(t){t=Math.floor(t);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+function fmt(t){t=Math.max(0,Math.floor(t));return Math.floor(t/60)+':'+String(t%60).padStart(2,'0');}
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function loadDex(){try{return JSON.parse(lsGet('pimple-dex')||'{}')||{};}catch(e){return {};}}
+let everOozed=lsGet('pimple-oozed')==='1';
+const DEX=loadDex();
 
-function newGame(fresh){
-  if(fresh)char.spots=genSpots(char);
-  for(const s of char.spots){s.p=0;s.state='idle';s.t=0;}
-  G={spots:char.spots,parts:[],plugs:[],floats:[],irr:[],score:0,combo:0,maxCombo:0,last:-9,ouch:0,
-    start:performance.now()/1000,elapsed:0,ended:false,shake:0,
-    fin:{x:200,y:300,d:44,a:0,ang:0},firstBh:true,firstPh:true};
+function snapFace(spots,clean){
+  const sc=1.6,x0=66,y0=74,w=268,h=380;
+  const c=document.createElement('canvas');c.width=Math.round(w*sc);c.height=Math.round(h*sc);
+  const k=c.getContext('2d');
+  k.fillStyle='#f6fcfa';k.fillRect(0,0,c.width,c.height);
+  k.setTransform(sc,0,0,sc,-x0*sc,-y0*sc);
+  drawScene(k,char,spots,1,{});
+  if(clean){
+    k.save();k.clip(char.paths.face);
+    const g=k.createRadialGradient(200,240,10,200,260,190);
+    g.addColorStop(0,'rgba(255,255,255,.22)');g.addColorStop(1,'rgba(255,255,255,0)');
+    k.fillStyle=g;k.fillRect(60,60,280,420);
+    k.restore();
+    for(const [x,y,r] of [[132,300,7],[268,312,5],[200,176,6],[240,390,4],[160,212,4],[214,300,3.5]]){
+      sparkle(k,x,y,r*1.6,'rgba(255,214,90,.55)');sparkle(k,x,y,r,'#ffffff');
+    }
+  }
+  return c;
+}
+
+function newGame(level,carry){
+  const mode=cfg.mode,now=performance.now()/1000;
+  char.spots=mode==='timed'?genSpots(char,1):genSpots(char,level);
+  G={mode,level,spots:char.spots,parts:[],plugs:[],worms:[],floats:[],irr:[],score:carry||0,
+    combo:0,maxCombo:0,last:-9,ouch:0,tooHard:0,perfect:0,squeezes:0,popped:0,
+    start:now,elapsed:0,remain:60,ended:false,shown:false,shake:0,slow:0,camZ:1,camX:200,camY:280,flash:0,
+    clearT:null,spawnT:0,tickT:0,fin:{x:200,y:300,d:44,a:0,ang:0},firstBh:true};
+  G.before=snapFace(G.spots,false);
   $('#result').hidden=true;
-  setTip('按住痘痘不放，擠到爆！黑頭多半躲在鼻子上');
+  $('#lab1').textContent=mode==='timed'?'已擠':`第 ${level} 關・剩下`;
+  $('#lab3').textContent=mode==='timed'?'倒數':'時間';
+  G.floats.push({x:200,y:250,txt:mode==='timed'?'60 秒開始！':`第 ${level} 關`,life:1.5,max:1.5,col:'#173c3a',size:30});
+  setTip(everOozed?(mode==='timed'?'60 秒內擠越多越好，痘痘會一直冒出來':'按住痘痘，膿冒出來後在金色區放手就是完美'):'按住痘痘不放，膿冒出來後在金色區放手 = 完美！');
   updHud(true);
 }
 let hudCache={};
 function updHud(force){
   const left=G.spots.filter(s=>s.state!=='popped').length;
-  const vals={left:String(left),score:String(G.score),time:fmt(G.elapsed)};
+  const vals={left:String(G.mode==='timed'?G.popped:left),score:String(G.score),time:G.mode==='timed'?fmt(Math.ceil(G.remain)):fmt(G.elapsed)};
   for(const k in vals)if(force||hudCache[k]!==vals[k]){$('#'+k).textContent=vals[k];hudCache[k]=vals[k];}
   return left;
 }
 
 /* ---------- input ---------- */
 let act=null;
-function toWorld(e){const r=cv.getBoundingClientRect(),v=cv._v;if(!v)return{x:0,y:0};return{x:(e.clientX-r.left-v.ox)/v.s,y:(e.clientY-r.top-v.oy)/v.s};}
+function toWorld(e){
+  const r=cv.getBoundingClientRect(),v=cv._v;if(!v)return{x:0,y:0};
+  const w={x:(e.clientX-r.left-v.ox)/v.s,y:(e.clientY-r.top-v.oy)/v.s};
+  if(G&&G.camZ>1.001){w.x=(w.x-G.camX)/G.camZ+G.camX;w.y=(w.y-G.camY)/G.camZ+G.camY;}
+  return w;
+}
 function findSpot(p){
   let best=null,bd=1e9;
-  for(const s of G.spots){if(s.state==='popped')continue;const d=Math.hypot(s.x-p.x,s.y-p.y);if(d<Math.max(s.r*2.4,14)&&d<bd){bd=d;best=s;}}
+  for(const s of G.spots){if(s.state==='popped'||s.grow<.6)continue;const d=Math.hypot(s.x-p.x,s.y-p.y);if(d<Math.max(s.r*2.4,14)&&d<bd){bd=d;best=s;}}
   return best;
 }
 cv.addEventListener('pointerdown',e=>{
@@ -571,90 +761,210 @@ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 
 /* ---------- game logic ---------- */
-const BASE={bh:10,ph:25,boss:80};
-function popSpot(s,now){
-  s.state='popped';s.t=0;s.p=1;
+function addFloat(x,y,txt,col,size,life=1.2){G.floats.push({x,y,txt,col,size,life,max:life});}
+function recordDex(type){
+  const first=!DEX[type];
+  DEX[type]=(DEX[type]||0)+1;lsSet('pimple-dex',JSON.stringify(DEX));
+  if(first&&type!=='bh'&&type!=='wh'){addFloat(200,200,'新發現：'+TYPES[type].name+'！','#e0a100',18,1.8);setTip('新發現「'+TYPES[type].name+'」，已收進痘痘圖鑑');}
+}
+function burst(x,y,n,big,cols){
+  for(let i=0;i<n;i++){
+    const a=-Math.PI/2+rnd(-1.3,1.3),sp=rnd(big?90:55,big?320:200);
+    G.parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:rnd(1.1,big?3.6:2.5),life:rnd(.7,1.3),max:1.3,c:pick(cols)});
+  }
+}
+function startOoze(s){
+  s.state='oozing';s.len=0;s.wl=0;s.h=-Math.PI/2+s.wa;s.worm=[{x:s.x,y:s.y}];s.inZone=false;
+  sndSquelch();buzz(10);
+  if(!everOozed){everOozed=true;lsSet('pimple-oozed','1');}
+  setTip('膿冒出來了！看下面的條，在金色區放手 = 完美');
+}
+function growWorm(s){
+  while(s.wl<s.len){
+    s.wl+=1;
+    s.h+=Math.sin(s.wl*.32+s.seed)*.07;
+    if(s.wl>9)s.h+=(Math.cos(s.h)>=0?1:-1)*.018;
+    const l=s.worm[s.worm.length-1];
+    s.worm.push({x:l.x+Math.cos(s.h),y:l.y+Math.sin(s.h)});
+  }
+}
+function dropWorm(s){
+  if(s.worm&&s.worm.length>1)G.worms.push({pts:s.worm.map(p=>({x:p.x,y:p.y})),w:wormWidth(s),cols:WORMC[s.type],vx:rnd(-25,25),vy:rnd(-70,-30),life:1.4});
+  s.worm=null;
+}
+function resolve(s,now,overflow){
+  const q=s.len/s.targets[s.stage];
+  dropWorm(s);s.len=0;s.p=0;
+  if(overflow&&act){act.lock=true;act.spot=null;}
+  if(!overflow&&q<.55){
+    s.state='idle';G.combo=0;
+    addFloat(s.x,s.y-22,'還沒擠乾淨','#4d6c68',13);
+    setTip('太早放手了，再按住擠一次');
+    return;
+  }
+  let mult=1,label='不錯',col='#173c3a';
+  if(overflow){
+    mult=.5;label='太用力！';col='#e2523e';G.tooHard++;
+    G.irr.push({x:s.x,y:s.y,r:s.r*3,a:.38});
+    burst(s.x,s.y,10,false,['#fff6d8','#f2dc9a']);sndOuch();buzz([20,30,20]);
+    setTip('擠太久會傷皮膚，進金色區就放手');
+  }else if(q>=.85){
+    mult=2;label='完美！';col='#e0a100';G.perfect++;
+    burst(s.x,s.y-6,10,false,['#ffd25a','#ffffff']);sndPerfect();buzz(30);
+  }
+  G.squeezes++;
+  s.stage++;
+  if(s.stage<s.stages){
+    s.state='idle';s.r*=.86;s.hold*=.8;
+    const pts=Math.round(10*mult);G.score+=pts;
+    addFloat(s.x,s.y-30,label,col,15);
+    addFloat(s.x,s.y-14,'+'+pts,'#ff6a55',13);
+    addFloat(s.x,s.y+22,'還有！再擠一次','#173c3a',12,1.4);
+    sndPop('wh');
+    return;
+  }
+  popFinal(s,now,mult,label,col);
+}
+function popFinal(s,now,mult,label,col){
+  s.state='popped';s.t=0;s.p=1;s.worm=null;
   if(now-G.last<2.4)G.combo++;else G.combo=1;
   G.last=now;G.maxCombo=Math.max(G.maxCombo,G.combo);
-  const pts=Math.round(BASE[s.type]*(1+.2*(G.combo-1)));
-  G.score+=pts;
-  G.floats.push({x:s.x,y:s.y-14,txt:'+'+pts,life:1.1,max:1.1,col:'#ff6a55',size:15});
-  if(G.combo>=3)G.floats.push({x:s.x,y:s.y-32,txt:'連擊 x'+G.combo,life:1.2,max:1.2,col:'#173c3a',size:12});
+  const pts=Math.round(TYPES[s.type].pts*mult*(1+.2*(G.combo-1)));
+  G.score+=pts;G.popped++;
+  if(label)addFloat(s.x,s.y-32,label,col,16);
+  addFloat(s.x,s.y-14,'+'+pts,'#ff6a55',15,1.1);
+  if(G.combo>=3)addFloat(s.x,s.y-50,'連擊 x'+G.combo,'#173c3a',12);
+  recordDex(s.type);
   if(s.type==='bh'){
     G.plugs.push({x:s.x,y:s.y,vx:rnd(-40,40),vy:rnd(-170,-120),rot:rnd(-1,1),vr:rnd(-9,9),life:1.2,r:s.r});
     sndPop('bh');buzz(12);
-    if(G.firstBh){G.firstBh=false;setTip('黑頭整條拔出來了！鼻子上還有，仔細找');}
+    if(G.firstBh){G.firstBh=false;if(G.squeezes===0)setTip('黑頭整條拔出來了！鼻子上還有，仔細找');}
   }else{
-    const big=s.type==='boss',n=big?44:20;
-    for(let i=0;i<n;i++){
-      const a=-Math.PI/2+rnd(-1.25,1.25),sp=rnd(big?90:60,big?300:210);
-      G.parts.push({x:s.x,y:s.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:rnd(1.1,big?3.4:2.6),life:rnd(.7,1.3),max:1.3,c:Math.random()<.7?'#fff6d8':'#f2dc9a'});
-    }
+    const big=s.type==='boss'||s.type==='cyst';
+    burst(s.x,s.y,big?46:s.type==='deep'?20:14,big,s.type==='cyst'?['#fffaf0','#efe6d2']:['#fff6d8','#f2dc9a']);
     if(big){
-      for(let i=0;i<8;i++){const a=-Math.PI/2+rnd(-1,1),sp=rnd(60,180);G.parts.push({x:s.x,y:s.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:rnd(1,2),life:rnd(.6,1),max:1,c:TONES[char.tone].red});}
-      if(!reduce)G.shake=6;
-      G.floats.push({x:s.x,y:s.y-50,txt:'爆漿！',life:1.4,max:1.4,col:'#e2523e',size:20});
-      setTip('最大顆的搞定了，超紓壓');
-    }else if(G.firstPh){G.firstPh=false;setTip('啵！就是這種感覺，繼續');}
-    sndPop(s.type);buzz(big?45:18);
+      for(let i=0;i<8;i++){const a=-Math.PI/2+rnd(-1,1),sp=rnd(60,180);G.parts.push({x:s.x,y:s.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:rnd(1,2),life:rnd(.6,1),max:1,c:(char.T||TONES[char.tone]).red});}
+      if(!reduce){G.shake=5;G.slow=.9;G.camX=s.x;G.camY=s.y;G.flash=.7;}
+      addFloat(s.x,s.y-58,'爆漿！','#e2523e',22,1.6);
+      buzz([30,30,70]);
+    }else buzz(18);
+    sndPop(big?'boss':'wh');
   }
-  if(act)act.lock=true,act.spot=null;
+  if(act){act.lock=true;act.spot=null;}
+}
+function spawnOne(){
+  G.spots=G.spots.filter(s=>!(s.state==='popped'&&s.t>3));
+  const r=Math.random(),type=r<.42?'bh':r<.76?'wh':r<.9?'deep':r<.97?'boss':'cyst';
+  const s=place(char,G.spots,type);
+  if(s)s.grow=0;
+}
+function finish(now){
+  G.ended=true;G.endAt=now;act=null;
+  if(G.mode==='level'){
+    G.clearT=0;sndClear();
+    G.sparks=[];for(let i=0;i<9;i++){let x,y,n=0;do{x=rnd(100,300);y=rnd(120,430);n++;}while(!inP(char.paths.face,x,y)&&n<30);G.sparks.push([x,y,rnd(3,7),rnd(0,.5)]);}
+  }else{setTip('時間到！');setTimeout(showResult,350);}
 }
 function update(dt,now){
-  if(G.ended){G.elapsed=G.elapsed;}else G.elapsed=now-G.start;
+  G.slow=Math.max(0,G.slow-dt);
+  const gdt=dt*(G.slow>0?.3:1);
+  if(!G.ended){G.elapsed=now-G.start;G.remain=Math.max(0,60-G.elapsed);}
   let pressed=null;
   if(act&&!act.lock&&act.spot&&act.spot.state!=='popped')pressed=act.spot;
   for(const s of G.spots){
-    if(s.state==='popped'){s.t+=dt;continue;}
-    if(s===pressed){s.state='pressing';s.p+=dt/s.hold;if(s.p>=1)popSpot(s,now);}
-    else if(s.state==='pressing'){s.p-=dt*.8;if(s.p<=0){s.p=0;s.state='idle';}}
+    if(s.grow<1)s.grow=Math.min(1,s.grow+dt*3);
+    if(s.state==='popped'){s.t+=gdt;continue;}
+    if(s.state==='oozing'){
+      if(s===pressed){
+        const tg=s.targets[s.stage];
+        s.len+=s.rate*gdt;growWorm(s);
+        G.tickT-=dt;if(G.tickT<=0){sndTick(Math.min(1,s.len/tg));G.tickT=.085;}
+        if(!s.inZone&&s.len>=tg*.85){s.inZone=true;sndDing();buzz(8);}
+        if(s.len>=tg*1.15)resolve(s,now,true);
+      }else resolve(s,now,false);
+    }else if(s===pressed){
+      s.state='pressing';s.p+=gdt/s.hold;
+      if(s.p>=1){if(s.type==='bh')popFinal(s,now,1,null,null);else startOoze(s);}
+    }else if(s.state==='pressing'){s.p-=gdt*.8;if(s.p<=0){s.p=0;s.state='idle';}}
   }
   if(act&&!act.lock&&!act.spot&&!G.ended){
     act.irr+=dt;
     if(!act.mark){act.mark={x:act.x,y:act.y,r:6,a:0};G.irr.push(act.mark);}
-    act.mark.r=Math.min(16,6+act.irr*14);act.mark.a=Math.min(.42,act.irr*.7);act.mark.hold=true;
+    act.mark.r=Math.min(16,6+act.irr*14);act.mark.a=Math.min(.42,act.irr*.7);
     if(act.irr>.5&&!act.warned){
       act.warned=true;G.ouch++;G.combo=0;
-      G.floats.push({x:act.x,y:act.y-26,txt:'好痛！輕一點',life:1.3,max:1.3,col:'#e2523e',size:13});
-      setTip('那裡沒有痘痘喔，擠好皮膚會紅腫');sndOuch();buzz([20,40,20]);
+      addFloat(act.x,act.y-26,'好痛！輕一點','#e2523e',13,1.3);
+      setTip('那裡沒有痘痘喔，亂擠皮膚會紅腫');sndOuch();buzz([20,40,20]);
     }
   }
   for(const m of G.irr){if(act&&act.mark===m)continue;m.a-=dt*.05;}
   G.irr=G.irr.filter(m=>m.a>0);
-  for(const p of G.parts){p.vy+=620*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt;}
+  for(const p of G.parts){p.vy+=620*gdt;p.x+=p.vx*gdt;p.y+=p.vy*gdt;p.life-=gdt;}
   G.parts=G.parts.filter(p=>p.life>0);
-  for(const p of G.plugs){p.vy+=520*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;p.life-=dt;}
+  for(const p of G.plugs){p.vy+=520*gdt;p.x+=p.vx*gdt;p.y+=p.vy*gdt;p.rot+=p.vr*gdt;p.life-=gdt;}
   G.plugs=G.plugs.filter(p=>p.life>0);
+  for(const w of G.worms){w.vy+=480*gdt;for(const p of w.pts){p.x+=w.vx*gdt;p.y+=w.vy*gdt;}w.life-=gdt;}
+  G.worms=G.worms.filter(w=>w.life>0);
   for(const t of G.floats){t.y-=26*dt;t.life-=dt;}
   G.floats=G.floats.filter(t=>t.life>0);
-  G.shake=Math.max(0,G.shake-dt*22);
+  G.shake=Math.max(0,G.shake-dt*20);
+  G.flash=Math.max(0,G.flash-dt*2.2);
+  G.camZ=lerp(G.camZ,G.slow>0?1.38:1,Math.min(1,dt*(G.slow>0?9:4)));
   const F=G.fin;
   if(act&&!act.lock&&!G.ended){
     const s=act.spot;
     const tx=s?s.x:act.x,ty=s?s.y:act.y;
-    const td=s?(s.type==='bh'?lerp(26,s.r+9,ease(s.p)):lerp(30+s.r,s.r*1.3+9,ease(s.p))):lerp(26,15,Math.min(1,act.irr/.5));
+    let td;
+    if(!s)td=lerp(26,15,Math.min(1,act.irr/.5));
+    else if(s.type==='bh')td=lerp(26,s.r+9,ease(s.p));
+    else if(s.state==='oozing')td=s.r*1.3+8+Math.sin(now*28)*.6;
+    else td=lerp(30+s.r,s.r*1.3+9,ease(s.p));
     if(F.a<.05){F.x=tx;F.y=ty;F.d=td+18;F.ang=s?s.ang:0;}
     F.x=lerp(F.x,tx,Math.min(1,dt*20));F.y=lerp(F.y,ty,Math.min(1,dt*20));
     F.d=lerp(F.d,td,Math.min(1,dt*16));F.ang=lerp(F.ang,s?s.ang:0,Math.min(1,dt*10));
     F.a=Math.min(1,F.a+dt*8);
   }else{F.a=Math.max(0,F.a-dt*5);F.d+=dt*60;}
+  if(G.mode==='timed'&&!G.ended){
+    G.spawnT-=dt;
+    const alive=G.spots.filter(s=>s.state!=='popped').length,target=8+Math.floor(G.elapsed/15);
+    if(alive<target&&G.spawnT<=0){spawnOne();G.spawnT=.45;}
+    if(G.remain<=0)finish(now);
+  }
   const left=updHud(false);
-  if(left===0&&!G.ended){G.ended=true;G.endAt=now;act=null;setTimeout(showResult,950);}
+  if(G.mode==='level'&&left===0&&!G.ended)finish(now);
+  if(G.clearT!==null){G.clearT+=dt;if(G.clearT>1.15&&!G.shown){G.shown=true;showResult();}}
 }
 function renderGame(now){
   const v=fit(cv);if(!v)return;
   const sh=G.shake;
   begin(ctx,cv,v,sh?rnd(-sh,sh):0,sh?rnd(-sh,sh):0);
+  if(G.camZ>1.001){ctx.translate(G.camX,G.camY);ctx.scale(G.camZ,G.camZ);ctx.translate(-G.camX,-G.camY);}
   const ps=act&&act.spot&&!act.lock?act.spot:null;
-  const wince=!!(ps&&((ps.type==='boss'&&ps.p>.35)||(ps.type!=='bh'&&ps.p>.75)))||!!(act&&act.warned&&!act.lock);
+  const wince=!!(ps&&(ps.state==='oozing'||(ps.type!=='bh'&&ps.p>.75)))||!!(act&&act.warned&&!act.lock);
   drawScene(ctx,char,G.spots,now,{irr:G.irr,wince});
+  const T=char.T||TONES[char.tone];
   for(const p of G.plugs){
     ctx.save();ctx.globalAlpha=Math.min(1,p.life*2);ctx.translate(p.x,p.y);ctx.rotate(p.rot);
     ctx.fillStyle='#ead9a4';ctx.beginPath();ctx.ellipse(0,p.r*1.3,p.r*.8,p.r*1.9,0,0,6.2832);ctx.fill();
-    ctx.fillStyle=TONES[char.tone].bh;circle(ctx,0,0,p.r*.9);ctx.restore();
+    ctx.fillStyle=T.bh;circle(ctx,0,0,p.r*.9);ctx.restore();
   }
+  for(const w of G.worms)drawWorm(ctx,w.pts,w.w,w.cols,Math.min(1,w.life*1.5));
   for(const p of G.parts){ctx.globalAlpha=Math.min(1,p.life/p.max*2);ctx.fillStyle=p.c;circle(ctx,p.x,p.y,p.r);}
   ctx.globalAlpha=1;
+  if(G.clearT!==null){
+    const t=G.clearT;
+    ctx.save();ctx.clip(char.paths.face);
+    const bx=lerp(20,380,Math.min(1,t/.9));
+    const lg=ctx.createLinearGradient(bx-70,140,bx+10,440);
+    lg.addColorStop(0,'rgba(255,255,255,0)');lg.addColorStop(.5,'rgba(255,255,255,.55)');lg.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=lg;ctx.fillRect(40,60,320,440);
+    ctx.restore();
+    for(const [x,y,r,d] of G.sparks){
+      const a=Math.max(0,Math.sin(Math.PI*Math.min(1,Math.max(0,(t-d)/.7))));
+      if(a>0){ctx.globalAlpha=a;sparkle(ctx,x,y,r*1.7,'rgba(255,214,90,.6)');sparkle(ctx,x,y,r,'#ffffff');}
+    }
+    ctx.globalAlpha=1;
+  }
   const F=G.fin;
   if(F.a>.02){
     ctx.save();ctx.globalAlpha=F.a;
@@ -663,13 +973,25 @@ function renderGame(now){
       drawFinger(ctx,F.ang+(side<0?0:Math.PI));ctx.restore();
     }
     ctx.restore();
-    if(ps&&ps.p>0){
-      const R=Math.max(ps.r*2.6+6,14);
-      ctx.lineCap='round';ctx.lineWidth=3;
-      ctx.strokeStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(ps.x,ps.y-F.d-10,6,0,6.2832);ctx.stroke();
-      ctx.strokeStyle='#ff6a55';ctx.beginPath();ctx.arc(ps.x,ps.y-F.d-10,6,-Math.PI/2,-Math.PI/2+6.2832*Math.min(1,ps.p));ctx.stroke();
-      void R;
-    }
+  }
+  for(const s of G.spots)if(s.state==='oozing'){
+    drawWorm(ctx,s.worm,wormWidth(s),WORMC[s.type],1);
+    ctx.fillStyle=WORMC[s.type][1];circle(ctx,s.x,s.y,wormWidth(s)*.62);
+  }
+  if(ps&&ps.state==='pressing'&&ps.p>0){
+    ctx.lineCap='round';ctx.lineWidth=3;
+    ctx.strokeStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.arc(ps.x,ps.y-F.d-10,6,0,6.2832);ctx.stroke();
+    ctx.strokeStyle='#ff6a55';ctx.beginPath();ctx.arc(ps.x,ps.y-F.d-10,6,-Math.PI/2,-Math.PI/2+6.2832*Math.min(1,ps.p));ctx.stroke();
+  }
+  if(ps&&ps.state==='oozing'){
+    const q=ps.len/ps.targets[ps.stage],W=46,H=7,gx=ps.x-W/2,gy=ps.y+ps.r*1.6+16;
+    const rr=(x,y,w,h)=>{ctx.beginPath();ctx.moveTo(x+h/2,y);ctx.lineTo(x+w-h/2,y);ctx.arc(x+w-h/2,y+h/2,h/2,-Math.PI/2,Math.PI/2);ctx.lineTo(x+h/2,y+h);ctx.arc(x+h/2,y+h/2,h/2,Math.PI/2,Math.PI*1.5);ctx.closePath();};
+    ctx.fillStyle='rgba(255,255,255,.92)';rr(gx-2,gy-2,W+4,H+4);ctx.fill();
+    ctx.fillStyle='#ffd25a';ctx.fillRect(gx+W*.85/1.15,gy,W*.15/1.15,H);
+    ctx.save();rr(gx,gy,W,H);ctx.clip();
+    ctx.fillStyle=q>=.85?'#2f9e63':'#ff6a55';ctx.fillRect(gx,gy,W*Math.min(1,q/1.15),H);
+    ctx.restore();
+    ctx.strokeStyle='#173c3a';ctx.lineWidth=1;rr(gx,gy,W,H);ctx.stroke();
   }
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
   for(const t of G.floats){
@@ -679,6 +1001,7 @@ function renderGame(now){
     ctx.fillStyle=t.col;ctx.fillText(t.txt,t.x,t.y);
   }
   ctx.globalAlpha=1;
+  if(G.flash>0){ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=`rgba(255,255,255,${G.flash*.55})`;ctx.fillRect(0,0,cv.width,cv.height);}
 }
 function renderPreview(now){
   const v=fit(pv);if(!v)return;
@@ -686,35 +1009,141 @@ function renderPreview(now){
   drawScene(pctx,char,char.spots,now,{});
 }
 
+/* ---------- results, dex, share ---------- */
+function setStats(rows){rows.forEach(([l,v],i)=>{$('#rL'+(i+1)).textContent=l;$('#rV'+(i+1)).textContent=v;});}
 function showResult(){
-  const t=G.endAt-G.start;
-  let stars=1;
-  if(t<45&&G.ouch===0)stars=3;else if(t<75&&G.ouch<=2)stars=2;
+  G.after=snapFace([],true);
+  $('#rBefore').src=G.before.toDataURL('image/jpeg',.85);
+  $('#rAfter').src=G.after.toDataURL('image/jpeg',.85);
+  let stars=1,best='';
+  if(G.mode==='level'){
+    const bad=G.ouch+G.tooHard,rate=G.perfect/Math.max(1,G.squeezes);
+    if(bad===0&&rate>=.5)stars=3;else if(bad<=2&&rate>=.2)stars=2;
+    $('#rTitle').textContent=`第 ${G.level} 關完成！`;
+    setStats([['分數',G.score],['完美',G.perfect],['最高連擊',G.maxCombo],['手太重',bad]]);
+    const mx=parseInt(lsGet('pimple-maxlevel')||'0',10);
+    if(G.level>mx){lsSet('pimple-maxlevel',String(G.level));best=mx?`新紀錄！最高闖到第 ${G.level} 關`:'';}
+    else best=`最高紀錄：第 ${mx} 關`;
+    $('#again').textContent='下一關';
+  }else{
+    if(G.popped>=25)stars=3;else if(G.popped>=15)stars=2;
+    $('#rTitle').textContent='時間到！';
+    setStats([['分數',G.score],['擠掉',G.popped],['完美',G.perfect],['最高連擊',G.maxCombo]]);
+    const b=parseInt(lsGet('pimple-best60')||'0',10);
+    if(G.score>b){lsSet('pimple-best60',String(G.score));best=b?'新紀錄！':'';}
+    else best=`最高分 ${b}`;
+    $('#again').textContent='再挑戰一次';
+  }
+  G.stars=stars;
   $('#rStars').innerHTML='★'.repeat(stars)+'<i>'+'★'.repeat(3-stars)+'</i>';
-  $('#rTitle').textContent=stars===3?'專業級手法！':stars===2?'乾淨溜溜':'擠完了，記得擦藥';
-  $('#rTime').textContent=fmt(t);$('#rScore').textContent=G.score;
-  $('#rCombo').textContent=G.maxCombo;$('#rOuch').textContent=G.ouch;
-  let best=null;
-  try{best=parseFloat(localStorage.getItem('pimple-best'));}catch(e){}
-  let msg='';
-  if(!best||t<best){try{localStorage.setItem('pimple-best',String(t));}catch(e){} msg=best?'新紀錄！':'';}
-  else msg='最快紀錄 '+fmt(best);
-  $('#best').textContent=msg;$('#best').hidden=!msg;
+  $('#rSub').textContent=stars===3?'專業級手法！':stars===2?'乾淨溜溜':'擠完了，記得擦藥';
+  $('#best').textContent=best;$('#best').hidden=!best;
   $('#result').hidden=false;
-  setTip('全部擠乾淨了！');
+}
+function drawDexIcon(cvs,t,locked){
+  const k=cvs.getContext('2d'),r=RAD[t][1]*(t==='bh'?1.6:1),span=r*(t==='bh'?5:6),S=cvs.width/span,cx=span/2;
+  k.setTransform(S,0,0,S,0,0);k.clearRect(0,0,span,span);
+  k.save();k.beginPath();k.arc(cx,cx,span/2-.1,0,6.2832);k.clip();
+  if(locked){
+    k.fillStyle='#cfe3dd';k.fillRect(0,0,span,span);
+    k.fillStyle='#8fb0a8';k.font=`800 ${span*.5}px "Baloo 2",sans-serif`;k.textAlign='center';k.textBaseline='middle';k.fillText('?',cx,cx+span*.04);
+  }else{
+    const T=TONES[0];k.fillStyle=T.skin;k.fillRect(0,0,span,span);
+    drawSpot(k,mkSpot(t,cx,cx,r),T);
+  }
+  k.restore();
+}
+function openDex(){
+  const d=DEX,grid=$('#dexGrid');let found=0;grid.textContent='';
+  for(const t of TORDER){
+    const n=d[t]||0;if(n)found++;
+    const card=document.createElement('div');card.className='dexcard'+(n?'':' locked');
+    const ic=document.createElement('canvas');ic.width=144;ic.height=144;drawDexIcon(ic,t,!n);
+    const h=document.createElement('b');h.textContent=n?TYPES[t].name:'？？？';
+    const p=document.createElement('p');p.textContent=n?TYPES[t].desc:'還沒遇到，繼續闖關就會出現';
+    const c=document.createElement('span');c.textContent=n?`擠過 ${n} 顆`:'';
+    card.append(ic,h,p,c);grid.append(card);
+  }
+  $('#dexSub').textContent=`已收集 ${found} / ${TORDER.length} 種`;
+  $('#dex').hidden=false;
+}
+function shareText(){
+  return G.mode==='level'?`我在「擠痘痘大作戰」闖到第 ${G.level} 關、拿了 ${G.score} 分！你也來擠擠看：${GAME_URL}`
+    :`我在「擠痘痘大作戰」60 秒擠掉 ${G.popped} 顆痘痘、拿了 ${G.score} 分！你也來挑戰：${GAME_URL}`;
+}
+function rrect(k,x,y,w,h,r){k.beginPath();k.moveTo(x+r,y);k.arcTo(x+w,y,x+w,y+h,r);k.arcTo(x+w,y+h,x,y+h,r);k.arcTo(x,y+h,x,y,r);k.arcTo(x,y,x+w,y,r);k.closePath();}
+async function buildShare(){
+  try{await Promise.all([document.fonts.load('60px Huninn'),document.fonts.load('800 60px "Baloo 2"')]);}catch(e){}
+  const W=1080,H=1350,c=document.createElement('canvas');c.width=W;c.height=H;
+  const k=c.getContext('2d'),UI='Huninn,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif',NUM='"Baloo 2",Huninn,sans-serif';
+  k.fillStyle='#dcefe9';k.fillRect(0,0,W,H);
+  k.strokeStyle='#c8e3db';k.lineWidth=4;
+  for(let x=0;x<=W;x+=90){k.beginPath();k.moveTo(x,0);k.lineTo(x,H);k.stroke();}
+  for(let y=0;y<=H;y+=90){k.beginPath();k.moveTo(0,y);k.lineTo(W,y);k.stroke();}
+  k.textAlign='center';k.textBaseline='alphabetic';
+  k.fillStyle='#173c3a';k.font=`72px ${UI}`;k.fillText('擠痘痘大作戰',W/2,118);
+  k.fillStyle='#e2523e';k.font=`42px ${UI}`;
+  k.fillText(G.mode==='level'?`闖過第 ${G.level} 關　`+'★'.repeat(G.stars||1):`60 秒擠掉 ${G.popped} 顆`,W/2,182);
+  const iw=430,ih=Math.round(iw*380/268),y0=222;
+  [[G.before,75,'擠之前'],[G.after,575,'擠之後']].forEach(([img,x,lab])=>{
+    k.save();k.shadowColor='rgba(23,60,58,.22)';k.shadowBlur=24;k.shadowOffsetY=8;
+    k.fillStyle='#ffffff';rrect(k,x-12,y0-12,iw+24,ih+24,34);k.fill();k.restore();
+    k.save();rrect(k,x,y0,iw,ih,24);k.clip();k.drawImage(img,x,y0,iw,ih);k.restore();
+    k.fillStyle=lab==='擠之後'?'#ff6a55':'#173c3a';rrect(k,x+iw/2-90,y0+ih-28,180,56,28);k.fill();
+    k.fillStyle='#ffffff';k.font=`34px ${UI}`;k.fillText(lab,x+iw/2,y0+ih+12);
+  });
+  const sy=y0+ih+70;
+  const stats=G.mode==='level'?[['分數',G.score],['完美',G.perfect],['最高連擊',G.maxCombo]]:[['分數',G.score],['擠掉',G.popped],['完美',G.perfect]];
+  stats.forEach(([l,v],i)=>{
+    const bw=290,x=75+i*(bw+20);
+    k.fillStyle='rgba(251,255,253,.92)';rrect(k,x,sy,bw,130,26);k.fill();
+    k.fillStyle='#4d6c68';k.font=`30px ${UI}`;k.fillText(l,x+bw/2,sy+44);
+    k.fillStyle='#173c3a';k.font=`800 62px ${NUM}`;k.fillText(String(v),x+bw/2,sy+108);
+  });
+  const by=H-226;
+  k.fillStyle='#173c3a';k.fillRect(0,by,W,226);
+  k.fillStyle='#ffffff';k.font=`54px ${UI}`;k.fillText('鈞衡舍 ChunBalance',W/2,by+70);
+  k.fillStyle='#cfe7e1';k.font=`32px ${UI}`;k.fillText('身體平衡找馬克・站得穩才走的久',W/2,by+120);
+  k.fillStyle='#ffb3a6';k.font=`34px ${UI}`;k.fillText('加官方 LINE「鈞衡舍」@chunbalance',W/2,by+168);
+  k.fillStyle='#9fc2bb';k.font=`24px ${UI}`;k.fillText('markcheng36.github.io/chunbalance-card/pimple.html',W/2,by+208);
+  return c;
+}
+async function doShare(){
+  const btn=$('#shareBtn');btn.disabled=true;btn.textContent='產生中…';
+  try{
+    const c=await buildShare(),text=shareText();
+    const blob=await new Promise(r=>{try{c.toBlob(r,'image/jpeg',.9);}catch(e){r(null);}});
+    if(blob&&navigator.canShare){
+      try{
+        const file=new File([blob],'擠痘痘戰績.jpg',{type:'image/jpeg'});
+        if(navigator.canShare({files:[file]})){await navigator.share({files:[file],text});return;}
+      }catch(e){if(e&&e.name==='AbortError')return;}
+    }
+    $('#shareImg').src=c.toDataURL('image/jpeg',.9);
+    $('#lineShare').href='https://line.me/R/share?text='+encodeURIComponent(text);
+    $('#shareBox').hidden=false;
+  }finally{btn.disabled=false;btn.textContent='分享戰績圖';}
 }
 
 /* ---------- UI ---------- */
+cfg.mode='level';
 function syncPick(){
   for(const b of document.querySelectorAll('[data-g]'))b.setAttribute('aria-pressed',String(b.dataset.g===cfg.g));
   for(const b of document.querySelectorAll('[data-t]'))b.setAttribute('aria-pressed',String(+b.dataset.t===cfg.tone));
+  for(const b of document.querySelectorAll('[data-m]'))b.setAttribute('aria-pressed',String(b.dataset.m===cfg.mode));
 }
 $('#optG').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;cfg.g=b.dataset.g;char=makeChar();syncPick();});
-$('#optT').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;cfg.tone=+b.dataset.t;char.tone=cfg.tone;syncPick();});
+$('#optT').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;cfg.tone=+b.dataset.t;if(char.photo)char=makeChar();char.tone=cfg.tone;syncPick();});
+$('#optM').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;cfg.mode=b.dataset.m;syncPick();});
 function go(s){screen=s;for(const id of ['pick','align','game'])$('#'+id).hidden=s!==id;}
-$('#start').addEventListener('click',()=>{ensureAudio();if(char.photo)char=makeChar();go('game');newGame(false);});
-$('#again').addEventListener('click',()=>{ensureAudio();newGame(true);});
-const back=()=>{act=null;G=null;if(char.photo)char=makeChar();else char.spots=genSpots(char);go('pick');};
+function startGame(){go('game');newGame(1,0);}
+$('#start').addEventListener('click',()=>{ensureAudio();if(char.photo)char=makeChar();startGame();});
+$('#again').addEventListener('click',()=>{ensureAudio();if(G.mode==='level')newGame(G.level+1,G.score);else newGame(1,0);});
+$('#shareBtn').addEventListener('click',doShare);
+$('#dexBtn').addEventListener('click',openDex);$('#dexBtn2').addEventListener('click',openDex);
+$('#dexClose').addEventListener('click',()=>{$('#dex').hidden=true;});
+$('#shareClose').addEventListener('click',()=>{$('#shareBox').hidden=true;});
+const back=()=>{act=null;G=null;$('#result').hidden=true;if(char.photo)char=makeChar();else char.spots=genSpots(char);go('pick');};
 
 /* ---------- photo mode ---------- */
 const TPL=buildPaths('m');
@@ -819,8 +1248,8 @@ function cartoonize(){
     return bcc.getImageData(0,0,W,H).data;
   };
   const E=blurAt(2.6),B=blurAt(3.4);
-  const G=new Float32Array(W*H);
-  for(let i=0,j=0;i<G.length;i++,j+=4)G[i]=.299*E[j]+.587*E[j+1]+.114*E[j+2];
+  const GR=new Float32Array(W*H);
+  for(let i=0,j=0;i<GR.length;i++,j+=4)GR[i]=.299*E[j]+.587*E[j+1]+.114*E[j+2];
   const O=c.createImageData(W,H),o=O.data,step=255/7;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
     const i=y*W+x,j=i*4;
@@ -833,8 +1262,8 @@ function cartoonize(){
     r=255*Math.pow(Math.max(0,r)/255,.82);g=255*Math.pow(Math.max(0,g)/255,.85);b=255*Math.pow(Math.max(0,b)/255,.88);
     let mag=0;
     if(x>0&&y>0&&x<W-1&&y<H-1){
-      const gx=G[i-W+1]+2*G[i+1]+G[i+W+1]-G[i-W-1]-2*G[i-1]-G[i+W-1];
-      const gy=G[i+W-1]+2*G[i+W]+G[i+W+1]-G[i-W-1]-2*G[i-W]-G[i-W+1];
+      const gx=GR[i-W+1]+2*GR[i+1]+GR[i+W+1]-GR[i-W-1]-2*GR[i-1]-GR[i+W-1];
+      const gy=GR[i+W-1]+2*GR[i+W]+GR[i+W+1]-GR[i-W-1]-2*GR[i-W]-GR[i-W+1];
       mag=Math.abs(gx)+Math.abs(gy);
     }
     const t=Math.max(0,Math.min(1,(mag-95)/120))*.8;
@@ -846,10 +1275,10 @@ function cartoonize(){
   vg.addColorStop(0,'rgba(246,252,250,0)');vg.addColorStop(1,'rgba(246,252,250,.92)');
   c.fillStyle=vg;c.fillRect(0,0,400,620);
   const L=.299*sr+.587*sg+.114*sb;
-  const tone=L>165?0:L>110?1:2;
+  const tidx=L>165?0:L>110?1:2;
   const skin=hexOf(sr,sg,sb);
-  const T=Object.assign({},TONES[tone],{skin,deep:mixHex(skin,'#000000',.45),bump:mixHex(skin,TONES[tone].red,.4),bumpHi:mixHex(skin,'#ffffff',.3)});
-  return {cnv,T,tone};
+  const T=Object.assign({},TONES[tidx],{skin,deep:mixHex(skin,'#000000',.45),bump:mixHex(skin,TONES[tidx].red,.4),bumpHi:mixHex(skin,'#ffffff',.3)});
+  return {cnv,T,tone:tidx};
 }
 $('#useP').addEventListener('click',()=>{
   if(!photo)return;
@@ -859,7 +1288,7 @@ $('#useP').addEventListener('click',()=>{
       const r=cartoonize();
       char={photo:true,img:r.cnv,T:r.T,tone:r.tone,g:'p',paths:{face:TPL.face,hf:new Path2D()},pores:[],stubble:[]};
       char.spots=genSpots(char);
-      go('game');newGame(false);
+      startGame();
     }finally{$('#busy').hidden=true;}
   },40);
 });
