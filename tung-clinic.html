@@ -10,7 +10,8 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/tung-clinic.html">
 <title>董氏客人上門｜鈞衡舍</title>
-<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}.src-site a,.src a{color:inherit;text-decoration:underline}
+</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
 <style>
 /* Layout: one column. HUD → customer bubble → three point-group cards → feedback. Rice paper, ink, seal red. */
@@ -91,6 +92,7 @@ button.main:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outlin
     <p>你是今天的值班調整師。客人會用<b>生活裡的話</b>說他哪裡不舒服，從 3 組董氏穴位裡選出<b>最對症</b>的那一組。</p>
     <p>每位客人 20 秒，選錯扣一顆愛心，越快選對分數越高。</p>
     <p class="mini">主治依「董氏心氣神針傳承網」的記載，穴組選自宣宇門專用題庫。<br>這是認識董氏奇穴的小遊戲，不能取代看診，請勿自行下針。</p>
+    <p class="mini src-site">穴位資料出處：<a href="https://tungs-acupuncture.com/" target="_blank" rel="noopener">董氏心氣神針傳承網 tungs-acupuncture.com</a></p>
     <button class="main" id="btnStart">開門營業</button>
   </div>
 
@@ -104,6 +106,7 @@ button.main:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outlin
       <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
       <button class="btn alt" id="btnAgain">再營業一天</button>
     </div>
+    <p class="mini src-site">穴位資料出處：<a href="https://tungs-acupuncture.com/" target="_blank" rel="noopener">董氏心氣神針傳承網 tungs-acupuncture.com</a></p>
   </div>
 </div>
 
@@ -184,7 +187,7 @@ function pick(k,b){if(S.done||b.disabled)return;const q=S.qs[S.i];b.disabled=tru
 function fail(why){S.done=true;clearInterval(tick);const q=S.qs[S.i];
   document.querySelectorAll('.card').forEach(b=>{b.disabled=true;if(b.dataset.k===q.a)b.classList.add('right');});face('sad');show(false,why,q);}
 function show(ok,head,q){const f=$('feedback');f.className=ok?'':'bad';f.hidden=false;
-  f.innerHTML=`<b style="color:var(--${ok?'ok':'seal'})">${head}</b><br>答案是<b>${G[q.a].n}</b>（${G[q.a].p}）。${q.e}<div class="src">主治出處：董氏心氣神針傳承網</div>`;
+  f.innerHTML=`<b style="color:var(--${ok?'ok':'seal'})">${head}</b><br>答案是<b>${G[q.a].n}</b>（${G[q.a].p}）。${q.e}<div class="src">主治出處：<a href="https://tungs-acupuncture.com/" target="_blank" rel="noopener">董氏心氣神針傳承網</a></div>`;
   const last=S.hearts<=0||S.i+1>=N;$('next').textContent=last?'看今天的成績':'下一位客人';$('next').hidden=false;
   $('next').onclick=()=>{if(last)end();else{S.i++;load();}};render();}
 function rank(){const r=S.right;if(r===N&&S.hearts===3)return '董氏神手';if(r>=8)return '人氣調整師';if(r>=5)return '值班調整師';if(r>=2)return '見習調整師';return '還在背穴位';}
