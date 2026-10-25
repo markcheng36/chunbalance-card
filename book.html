@@ -268,7 +268,7 @@
   function done(id){const d=$(id);d.classList.add('show');d.scrollIntoView({behavior:'smooth',block:'center'});}
 
   // 選時間：月曆
-  let days=[], pick='', slotPick='', YM='';
+  let days=[], pick='', slotPick='', YM=new Date(Date.now()+8*3600e3).toISOString().slice(0,7), READY=false;
   const ymOf=ds=>ds.slice(0,7);
   function months(){return [...new Set(days.map(d=>ymOf(d.date)))];}
   function drawCal(){
@@ -284,7 +284,7 @@
     }
     $('mgrid').innerHTML=h;
     const d=map[pick];
-    $('slots').innerHTML=!days.some(x=>x.slots.length||(x.blocked||[]).length)?'<p class="empty">目前沒有可預約的時段，請加官方 LINE 詢問。</p>':
+    $('slots').innerHTML=!READY?'<p class="empty">讀取中…</p>':!days.some(x=>x.slots.length||(x.blocked||[]).length)?'<p class="empty">目前沒有可預約的時段，請加官方 LINE 詢問。</p>':
       !d?'<p class="empty">請先選日期。</p>':
         // 可約的時段＋教練設成「滿／進修」的時段，照時間排
         [...d.slots.map(t=>({t})),...(d.blocked||[]).map(x=>({t:x.time,l:x.label}))].sort((a,b)=>a.t<b.t?-1:1)
@@ -294,11 +294,13 @@
   $('mgrid').addEventListener('click',e=>{const b=e.target.closest('button.mc');if(!b||b.disabled)return;pick=b.dataset.d;slotPick='';drawCal();});
   $('m-prev').onclick=()=>{const ms=months();YM=ms[Math.max(0,ms.indexOf(YM)-1)];drawCal();};
   $('m-next').onclick=()=>{const ms=months();YM=ms[Math.min(ms.length-1,ms.indexOf(YM)+1)];drawCal();};
-  $('slots').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;slotPick=b.textContent;drawCal();});
+  // 點時段只換顏色，不重畫整個月曆
+  $('slots').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;slotPick=b.textContent;
+    $('slots').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));});
   function loadSlots(){
     get({a:'slots'}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
-      days=r.days; const f=days.find(d=>d.slots.length); pick=f?f.date:''; YM=ymOf(f?f.date:days[0].date); drawCal();
+      days=r.days; READY=true; const f=days.find(d=>d.slots.length); pick=f?f.date:''; YM=ymOf(f?f.date:days[0].date); drawCal();
     }).catch(()=>{$('slots').innerHTML='<p class="empty">時段讀取失敗，請重新整理，或加官方 LINE 預約。</p>';});
   }
 
@@ -341,6 +343,7 @@
       };
     }).catch(e=>{$('p-loading').textContent=(e.message||'讀取失敗')+'，請加官方 LINE 詢問。';});
   } else {
+    drawCal(); // 先畫好空的月曆，資料到了不會跳動
     loadSlots();
   }
 </script>
