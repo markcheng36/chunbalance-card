@@ -128,6 +128,18 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 #shareImg{width:100%;border-radius:14px;box-shadow:0 2px 10px rgba(23,60,58,.15)}
 .linkbtn{display:block;text-align:center;text-decoration:none}
 .small.center{align-self:center}
+.hearts{color:var(--accent)!important;font-family:var(--f-ui)!important;font-size:20px!important;letter-spacing:.04em}
+.hearts i{color:var(--line);font-style:normal}
+.stat.urgent b{color:var(--accent-deep)}
+#meter{flex:none;background:var(--card);border-radius:16px;padding:7px 12px 9px;display:flex;flex-direction:column;gap:5px;
+  box-shadow:0 3px 10px rgba(23,60,58,.08);pointer-events:none}
+.mlabel{font-size:15px;text-align:center;color:var(--muted);min-height:1.3em}
+.mbar{position:relative;height:18px;border-radius:999px;background:#e3efeb;overflow:hidden;box-shadow:inset 0 0 0 2px var(--ink)}
+.mzone{position:absolute;top:0;bottom:0;z-index:1;background:rgba(255,210,90,.55);box-shadow:inset 2px 0 0 #e0a100,inset -2px 0 0 #e0a100}
+.mfill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent);opacity:.9}
+#meter.hot .mfill{background:#2f9e63}
+#meter.hot .mlabel{color:#2f9e63;font-weight:bold;font-size:17px}
+#meter.on .mlabel{color:var(--ink)}
 </style>
 
 </head>
@@ -190,8 +202,10 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
   <div class="hud">
     <div class="stat"><span id="lab1">剩下</span><b id="left">0</b></div>
     <div class="stat"><span>分數</span><b id="score">0</b></div>
-    <div class="stat"><span id="lab3">時間</span><b id="time">0:00</b></div>
+    <div class="stat" id="timeStat"><span id="lab3">時間</span><b id="time">0:00</b></div>
+    <div class="stat" id="hpStat"><span>皮膚</span><b id="hp" class="hearts">♥♥♥</b></div>
   </div>
+  <div id="meter"><div class="mlabel" id="mlabel">按住痘痘開始擠</div><div class="mbar"><i class="mzone" id="mzone" hidden></i><i class="mfill" id="mfill"></i></div></div>
   <div class="mirror" id="stage">
     <canvas id="cv" aria-label="遊戲畫面：按住痘痘不放把它擠出來"></canvas>
   </div>
@@ -209,7 +223,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
     <p class="sub" id="rSub"></p>
     <div class="ba">
       <figure><img id="rBefore" alt="擠之前的臉"><figcaption>擠之前</figcaption></figure>
-      <figure><img id="rAfter" alt="擠之後的臉"><figcaption>擠之後</figcaption></figure>
+      <figure><img id="rAfter" alt="擠之後的臉"><figcaption id="rCapA">擠之後</figcaption></figure>
     </div>
     <div class="grid4">
       <div><span id="rL1">分數</span><b id="rV1">0</b></div>
@@ -714,20 +728,55 @@ function newGame(level,carry){
     combo:0,maxCombo:0,last:-9,ouch:0,tooHard:0,perfect:0,squeezes:0,popped:0,
     start:now,elapsed:0,remain:60,ended:false,shown:false,shake:0,slow:0,camZ:1,camX:200,camY:280,flash:0,
     clearT:null,spawnT:0,tickT:0,fin:{x:200,y:300,d:44,a:0,ang:0},firstBh:true};
+  G.zoneLo=mode==='timed'?.85:Math.min(.93,.85+.016*(level-1));
+  G.over=mode==='timed'?1.15:Math.max(1.06,1.15-.02*(level-1));
+  G.rateK=mode==='timed'?1:Math.min(1.5,1+.07*(level-1));
+  G.hearts=3;G.levelStartScore=carry||0;G.failed=null;G.bonus=0;
+  G.limit=Math.round((16+G.spots.reduce((a,s)=>a+(s.type==='bh'?1:s.stages*2.4),0))*Math.max(.62,1-.05*(level-1)));
+  G.remain=mode==='timed'?60:G.limit;
+  $('#hpStat').hidden=mode==='timed';updHearts();
   G.before=snapFace(G.spots,false);
   $('#result').hidden=true;
-  $('#lab1').textContent=mode==='timed'?'已擠':`第 ${level} 關・剩下`;
-  $('#lab3').textContent=mode==='timed'?'倒數':'時間';
+  $('#lab1').textContent=mode==='timed'?'已擠':`第 ${level} 關`;
+  $('#lab3').textContent='剩餘時間';
   G.floats.push({x:200,y:250,txt:mode==='timed'?'60 秒開始！':`第 ${level} 關`,life:1.5,max:1.5,col:'#173c3a',size:30});
+  if(mode==='level')G.floats.push({x:200,y:282,txt:`${G.limit} 秒內擠完，擠錯會扣血`,life:2.2,max:2.2,col:'#e2523e',size:14});
   setTip(everOozed?(mode==='timed'?'60 秒內擠越多越好，痘痘會一直冒出來':'按住痘痘，膿冒出來後在金色區放手就是完美'):'按住痘痘不放，膿冒出來後在金色區放手 = 完美！');
   updHud(true);
 }
 let hudCache={};
 function updHud(force){
   const left=G.spots.filter(s=>s.state!=='popped').length;
-  const vals={left:String(G.mode==='timed'?G.popped:left),score:String(G.score),time:G.mode==='timed'?fmt(Math.ceil(G.remain)):fmt(G.elapsed)};
+  const vals={left:String(G.mode==='timed'?G.popped:left),score:String(G.score),time:fmt(Math.ceil(G.remain))};
+  $('#timeStat').classList.toggle('urgent',!G.ended&&G.remain<=10);
   for(const k in vals)if(force||hudCache[k]!==vals[k]){$('#'+k).textContent=vals[k];hudCache[k]=vals[k];}
   return left;
+}
+
+function updHearts(){$('#hp').innerHTML='♥'.repeat(Math.max(0,G.hearts))+'<i>'+'♥'.repeat(3-Math.max(0,G.hearts))+'</i>';}
+function loseHeart(x,y,why){
+  if(G.mode!=='level'||G.ended)return;
+  G.hearts--;updHearts();addFloat(x,y-44,'-♥','#e2523e',18,1.2);
+  if(!reduce)G.shake=Math.max(G.shake,3);
+  if(G.hearts<=0)fail('皮膚被擠傷了');
+}
+function fail(why){G.ended=true;G.failed=why;G.endAt=performance.now()/1000;act=null;setTip(why+'，再試一次');sndOuch();setTimeout(showResult,600);}
+let meterCache='';
+function updMeter(ps){
+  let label='按住痘痘開始擠',fill=0,zone=null,hot=false,on=false;
+  if(ps&&ps.state==='pressing'){label='擠壓中…撐住';fill=Math.min(1,ps.p);on=true;}
+  else if(ps&&ps.state==='oozing'){
+    const q=ps.len/ps.targets[ps.stage];on=true;
+    fill=Math.min(1,q/G.over);zone=[G.zoneLo/G.over,1/G.over];hot=q>=G.zoneLo;
+    label=hot?'放手！':'膿出來了，到金色區就放手';
+  }
+  const key=label+'|'+(zone?zone.join():'')+'|'+hot;
+  if(key!==meterCache){
+    meterCache=key;$('#mlabel').textContent=label;
+    const m=$('#meter');m.classList.toggle('hot',hot);m.classList.toggle('on',on);
+    const z=$('#mzone');z.hidden=!zone;if(zone){z.style.left=(zone[0]*100)+'%';z.style.width=((zone[1]-zone[0])*100)+'%';}
+  }
+  $('#mfill').style.width=(fill*100).toFixed(1)+'%';
 }
 
 /* ---------- input ---------- */
@@ -777,7 +826,7 @@ function startOoze(s){
   s.state='oozing';s.len=0;s.wl=0;s.h=-Math.PI/2+s.wa;s.worm=[{x:s.x,y:s.y}];s.inZone=false;
   sndSquelch();buzz(10);
   if(!everOozed){everOozed=true;lsSet('pimple-oozed','1');}
-  setTip('膿冒出來了！看下面的條，在金色區放手 = 完美');
+  setTip('膿冒出來了！看上面的條，到金色區就放手 = 完美');
 }
 function growWorm(s){
   while(s.wl<s.len){
@@ -808,7 +857,9 @@ function resolve(s,now,overflow){
     G.irr.push({x:s.x,y:s.y,r:s.r*3,a:.38});
     burst(s.x,s.y,10,false,['#fff6d8','#f2dc9a']);sndOuch();buzz([20,30,20]);
     setTip('擠太久會傷皮膚，進金色區就放手');
-  }else if(q>=.85){
+    loseHeart(s.x,s.y,'太用力');
+    if(G.ended)return;
+  }else if(q>=G.zoneLo){
     mult=2;label='完美！';col='#e0a100';G.perfect++;
     burst(s.x,s.y-6,10,false,['#ffd25a','#ffffff']);sndPerfect();buzz(30);
   }
@@ -862,13 +913,16 @@ function finish(now){
   G.ended=true;G.endAt=now;act=null;
   if(G.mode==='level'){
     G.clearT=0;sndClear();
+    G.bonus=Math.ceil(G.remain)*5+G.hearts*50;G.score+=G.bonus;
+    addFloat(200,230,'過關！','#2f9e63',30,1.6);addFloat(200,262,'時間＋愛心獎勵 +'+G.bonus,'#e0a100',16,1.6);
     G.sparks=[];for(let i=0;i<9;i++){let x,y,n=0;do{x=rnd(100,300);y=rnd(120,430);n++;}while(!inP(char.paths.face,x,y)&&n<30);G.sparks.push([x,y,rnd(3,7),rnd(0,.5)]);}
   }else{setTip('時間到！');setTimeout(showResult,350);}
 }
 function update(dt,now){
   G.slow=Math.max(0,G.slow-dt);
   const gdt=dt*(G.slow>0?.3:1);
-  if(!G.ended){G.elapsed=now-G.start;G.remain=Math.max(0,60-G.elapsed);}
+  if(!G.ended){G.elapsed=now-G.start;G.remain=Math.max(0,(G.mode==='timed'?60:G.limit)-G.elapsed);
+    if(G.mode==='level'&&G.remain<=0&&G.spots.some(s=>s.state!=='popped')){fail('時間到了');}}
   let pressed=null;
   if(act&&!act.lock&&act.spot&&act.spot.state!=='popped')pressed=act.spot;
   for(const s of G.spots){
@@ -877,10 +931,10 @@ function update(dt,now){
     if(s.state==='oozing'){
       if(s===pressed){
         const tg=s.targets[s.stage];
-        s.len+=s.rate*gdt;growWorm(s);
+        s.len+=s.rate*G.rateK*gdt;growWorm(s);
         G.tickT-=dt;if(G.tickT<=0){sndTick(Math.min(1,s.len/tg));G.tickT=.085;}
-        if(!s.inZone&&s.len>=tg*.85){s.inZone=true;sndDing();buzz(8);}
-        if(s.len>=tg*1.15)resolve(s,now,true);
+        if(!s.inZone&&s.len>=tg*G.zoneLo){s.inZone=true;sndDing();buzz(8);}
+        if(s.len>=tg*G.over)resolve(s,now,true);
       }else resolve(s,now,false);
     }else if(s===pressed){
       s.state='pressing';s.p+=gdt/s.hold;
@@ -895,6 +949,7 @@ function update(dt,now){
       act.warned=true;G.ouch++;G.combo=0;
       addFloat(act.x,act.y-26,'好痛！輕一點','#e2523e',13,1.3);
       setTip('那裡沒有痘痘喔，亂擠皮膚會紅腫');sndOuch();buzz([20,40,20]);
+      loseHeart(act.x,act.y,'亂擠');
     }
   }
   for(const m of G.irr){if(act&&act.mark===m)continue;m.a-=dt*.05;}
@@ -967,7 +1022,7 @@ function renderGame(now){
   }
   const F=G.fin;
   if(F.a>.02){
-    ctx.save();ctx.globalAlpha=F.a;
+    ctx.save();ctx.globalAlpha=F.a*.72;
     for(const side of [-1,1]){
       ctx.save();ctx.translate(F.x+side*F.d*Math.cos(F.ang),F.y+side*F.d*Math.sin(F.ang));
       drawFinger(ctx,F.ang+(side<0?0:Math.PI));ctx.restore();
@@ -978,21 +1033,7 @@ function renderGame(now){
     drawWorm(ctx,s.worm,wormWidth(s),WORMC[s.type],1);
     ctx.fillStyle=WORMC[s.type][1];circle(ctx,s.x,s.y,wormWidth(s)*.62);
   }
-  if(ps&&ps.state==='pressing'&&ps.p>0){
-    ctx.lineCap='round';ctx.lineWidth=3;
-    ctx.strokeStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.arc(ps.x,ps.y-F.d-10,6,0,6.2832);ctx.stroke();
-    ctx.strokeStyle='#ff6a55';ctx.beginPath();ctx.arc(ps.x,ps.y-F.d-10,6,-Math.PI/2,-Math.PI/2+6.2832*Math.min(1,ps.p));ctx.stroke();
-  }
-  if(ps&&ps.state==='oozing'){
-    const q=ps.len/ps.targets[ps.stage],W=46,H=7,gx=ps.x-W/2,gy=ps.y+ps.r*1.6+16;
-    const rr=(x,y,w,h)=>{ctx.beginPath();ctx.moveTo(x+h/2,y);ctx.lineTo(x+w-h/2,y);ctx.arc(x+w-h/2,y+h/2,h/2,-Math.PI/2,Math.PI/2);ctx.lineTo(x+h/2,y+h);ctx.arc(x+h/2,y+h/2,h/2,Math.PI/2,Math.PI*1.5);ctx.closePath();};
-    ctx.fillStyle='rgba(255,255,255,.92)';rr(gx-2,gy-2,W+4,H+4);ctx.fill();
-    ctx.fillStyle='#ffd25a';ctx.fillRect(gx+W*.85/1.15,gy,W*.15/1.15,H);
-    ctx.save();rr(gx,gy,W,H);ctx.clip();
-    ctx.fillStyle=q>=.85?'#2f9e63':'#ff6a55';ctx.fillRect(gx,gy,W*Math.min(1,q/1.15),H);
-    ctx.restore();
-    ctx.strokeStyle='#173c3a';ctx.lineWidth=1;rr(gx,gy,W,H);ctx.stroke();
-  }
+  updMeter(ps);
   ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineJoin='round';
   for(const t of G.floats){
     ctx.globalAlpha=Math.min(1,t.life/t.max*2.5);
@@ -1012,15 +1053,27 @@ function renderPreview(now){
 /* ---------- results, dex, share ---------- */
 function setStats(rows){rows.forEach(([l,v],i)=>{$('#rL'+(i+1)).textContent=l;$('#rV'+(i+1)).textContent=v;});}
 function showResult(){
-  G.after=snapFace([],true);
+  G.after=G.failed?snapFace(G.spots.filter(s=>s.state!=='popped'),false):snapFace([],true);
+  $('#rCapA').textContent=G.failed?'現在':'擠之後';
+  $('#shareBtn').hidden=!!G.failed;$('#rStars').hidden=!!G.failed;
   $('#rBefore').src=G.before.toDataURL('image/jpeg',.85);
   $('#rAfter').src=G.after.toDataURL('image/jpeg',.85);
   let stars=1,best='';
+  if(G.failed){
+    $('#rTitle').textContent=`第 ${G.level} 關失敗`;
+    $('#rSub').textContent=G.failed+'，再試一次';
+    setStats([['分數',G.score],['完美',G.perfect],['還剩',G.spots.filter(s=>s.state!=='popped').length],['關卡',G.level]]);
+    const mx=parseInt(lsGet('pimple-maxlevel')||'0',10);
+    $('#best').textContent=mx?`最高紀錄：第 ${mx} 關`:'';$('#best').hidden=!mx;
+    $('#again').textContent='重來這關';
+    $('#result').hidden=false;
+    return;
+  }
   if(G.mode==='level'){
-    const bad=G.ouch+G.tooHard,rate=G.perfect/Math.max(1,G.squeezes);
-    if(bad===0&&rate>=.5)stars=3;else if(bad<=2&&rate>=.2)stars=2;
-    $('#rTitle').textContent=`第 ${G.level} 關完成！`;
-    setStats([['分數',G.score],['完美',G.perfect],['最高連擊',G.maxCombo],['手太重',bad]]);
+    const rate=G.perfect/Math.max(1,G.squeezes);
+    if(G.hearts===3&&rate>=.6)stars=3;else if(G.hearts>=2)stars=2;
+    $('#rTitle').textContent=`第 ${G.level} 關過關！`;
+    setStats([['分數',G.score],['完美',G.perfect],['時間獎勵',G.bonus],['剩下愛心',G.hearts]]);
     const mx=parseInt(lsGet('pimple-maxlevel')||'0',10);
     if(G.level>mx){lsSet('pimple-maxlevel',String(G.level));best=mx?`新紀錄！最高闖到第 ${G.level} 關`:'';}
     else best=`最高紀錄：第 ${mx} 關`;
@@ -1138,7 +1191,7 @@ $('#optM').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(
 function go(s){screen=s;for(const id of ['pick','align','game'])$('#'+id).hidden=s!==id;}
 function startGame(){go('game');newGame(1,0);}
 $('#start').addEventListener('click',()=>{ensureAudio();if(char.photo)char=makeChar();startGame();});
-$('#again').addEventListener('click',()=>{ensureAudio();if(G.mode==='level')newGame(G.level+1,G.score);else newGame(1,0);});
+$('#again').addEventListener('click',()=>{ensureAudio();if(G.mode==='timed')newGame(1,0);else if(G.failed)newGame(G.level,G.levelStartScore);else newGame(G.level+1,G.score);});
 $('#shareBtn').addEventListener('click',doShare);
 $('#dexBtn').addEventListener('click',openDex);$('#dexBtn2').addEventListener('click',openDex);
 $('#dexClose').addEventListener('click',()=>{$('#dex').hidden=true;});
