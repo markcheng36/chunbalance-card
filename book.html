@@ -131,6 +131,13 @@
   .err.show{display:block;}
   .go:disabled{opacity:.5;}
   .empty{font-size:14px;color:var(--ink-soft);padding:10px 0;}
+  .minelink{display:block;text-align:right;font-size:13.5px;font-weight:700;color:var(--olive-dark);text-decoration:none;margin:2px 4px 0;}
+  .mine{margin-top:28px;}
+  .mine .go{background:var(--olive-dark);}
+  .mitem{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding:10px 0;font-size:14.5px;}
+  .mitem:first-child{border-top:0;}
+  .mitem span:last-child{color:var(--ink-soft);text-align:right;}
+  #m-list .res{margin-top:16px;background:var(--bg);border-radius:14px;padding:12px 14px;}
   footer{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:36px;}
   /* RWD：平板加寬、電腦分左右兩欄 */
   @media (max-width:359px){
@@ -151,7 +158,7 @@
     .bk .body-part{border-left:1px dashed var(--line);padding-left:40px;}
     .bk .body-part>h2:first-child{margin-top:0!important;}
     .bk:has(.body-part[hidden]){grid-template-columns:minmax(0,1fr);max-width:620px;margin-left:auto;margin-right:auto;}
-    .done{max-width:620px;margin-left:auto;margin-right:auto;}
+    .done,.mine{max-width:620px;margin-left:auto;margin-right:auto;}
     .slots{grid-template-columns:repeat(5,minmax(0,1fr));}
     .mc{height:48px;}
     .svc,.chips button,.slots button:not(.blk):not(.full),.mc:not(:disabled),.tabs button{transition:border-color .15s,background .15s;}
@@ -168,6 +175,7 @@
     <button class="on" data-tab="new">第一次來<small>歡迎認識鈞衡舍</small></button>
     <button data-tab="old">老朋友<small>歡迎回來</small></button>
   </div>
+  <a class="minelink" href="#mine" id="mine-link">已經約好了？查我的預約 ›</a>
 
   <!-- 老朋友：直接預約 -->
   <section id="tab-old">
@@ -245,6 +253,19 @@
       <p class="hint" id="p-done"></p>
       <div class="tolime"><b>加鈞衡舍官方 LINE</b><br>預約提醒、要改時間，都在 LINE 跟教練說。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE，收預約提醒</a></div>
     </div>
+  </section>
+
+  <!-- 查我的預約：手機＋名字都對才查得到 -->
+  <section class="box mine" id="mine">
+    <h2>查我的預約</h2>
+    <p class="hint">輸入預約時填的手機和名字。</p>
+    <label class="q">手機</label>
+    <input id="m-phone" type="tel" inputmode="numeric" placeholder="09xxxxxxxx">
+    <label class="q">名字</label>
+    <input id="m-name" maxlength="30" placeholder="名字">
+    <button class="go" id="m-go">查詢</button>
+    <p class="err" id="m-err"></p>
+    <div id="m-list"></div>
   </section>
 
   <footer>鈞衡舍 ChunBalance｜讓平衡，成為身體最自在的歸屬</footer>
@@ -378,10 +399,27 @@
     }).catch(e=>{err('b-err',e.message||'送出失敗，請再試一次');busy($('b-go'),false,'確認預約');slotPick='';loadSlots();});
   };
 
+  // 查我的預約：改時間、取消都請加官方 LINE
+  $('m-go').onclick=()=>{
+    const phone=$('m-phone').value.trim().replace(/[\s-]/g,''), name=$('m-name').value.trim();
+    if(!phoneOk(phone)) return err('m-err','手機請填 09 開頭的 10 碼');
+    if(!name) return err('m-err','請填名字');
+    err('m-err');busy($('m-go'),true,'查詢中…');$('m-list').innerHTML='';
+    post({a:'mine',phone,name}).then(r=>{
+      if(!r.ok) throw new Error(/不明/.test(r.msg||'')?'查詢功能準備中，請先加官方 LINE 詢問':r.msg);
+      const line='<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">要改時間或取消，請加官方 LINE</a>';
+      const box=document.createElement('div');box.className='res';
+      box.innerHTML=(r.list.length?r.list.map(x=>'<div class="mitem"><b>'+fmt(x.date,x.w,x.time)+'</b><span></span></div>').join(''):
+        '<p class="empty">沒有查到接下來的預約。請確認手機和名字跟預約時填的一樣。</p>')+line;
+      // 服務名稱用 textContent 放，避免奇怪字元
+      box.querySelectorAll('.mitem span').forEach((s,i)=>s.textContent=r.list[i].service);
+      $('m-list').appendChild(box);
+    }).catch(e=>err('m-err',e.message||'查詢失敗，請再試一次')).finally(()=>busy($('m-go'),false,'查詢'));
+  };
   // 方案卡
   const planId=new URLSearchParams(location.search).get('plan');
   if(planId){
-    document.querySelector('.tabs').style.display='none';$('tab-old').hidden=true;$('tab-plan').hidden=false;
+    document.querySelector('.tabs').style.display='none';$('mine-link').hidden=true;$('mine').hidden=true;$('tab-old').hidden=true;$('tab-plan').hidden=false;
     get({a:'plan',id:planId}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
       $('p-loading').hidden=true;$('p-body').hidden=false;
