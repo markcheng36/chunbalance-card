@@ -352,7 +352,7 @@
       if(ds<td) cls+=' past';
       else if(!d) cls+=' na';
       else{
-        const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
+        const bk=d.slots.filter(s=>s.state==='booked'&&!s.cont).length, op=d.slots.filter(s=>s.state==='open').length;
         if(d.dayOff){cls+=' off';info='<small>休息</small>';}
         else info='<span class="dots">'+(bk?'<i class="b"></i>':'')+(op?'<i class="o"></i>':'')+'</span><small>'+(bk?bk+'約':op?op+'空':'')+'</small>';
       }
@@ -370,7 +370,7 @@
     if(LOADING){box.innerHTML='<p class="hint">讀取中…</p>';return;}
     if(!d){box.innerHTML='<p class="hint">'+(D.today?'點上面的日期來調整時段。':'程式還沒更新到新版，暫時只能看最近兩週。')+'</p>';return;}
     const el=document.createElement('div');el.className='cday'+(d.dayOff?' off':'');
-    const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
+    const bk=d.slots.filter(s=>s.state==='booked'&&!s.cont).length, op=d.slots.filter(s=>s.state==='open').length;
     el.innerHTML='<div class="dt"><div><b>'+md(d.date)+'（'+d.w+'）</b><small>'+(d.dayOff?'休息':!d.slots.length?'沒開，可按＋加':(bk?bk+' 約・':'')+op+' 空')+'</small></div>'+
       '<label class="sw"><input type="checkbox"'+(d.dayOff?'':' checked')+'><span></span></label></div>';
     el.querySelector('input').onchange=e=>{d.dayOff=!e.target.checked;keepScroll(drawCal);mutate({a:'toggleDay',date:d.date,off:d.dayOff}).catch(()=>{});};
@@ -379,7 +379,7 @@
       d.slots.forEach(s=>{
         const b=document.createElement('button');
         b.className='slot'+(s.state==='booked'?' booked':s.state==='open'?'':' '+s.state);
-        b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':s.state==='study'?'<small>進修</small>':s.state==='studyFull'?'<small>進修・顯示滿</small>':'');
+        b.innerHTML=s.time+(s.state==='booked'?'<small>'+(s.cont?'↑ 續':s.name)+'</small>':s.state==='study'?'<small>進修</small>':s.state==='studyFull'?'<small>進修・顯示滿</small>':'');
         b.onclick=()=>{
           if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
           ACT=ACT===d.date+' '+s.time?'':d.date+' '+s.time;keepScroll(drawCal);
@@ -420,7 +420,7 @@
   function drawList(){
     // 接下來的預約（新版程式給全部；舊版只看得到這次拿到的日子）
     let list=D.upcoming;
-    if(!list){list=[];D.days.forEach(x=>x.slots.forEach(s=>{if(s.state==='booked')list.push(Object.assign({date:x.date,w:x.w},s));}));}
+    if(!list){list=[];D.days.forEach(x=>x.slots.forEach(s=>{if(s.state==='booked'&&!s.cont)list.push(Object.assign({date:x.date,w:x.w},s));}));}
     $('blist').innerHTML=list.length?'':'<p class="hint">還沒有預約</p>';
     list.forEach(s=>{
       const it=document.createElement('div');it.className='it';
