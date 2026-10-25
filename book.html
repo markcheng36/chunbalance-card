@@ -125,6 +125,8 @@
   .done{display:none;text-align:center;}
   .done.show{display:block;}
   .done .ok{font-size:44px;color:var(--olive);}
+  .tolime{margin-top:16px;background:var(--bg);border-radius:14px;padding:14px;font-size:14.5px;text-align:left;}
+  .tolime b{color:var(--charcoal);}
   .err{display:none;margin-top:12px;color:var(--coral);font-size:14px;font-weight:700;}
   .err.show{display:block;}
   .go:disabled{opacity:.5;}
@@ -211,6 +213,7 @@
       <div class="ok">✓</div>
       <h2>預約完成</h2>
       <p class="hint" id="b-done"></p>
+      <div class="tolime"><b>加鈞衡舍官方 LINE</b><br>預約提醒、要改時間，都在 LINE 跟教練說。<span id="b-coupon" hidden><br>新朋友記得在 LINE 領優惠券，來的時候就能用。</span><a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE，收預約提醒</a></div>
     </div>
   </section>
 
@@ -240,6 +243,7 @@
       <div class="ok">✓</div>
       <h2>預約完成</h2>
       <p class="hint" id="p-done"></p>
+      <div class="tolime"><b>加鈞衡舍官方 LINE</b><br>預約提醒、要改時間，都在 LINE 跟教練說。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE，收預約提醒</a></div>
     </div>
   </section>
 
@@ -370,7 +374,7 @@
       if(!r.ok) throw new Error(r.msg);
       notify(`新預約｜${FIRST?'第一次來｜':''}${fmt(r.date,d.w,r.time)}｜${svc.querySelector('b')?svc.querySelector('b').textContent:svc.dataset.id}｜${mask(name)}`);
       $('b-done').textContent=`${fmt(r.date,d.w,r.time)} 板橋，鈞衡舍等你。`;
-      $('b-go').hidden=true; done('d-old');
+      $('b-coupon').hidden=!FIRST; $('b-go').hidden=true; done('d-old');
     }).catch(e=>{err('b-err',e.message||'送出失敗，請再試一次');busy($('b-go'),false,'確認預約');slotPick='';loadSlots();});
   };
 
