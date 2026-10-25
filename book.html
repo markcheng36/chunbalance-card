@@ -173,10 +173,11 @@
       <h2 style="margin-top:22px">2. 選服務</h2>
       <div class="svc on" data-id="b30" data-min="30"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
       <div class="svc" data-id="b60" data-min="60"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
-      <div class="svc" data-id="s60" data-min="60"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
+      <div class="svc old-only" data-id="s60" data-min="60" style="display:none"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
       <div class="svc old-only" data-id="s90" data-min="90" id="svc-s90" style="display:none"><div><b>全身結構調整 90 分鐘</b></div><span class="p">3,000</span></div>
       <div class="svc old-only" data-id="pkg" data-min="60" id="svc-pkg" style="display:none"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
       <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
+      <div class="home show coupon" id="coupon"><b>新朋友優惠</b>：第一次來享新朋友推廣價。<br>預約前請先加鈞衡舍官方 LINE，領取新朋友優惠券。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 領優惠券</a></div>
       <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       </div>
       <div class="body-part">
@@ -247,12 +248,13 @@
   // 分頁
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-    // 第一次來／老朋友都直接選時間；老朋友多了 90 分鐘和多堂方案
+    // 第一次來：只有 30／60 分鐘（新朋友價，到官方 LINE 領優惠券）；老朋友多了全身結構調整和多堂方案
     FIRST=b.dataset.tab==='new';
     showOld();
   });
   let HAS90=false; // 後台程式更新到 v9 才有 90 分鐘
   function showOld(){
+    $('coupon').classList.toggle('show',FIRST);
     document.querySelectorAll('.svc.old-only').forEach(x=>{
       const show=!FIRST&&(x.dataset.id!=='s90'||HAS90);x.style.display=show?'':'none';
       if(!show&&x.classList.contains('on')){x.classList.remove('on');document.querySelector('.svc').click();}
