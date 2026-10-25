@@ -69,7 +69,7 @@
   .mhead button{font:inherit;font-size:18px;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--charcoal);cursor:pointer;}
   .mhead button:disabled{opacity:.3;cursor:default;}
   .mhead b{flex:1;text-align:center;font-size:16px;}
-  .mgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .mgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;}
   .mgrid .wh{text-align:center;font-size:12px;color:var(--ink-soft);padding:2px 0;}
   .mgrid .wh:nth-child(7n+1),.mgrid .wh:nth-child(7n){color:var(--coral);}
   .mc{aspect-ratio:1/1;border:1px solid var(--line);border-radius:10px;background:#fff;font:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;color:var(--ink);}
@@ -79,7 +79,7 @@
   .mc:disabled i{display:none;}
   .mc.on{border-color:var(--olive);background:var(--olive);color:#fff;}
   .mc.on i{background:#fff;}
-  .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;}
+  .slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px;}
   .slots button{font:inherit;font-size:14px;padding:8px 0;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;}
   .slots button.full{color:#bbb;text-decoration:line-through;cursor:default;}
   .slots button.blk{color:#aaa;background:#F1ECE4;border-style:dashed;cursor:default;line-height:1.2;padding:5px 0;}
@@ -127,6 +127,31 @@
   .go:disabled{opacity:.5;}
   .empty{font-size:14px;color:var(--ink-soft);padding:10px 0;}
   footer{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:36px;}
+  /* RWD：平板加寬、電腦分左右兩欄 */
+  @media (max-width:359px){
+    .slots{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .slogan h1{font-size:21px;}
+  }
+  @media (min-width:700px){
+    .wrap{max-width:640px;}
+    .mc{aspect-ratio:auto;height:52px;}
+  }
+  @media (min-width:960px){
+    .wrap{max-width:1040px;padding:0 32px 72px;}
+    .brand{padding-top:40px;}
+    .slogan,#tab-plan{max-width:620px;margin-left:auto;margin-right:auto;}
+    .tabs{margin-top:24px;}
+    .box{padding:28px 32px;}
+    .bk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:40px;align-items:start;}
+    .bk .body-part{border-left:1px dashed var(--line);padding-left:40px;}
+    .bk .body-part>h2:first-child{margin-top:0!important;}
+    .bk:has(.body-part[hidden]){grid-template-columns:minmax(0,1fr);max-width:620px;margin-left:auto;margin-right:auto;}
+    .done{max-width:620px;margin-left:auto;margin-right:auto;}
+    .slots{grid-template-columns:repeat(5,minmax(0,1fr));}
+    .mc{height:48px;}
+    .svc,.chips button,.slots button:not(.blk):not(.full),.mc:not(:disabled),.tabs button{transition:border-color .15s,background .15s;}
+    .svc:hover,.slots button:not(.blk):not(.full):not(.on):hover,.mc:not(:disabled):not(.on):hover{border-color:var(--olive);}
+  }
 </style>
 </head>
 <body>
@@ -141,7 +166,8 @@
 
   <!-- 老朋友：直接預約 -->
   <section id="tab-old">
-    <div class="box">
+    <div class="box bk">
+      <div class="colA">
       <h2>1. 選教練</h2>
       <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
       <h2 style="margin-top:22px">2. 選服務</h2>
@@ -151,6 +177,7 @@
       <div class="svc" data-id="pkg" id="svc-pkg" style="display:none"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
       <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
       <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      </div>
       <div class="body-part">
 
       <h2 style="margin-top:22px">3. 在哪裡做？</h2>
