@@ -259,6 +259,27 @@
       drawReq();drawWeek();prefetch();
     }).catch(e=>toast(e.message||'讀取失敗'));
   }
+  // 操作時不整頁重畫：畫面先變，資料在背景存；全部存完才安靜地對一次資料
+  let PENDING=0, LASTREQ='';
+  function mutate(o){
+    PENDING++;
+    return post(o).catch(e=>{toast(/不明/.test(e.message)?'程式要先更新到最新版':e.message);FORCE=true;throw e;})
+      .finally(()=>{PENDING--;if(!PENDING)quietRefresh();});
+  }
+  let FORCE=false;
+  function quietRefresh(){
+    const ym=YM;CACHE={};
+    fetchMonth(ym).then(r=>{
+      if(!r.ok||PENDING||ym!==YM) return;
+      const busy=ACT||document.querySelector('#cal .addrow')||$('st-form').classList.contains('show');
+      const same=JSON.stringify(r.days)===JSON.stringify(D.days);
+      D=r;
+      if(FORCE||(!busy&&!same)){FORCE=false;keepScroll(drawCal);} else drawList();
+      const rq=JSON.stringify(r.requests);if(rq!==LASTREQ)drawReq();
+      prefetch();
+    }).catch(()=>{});
+  }
+  function keepScroll(fn){const y=window.scrollY;fn();window.scrollTo(0,y);}
   function showLogin(){$('app').hidden=true;$('login').hidden=false;}
   $('pw-go').onclick=()=>{K=$('pw').value.trim();load();};
 
@@ -303,7 +324,7 @@
       if(ds===td) cls+=' today';
       if(ds===PICK) cls+=' pick';
       c.className=cls;c.innerHTML='<b>'+i+'</b>'+info;
-      if(d&&ds>=td) c.onclick=()=>{PICK=ds;drawCal();};
+      if(d&&ds>=td) c.onclick=()=>{PICK=ds;ACT='';keepScroll(drawCal);};
       g.appendChild(c);
     }
     drawDay(map[PICK]&&PICK>=td?map[PICK]:null);
@@ -317,7 +338,7 @@
     const bk=d.slots.filter(s=>s.state==='booked').length, op=d.slots.filter(s=>s.state==='open').length;
     el.innerHTML='<div class="dt"><div><b>'+md(d.date)+'（'+d.w+'）</b><small>'+(d.dayOff?'休息':!d.slots.length?'沒開，可按＋加':(bk?bk+' 約・':'')+op+' 空')+'</small></div>'+
       '<label class="sw"><input type="checkbox"'+(d.dayOff?'':' checked')+'><span></span></label></div>';
-    el.querySelector('input').onchange=e=>{d.dayOff=!e.target.checked;drawCal();post({a:'toggleDay',date:d.date,off:d.dayOff}).then(load).catch(er=>{toast(er.message);load();});};
+    el.querySelector('input').onchange=e=>{d.dayOff=!e.target.checked;keepScroll(drawCal);mutate({a:'toggleDay',date:d.date,off:d.dayOff}).catch(()=>{});};
     if(!d.dayOff){
       const sb=document.createElement('div');sb.className='slots';
       d.slots.forEach(s=>{
@@ -326,7 +347,7 @@
         b.innerHTML=s.time+(s.state==='booked'?'<small>'+s.name+'</small>':s.state==='study'?'<small>進修</small>':s.state==='studyFull'?'<small>進修・顯示滿</small>':'');
         b.onclick=()=>{
           if(s.state==='booked'){toast(s.name+' '+s.phone+'｜'+s.service);return;}
-          ACT=ACT===d.date+' '+s.time?'':d.date+' '+s.time;drawCal();
+          ACT=ACT===d.date+' '+s.time?'':d.date+' '+s.time;keepScroll(drawCal);
         };
         sb.appendChild(b);
       });
@@ -340,9 +361,9 @@
             .map(([k,l])=>'<button data-k="'+k+'"'+(ac.state===k?' class="on"':'')+'>'+l+'</button>').join('')+'</div>';
         box2.querySelectorAll('button').forEach(x=>x.onclick=()=>{
           const st=x.dataset.k;ACT='';
-          if(st===ac.state){drawCal();return;}
-          ac.state=st;drawCal();
-          post({a:'setSlot',date:d.date,time:ac.time,state:st}).then(load).catch(e=>{toast(/不明/.test(e.message)?'程式要先更新到 v6':e.message);load();});
+          if(st===ac.state){keepScroll(drawCal);return;}
+          ac.state=st;keepScroll(drawCal);
+          mutate({a:'setSlot',date:d.date,time:ac.time,state:st}).catch(()=>{});
         });
       }
       const a=document.createElement('button');a.className='add';a.textContent='＋';
@@ -352,8 +373,8 @@
         r.querySelector('button').onclick=()=>{
           const t=r.querySelector('select').value;
           if(!d.slots.some(x=>x.time===t)){d.slots.push({time:t,state:'open'});d.slots.sort((x,y)=>x.time<y.time?-1:1);}
-          d.dayOff=false;drawCal();toast('已加時段');
-          post({a:'addSlot',date:d.date,time:t}).then(load).catch(e=>{toast(e.message);load();});
+          d.dayOff=false;keepScroll(drawCal);toast('已加時段');
+          mutate({a:'addSlot',date:d.date,time:t}).catch(()=>{});
         };
         el.appendChild(r);
       };
@@ -370,7 +391,13 @@
       const it=document.createElement('div');it.className='it';
       it.innerHTML='<div><b>'+md(s.date)+'（'+s.w+'）'+s.time+'　'+s.name+'</b><small>'+s.service+'｜<a href="tel:'+s.phone+'">'+s.phone+'</a></small></div>';
       const x=document.createElement('button');x.className='x';x.textContent='取消';
-      twoTap(x,'取消',()=>post({a:'cancel',id:s.id}).then(()=>{toast('已取消');load();}).catch(e=>toast(e.message)));
+      twoTap(x,'取消',()=>{
+        // 先從畫面拿掉，背景再存
+        if(D.upcoming) D.upcoming=D.upcoming.filter(u=>u.id!==s.id);
+        D.days.forEach(dd=>dd.slots.forEach(z=>{if(z.id===s.id){z.state='open';z.name='';z.id='';}}));
+        keepScroll(drawCal);toast('已取消');
+        mutate({a:'cancel',id:s.id}).catch(()=>{});
+      });
       it.appendChild(x);$('blist').appendChild(it);
     });
   }
@@ -386,8 +413,8 @@
     const o={a:'studyRange',from:$('st-from').value,to:$('st-to').value,state};
     if(!o.from) return toast('請選日期');
     if(segV('st-all')==='0'){o.start=$('st-start').value;o.end=$('st-end').value;}
-    return post(o).then(r=>{toast((state==='clear'?'已取消 ':'已設定 ')+r.count+' 個時段'+(r.skipped?'，'+r.skipped+' 個已有人約沒動':''));$('st-form').classList.remove('show');load();})
-      .catch(e=>toast(/不明/.test(e.message)?'程式要先更新到 v7':e.message));
+    return mutate(o).then(r=>{toast((state==='clear'?'已取消 ':'已設定 ')+r.count+' 個時段'+(r.skipped?'，'+r.skipped+' 個已有人約沒動':''));$('st-form').classList.remove('show');FORCE=true;})
+      .catch(()=>{});
   }
   $('st-go').onclick=()=>studyRange(segV('st-lab'));
   twoTap($('st-clear'),'取消這段日期的進修',()=>studyRange('clear'));
@@ -395,6 +422,7 @@
   // ===== 需求單 =====
   function planUrl(id){return BOOK+'?plan='+id;}
   function drawReq(){
+    LASTREQ=JSON.stringify(D.requests);
     const n=D.requests.filter(r=>r.status==='待回覆').length;
     $('req-n').hidden=!n;$('req-n').textContent=n;
     const box=$('rlist');box.innerHTML=D.requests.length?'':'<p class="hint" style="margin-top:10px">目前沒有需求單</p>';
@@ -428,7 +456,7 @@
         post({a:'sendPlan',id:r.id,plan:ps.value,price:pr.value,date,time,addon:el.querySelector('.f-addon').value,note:el.querySelector('.f-note').value})
           .then(()=>{toast('方案卡已產生');showLink(el,r);}).catch(e=>toast(e.message));
       };
-      twoTap(el.querySelector('.f-close'),'不用回了，收起來',()=>post({a:'closeRequest',id:r.id}).then(load).catch(e=>toast(e.message)));
+      twoTap(el.querySelector('.f-close'),'不用回了，收起來',()=>{D.requests=D.requests.filter(q=>q.id!==r.id);drawReq();mutate({a:'closeRequest',id:r.id}).catch(()=>{});});
       box.appendChild(el);
     });
   }
@@ -452,9 +480,9 @@
   $('wk-go').onclick=()=>{
     const week=[...document.querySelectorAll('#wk .wk')].map(r=>{const s=r.querySelectorAll('select');return {open:r.querySelector('input').checked,start:s[0].value,end:s[1].value};});
     if(week.some(w=>w.open&&toMin(w.end)<=toMin(w.start))) return toast('結束時間要比開始晚');
-    post({a:'setWeek',week}).then(()=>{toast('已儲存');load();}).catch(e=>toast(e.message));
+    toast('已儲存');FORCE=true;mutate({a:'setWeek',week}).catch(()=>{});
   };
-  $('set-go').onclick=()=>post({a:'setSettings',step:$('step').value,days:$('ndays').value,lead:$('lead').value}).then(()=>{toast('已儲存');load();}).catch(e=>toast(e.message));
+  $('set-go').onclick=()=>{toast('已儲存');FORCE=true;mutate({a:'setSettings',step:$('step').value,days:$('ndays').value,lead:$('lead').value}).catch(()=>{});};
 
   if(K) load(); else showLogin();
 </script>
