@@ -171,10 +171,11 @@
       <h2>1. 選教練</h2>
       <div class="coach"><img src="images/headshot.jpg" alt=""><div><b>馬克</b><small>身體結構平衡教練</small></div></div>
       <h2 style="margin-top:22px">2. 選服務</h2>
-      <div class="svc on" data-id="b30"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
-      <div class="svc" data-id="b60"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
-      <div class="svc" data-id="s60"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
-      <div class="svc" data-id="pkg" id="svc-pkg" style="display:none"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
+      <div class="svc on" data-id="b30" data-min="30"><div><b>身體平衡 30 分鐘</b><small>快速有感</small></div><span class="p">1,000</span></div>
+      <div class="svc" data-id="b60" data-min="60"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800</span></div>
+      <div class="svc" data-id="s60" data-min="60"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
+      <div class="svc old-only" data-id="s90" data-min="90" id="svc-s90" style="display:none"><div><b>全身結構調整 90 分鐘</b></div><span class="p">3,000</span></div>
+      <div class="svc old-only" data-id="pkg" data-min="60" id="svc-pkg" style="display:none"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
       <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
       <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       </div>
@@ -246,11 +247,17 @@
   // 分頁
   document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
-    // 第一次來／老朋友都直接選時間；只差在老朋友可以用多堂方案
+    // 第一次來／老朋友都直接選時間；老朋友多了 90 分鐘和多堂方案
     FIRST=b.dataset.tab==='new';
-    const pkg=document.getElementById('svc-pkg');pkg.style.display=FIRST?'none':'';
-    if(FIRST&&pkg.classList.contains('on')){pkg.classList.remove('on');document.querySelector('.svc').click();}
+    showOld();
   });
+  let HAS90=false; // 後台程式更新到 v9 才有 90 分鐘
+  function showOld(){
+    document.querySelectorAll('.svc.old-only').forEach(x=>{
+      const show=!FIRST&&(x.dataset.id!=='s90'||HAS90);x.style.display=show?'':'none';
+      if(!show&&x.classList.contains('on')){x.classList.remove('on');document.querySelector('.svc').click();}
+    });
+  }
   // 選項
   document.querySelectorAll('.chips').forEach(g=>g.addEventListener('click',e=>{
     const b=e.target.closest('button'); if(!b) return;
@@ -272,6 +279,7 @@
   document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>{
     document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s));
     setTrain(s.closest('.box'),s.hasAttribute('data-train'));
+    if(READY) drawSlots(); // 服務長短不同，能約的時間也不同；只重畫時段
   });
   // ===== 接後台 =====
   const API='https://script.google.com/macros/s/AKfycbwnbrXXw1kLhc--aVYD8hCJ2bObvyO0M5l4V5BDz3WmKyimXQYxrVk-SOzRSkjoumKJzQ/exec';
@@ -310,13 +318,23 @@
       h+='<button class="mc'+(ds===pick?' on':'')+'" data-d="'+ds+'"'+(has?'':' disabled')+'>'+k+(d&&d.slots.length?'<i></i>':'')+'</button>';
     }
     $('mgrid').innerHTML=h;
-    const d=map[pick];
+    drawSlots();
+  }
+  // 選的服務要多久：接下來不夠時間的時段不顯示（例如 90 分鐘）
+  const svcMin=()=>{const s=document.querySelector('.svc.on');return s&&+s.dataset.min||0;};
+  function fits(d,t){
+    const s=+t.slice(0,2)*60+ +t.slice(3), e=s+svcMin();
+    return !(d.busy||[]).some(r=>s<r[1]&&r[0]<e);
+  }
+  function drawSlots(){
+    const d0=days.find(x=>x.date===pick), d=d0&&Object.assign({},d0,{slots:d0.slots.filter(t=>fits(d0,t))});
+    if(slotPick&&!(d&&d.slots.includes(slotPick))) slotPick='';
     $('slots').innerHTML=!READY?'<p class="empty">讀取中…</p>':!days.some(x=>x.slots.length||(x.blocked||[]).length)?'<p class="empty">目前沒有可預約的時段，請加官方 LINE 詢問。</p>':
       !d?'<p class="empty">請先選日期。</p>':
         // 可約的時段＋教練設成「滿／進修」的時段，照時間排
         [...d.slots.map(t=>({t})),...(d.blocked||[]).map(x=>({t:x.time,l:x.label}))].sort((a,b)=>a.t<b.t?-1:1)
           .map(x=>x.l?`<button class="blk" disabled>${x.t}<small>${x.l}</small></button>`:`<button class="${x.t===slotPick?'on':''}">${x.t}</button>`).join('')+
-          (d.slots.length?'':'<p class="empty" style="grid-column:1/-1">這天已經約滿了，請選其他天。</p>');
+          (d.slots.length?'':'<p class="empty" style="grid-column:1/-1">'+(d0.slots.length?'這天剩下的時間不夠 '+svcMin()+' 分鐘，請選其他天。':'這天已經約滿了，請選其他天。')+'</p>');
   }
   $('mgrid').addEventListener('click',e=>{const b=e.target.closest('button.mc');if(!b||b.disabled)return;pick=b.dataset.d;slotPick='';drawCal();});
   $('m-prev').onclick=()=>{const ms=months();YM=ms[Math.max(0,ms.indexOf(YM)-1)];drawCal();};
@@ -327,7 +345,8 @@
   function loadSlots(){
     get({a:'slots'}).then(r=>{
       if(!r.ok) throw new Error(r.msg);
-      days=r.days; READY=true; const f=days.find(d=>d.slots.length); pick=f?f.date:''; YM=ymOf(f?f.date:days[0].date); drawCal();
+      days=r.days; READY=true;
+      if((r.services||[]).some(x=>x.id==='s90')&&!HAS90){HAS90=true;showOld();} const f=days.find(d=>d.slots.length); pick=f?f.date:''; YM=ymOf(f?f.date:days[0].date); drawCal();
     }).catch(()=>{$('slots').innerHTML='<p class="empty">時段讀取失敗，請重新整理，或加官方 LINE 預約。</p>';});
   }
 
