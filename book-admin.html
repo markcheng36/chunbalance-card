@@ -372,7 +372,7 @@
         const r=document.createElement('div');r.className='addrow';r.innerHTML=sel('19:00')+'<button class="sm" style="margin:0">加這個時段</button>';
         r.querySelector('button').onclick=()=>{
           const t=r.querySelector('select').value;
-          if(!d.slots.some(x=>x.time===t)){d.slots.push({time:t,state:'open'});d.slots.sort((x,y)=>x.time<y.time?-1:1);}
+          if(!d.slots.some(x=>x.time===t)){d.slots.push({time:t,state:'open',name:'',phone:'',service:'',id:''});d.slots.sort((x,y)=>x.time<y.time?-1:1);}
           d.dayOff=false;keepScroll(drawCal);toast('已加時段');
           mutate({a:'addSlot',date:d.date,time:t}).catch(()=>{});
         };
