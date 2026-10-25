@@ -189,9 +189,11 @@
       <div class="svc first-only" data-id="b60" data-min="60"><div><b>身體平衡 60 分鐘</b><small>完整體驗</small></div><span class="p">1,800<small class="cp">領券價</small></span></div>
       <div class="svc old-only" data-id="s60" data-min="60" style="display:none"><div><b>全身結構調整 60 分鐘</b></div><span class="p">2,500</span></div>
       <div class="svc old-only" data-id="s90" data-min="90" id="svc-s90" style="display:none"><div><b>全身結構調整 90 分鐘</b></div><span class="p">3,000</span></div>
-      <div class="svc old-only" data-id="pkg" data-min="60" id="svc-pkg" style="display:none"><div><b>使用多堂方案</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
-      <div class="svc" data-train><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
-      <div class="home train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
+      <div class="svc old-only" data-id="pkg" data-min="60" id="svc-pkg" style="display:none"><div><b>已買多堂：用堂數預約</b><small>已購買 5 堂／10 堂</small></div><span class="p">扣堂</span></div>
+      <div class="svc old-only" data-info="buy" style="display:none"><div><b>購買多堂方案</b><small>5 堂／10 堂．每堂 60 分鐘</small></div><span class="p">11,000 起</span></div>
+      <div class="svc" data-train data-info="train"><div><b>運動訓練</b><small>雙北健身房．一對一</small></div><span class="p">1,600–1,800</span></div>
+      <div class="home info buy" data-k="buy"><b>多堂方案</b>（每堂 60 分鐘）<br>5 堂 NT$11,000（平均每堂 2,200）<br>10 堂 NT$20,000（平均每堂 2,000）<br>購買和排課請加官方 LINE 跟教練確認。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 購買多堂</a></div>
+      <div class="home info train" data-k="train"><b>運動訓練</b>：國家健美教練一對一帶你練。<br>地點：雙北有提供自由教練場租的健身房<br>費用：每堂 NT$1,600–1,800（依場地）<br>場地和時間要先跟教練討論，請加官方 LINE。<a class="line-btn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加鈞衡舍官方 LINE 討論</a></div>
       </div>
       <div class="body-part">
 
@@ -304,15 +306,14 @@
     box.querySelector('.home.visit').classList.toggle('show',home);
     box.querySelector('.studio').hidden=home;
   }));
-  // 運動訓練：改成加 LINE 討論
-  function setTrain(box,on){
-    box.querySelector('.train').classList.toggle('show',on);
-    box.querySelector('.body-part').hidden=on;
+  // 運動訓練、購買多堂：不在網頁選時間，改成加 LINE 討論
+  function setInfo(box,k){
+    box.querySelectorAll('.home.info').forEach(x=>x.classList.toggle('show',x.dataset.k===k));
+    box.querySelector('.body-part').hidden=!!k;
   }
-  document.querySelectorAll('.chips.kind').forEach(g=>g.addEventListener('click',()=>setTrain(g.closest('.box'),!!g.querySelector('button.on[data-train]'))));
   document.querySelectorAll('.svc').forEach(s=>s.onclick=()=>{
     document.querySelectorAll('.svc').forEach(x=>x.classList.toggle('on',x===s));
-    setTrain(s.closest('.box'),s.hasAttribute('data-train'));
+    setInfo(s.closest('.box'),s.dataset.info||'');
     if(READY) drawSlots(); // 服務長短不同，能約的時間也不同；只重畫時段
   });
   // ===== 接後台 =====
