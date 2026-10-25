@@ -256,10 +256,13 @@ function onHead(x,y){
   for(const ex of [C.x-FRX*sw-6,C.x+FRX*sw+6])if(dist(x,y,ex,265)<30)return true;
   return false;
 }
+const PIG_AT=13;                    // same count as the 豬頭等級 rating
+function isPig(){return F.slaps>=PIG_AT;}
 function swell(){return 1+Math.min(.16,F.slaps*.007);}
 
 function slapFace(x,y){
   F.slaps++;
+  const turned=F.slaps===PIG_AT;
   F.prints.push({x,y,rot:rnd(-.6,.6),t:G.t});if(F.prints.length>30)F.prints.shift();
   let label;
   const ei=EYE.findIndex(e=>dist(x,y,e.x,e.y)<30);
@@ -272,7 +275,7 @@ function slapFace(x,y){
     else{b={x,y,n:1,t:G.t,bleedT:0};F.bumps.push(b);}
     label=b.n>=4?'腫成一顆包！':b.n===3?'流血了！':b.n===2?'腫起來了！':'好痛！';
   }
-  return label;
+  return turned?'變成豬頭了！🐷':label;
 }
 
 /* ---------- drawing: person ---------- */
@@ -284,19 +287,22 @@ function drawPerson(k,hp,t,over){
     k.save();k.translate(C.x,C.y);k.scale(sw,1+(sw-1)*.4);k.translate(-C.x,-C.y);k.drawImage(PH.pre,PB.x,PB.y,PB.w,PB.h);k.restore();
   }else{
   // back hair (long for girl)
-  if(gender==='f'){k.fillStyle='#3a2a22';k.beginPath();k.ellipse(C.x,C.y+30,rx+26,FRY+30,0,Math.PI*1.02,Math.PI*1.98,true);k.fill();
-    k.beginPath();k.moveTo(C.x-rx-26,C.y+20);k.quadraticCurveTo(C.x-rx-20,C.y+170,C.x-rx+30,C.y+160);k.lineTo(C.x+rx-30,C.y+160);k.quadraticCurveTo(C.x+rx+20,C.y+170,C.x+rx+26,C.y+20);k.fill();}
+  if(gender==='f'){ // one hair mass: crown + long sides, drawn behind the face (ears tucked under)
+    k.fillStyle='#3a2a22';k.strokeStyle=sk.ink;k.lineWidth=3;k.beginPath();k.moveTo(C.x-rx+30,C.y+165);
+    k.quadraticCurveTo(C.x-rx-26,C.y+178,C.x-rx-24,C.y+20);k.bezierCurveTo(C.x-rx-30,C.y-215,C.x+rx+30,C.y-215,C.x+rx+24,C.y+20);
+    k.quadraticCurveTo(C.x+rx+26,C.y+178,C.x+rx-30,C.y+165);k.closePath();k.fill();k.stroke();}
   // shoulders / pajamas
   k.fillStyle='#7fb4e8';k.strokeStyle=sk.ink;k.lineWidth=3;
   k.beginPath();k.moveTo(60,DH+10);k.quadraticCurveTo(70,420,150,400);k.lineTo(250,400);k.quadraticCurveTo(330,420,340,DH+10);k.closePath();k.fill();k.stroke();
   k.fillStyle='rgba(255,255,255,.6)';for(let i=0;i<7;i++){k.beginPath();k.arc(90+i*38,460+(i%2)*22,5,0,7);k.fill();}
   k.fillStyle=sk.base;k.beginPath();k.moveTo(170,370);k.lineTo(170,405);k.quadraticCurveTo(200,420,230,405);k.lineTo(230,370);k.fill();k.stroke();
   // ears
-  for(const sgn of [-1,1]){const ex=C.x+sgn*(rx+4);k.fillStyle=sk.base;k.beginPath();k.ellipse(ex,268,20,28,0,0,7);k.fill();k.stroke();
+  if(gender!=='f'&&!isPig())for(const sgn of [-1,1]){const ex=C.x+sgn*(rx+4);k.fillStyle=sk.base;k.beginPath();k.ellipse(ex,268,20,28,0,0,7);k.fill();k.stroke();
     k.strokeStyle=sk.shade;k.beginPath();k.arc(ex,268,10,sgn<0?Math.PI*.6:-Math.PI*.4,sgn<0?Math.PI*1.4:Math.PI*.4);k.stroke();k.strokeStyle=sk.ink;}
   // face
   k.fillStyle=sk.base;k.beginPath();k.ellipse(C.x,C.y,rx,FRY,0,0,7);k.fill();k.stroke();
   }
+  if(isPig()){k.fillStyle='rgba(255,140,170,.42)';k.beginPath();k.ellipse(C.x,C.y,rx*(PH?1.02:1),FRY,0,0,7);k.fill();}
   // handprints (under bumps)
   for(const p of F.prints){const age=t-p.t,a=age<.4?.75:Math.max(.28,.75-(age-.4)*.12);drawHand(k,p.x,p.y,p.rot,`rgba(232,70,70,${a})`,.85);}
   // cheeks blush
@@ -311,21 +317,42 @@ function drawPerson(k,hp,t,over){
   if(!PH){
   k.strokeStyle=sk.ink;k.lineWidth=3;k.fillStyle=gender==='f'?'#3a2a22':'#2d2420';
   k.beginPath();
-  if(gender==='f'){ // full crown so no scalp shows, side-swept bangs
-    k.moveTo(C.x-rx-10,C.y+40);k.bezierCurveTo(C.x-rx-22,C.y-215,C.x+rx+22,C.y-215,C.x+rx+10,C.y+40);
+  if(gender==='f'){ // bangs over the forehead; outer edge blends into the hair mass, only the inner edge is outlined
+    k.moveTo(C.x-rx-4,C.y+5);k.bezierCurveTo(C.x-rx-12,C.y-200,C.x+rx+12,C.y-200,C.x+rx+4,C.y+5);
     k.quadraticCurveTo(C.x+rx-4,C.y-30,C.x+rx-26,C.y-62);k.quadraticCurveTo(C.x+40,C.y-62,C.x-18,C.y-98);
-    k.quadraticCurveTo(C.x-70,C.y-60,C.x-rx+4,C.y-18);k.quadraticCurveTo(C.x-rx-2,C.y+10,C.x-rx-10,C.y+40);}
+    k.quadraticCurveTo(C.x-70,C.y-60,C.x-rx+4,C.y-18);k.closePath();k.fill();
+    k.beginPath();k.moveTo(C.x+rx+4,C.y+5);k.quadraticCurveTo(C.x+rx-4,C.y-30,C.x+rx-26,C.y-62);k.quadraticCurveTo(C.x+40,C.y-62,C.x-18,C.y-98);
+    k.quadraticCurveTo(C.x-70,C.y-60,C.x-rx+4,C.y-18);k.lineTo(C.x-rx-4,C.y+5);k.stroke();}
   else{k.moveTo(C.x-rx+2,C.y-40);k.bezierCurveTo(C.x-rx-10,C.y-175,C.x+rx+10,C.y-175,C.x+rx-2,C.y-40);
-    k.quadraticCurveTo(C.x+60,C.y-100,C.x+20,C.y-92);k.lineTo(C.x+5,C.y-110);k.lineTo(C.x-15,C.y-90);k.quadraticCurveTo(C.x-70,C.y-105,C.x-rx+2,C.y-40);}
-  k.closePath();k.fill();k.stroke();
+    k.quadraticCurveTo(C.x+60,C.y-100,C.x+20,C.y-92);k.lineTo(C.x+5,C.y-110);k.lineTo(C.x-15,C.y-90);k.quadraticCurveTo(C.x-70,C.y-105,C.x-rx+2,C.y-40);
+    k.closePath();k.fill();k.stroke();}
   if(gender==='f'){k.strokeStyle='rgba(255,255,255,.22)';k.lineWidth=4;k.beginPath();k.arc(C.x,C.y-20,rx-6,Math.PI*1.18,Math.PI*1.42);k.stroke();}
   }
+  if(isPig())drawPigEars(k,rx,t);
   // bumps (they bulge over hair/face edges = 腫來腫去)
   for(const b of F.bumps)drawBump(k,b,t);
-  drawEyes(k,hp,t,over);drawNose(k,t);drawMouth(k,hp,t,over);
+  drawEyes(k,hp,t,over);drawMouth(k,hp,t,over);if(isPig())drawSnout(k,t);else drawNose(k,t);
   // dizzy stars when beaten up
   if(over||F.slaps>=10){k.font=`22px ${UI}`;k.textAlign='center';k.textBaseline='middle';
     for(let i=0;i<3;i++){const a=t*2.4+i*2.09;k.fillStyle='#f2b636';k.fillText('★',C.x+Math.cos(a)*120,C.y-150+Math.sin(a)*22);}}
+}
+function drawPigEars(k,rx,t){ // wide, floppy ears pointing outwards with the tip folded down
+  const flop=Math.sin(t*3)*.06;
+  for(const sgn of [-1,1]){
+    k.save();k.translate(C.x+sgn*(rx*.7),C.y-FRY*.78);k.scale(sgn,1);k.rotate(1.05+flop);
+    k.fillStyle='#f7a3b7';k.strokeStyle='#8a3b4e';k.lineWidth=3;
+    k.beginPath();k.moveTo(-24,10);k.bezierCurveTo(-30,-24,-8,-46,4,-44);k.bezierCurveTo(20,-36,30,-8,24,10);k.closePath();k.fill();k.stroke();
+    k.fillStyle='#e9748f';k.beginPath();k.moveTo(-13,6);k.bezierCurveTo(-16,-16,-4,-30,4,-30);k.bezierCurveTo(12,-24,16,-6,13,6);k.closePath();k.fill();
+    k.fillStyle='#f39bb0';k.beginPath();k.moveTo(-10,-34);k.quadraticCurveTo(4,-30,16,-30);k.quadraticCurveTo(10,-14,2,-10);k.closePath();k.fill();k.stroke(); // folded tip
+    k.restore();
+  }
+}
+function drawSnout(k,t){
+  const x=NOSE.x,y=NOSE.y+4,w=Math.sin(t*5)*1.2;
+  k.fillStyle='#f7a3b7';k.strokeStyle='#8a3b4e';k.lineWidth=3;k.beginPath();k.ellipse(x,y,32+w,23+w,0,0,7);k.fill();k.stroke();
+  k.fillStyle='rgba(255,255,255,.45)';k.beginPath();k.ellipse(x-12,y-11,9,4,-.3,0,7);k.fill();
+  k.fillStyle='#7a2f43';for(const d of [-1,1]){k.beginPath();k.ellipse(x+d*11,y+2,5.5,8,d*.15,0,7);k.fill();}
+  if(F.nose>=2){k.fillStyle='#d8262e';for(const d of [-1,1]){const L=10+Math.min(F.nose,4)*5;k.beginPath();k.moveTo(x+d*11-2.5,y+9);k.lineTo(x+d*11+2.5,y+9);k.lineTo(x+d*11+2,y+9+L);k.arc(x+d*11,y+9+L,3,0,Math.PI);k.closePath();k.fill();}}
 }
 function drawHand(k,x,y,rot,col,sc){
   k.save();k.translate(x,y);k.rotate(rot);k.scale(sc,sc);k.fillStyle=col;
