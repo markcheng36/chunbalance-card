@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="痛的地方常常不是原因。看線索，找出身體真正出問題的源頭。｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="結構偵探">
+<meta property="og:description" content="痛的地方常常不是原因。看線索，找出身體真正出問題的源頭。｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/detective.html">
+<title>結構偵探｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one column. HUD → bug-report ticket (case) → body map you tap. Overlays for start / verdict / end. */
+:root{
+  --bg:#e9ece8; --paper:#fbfbf8; --ink:#1f2a2e; --muted:#5f6b6a; --line:#cfd6d2;
+  --red:#c1553d; --ok:#3f8f6b; --hl:#f2c94c; --body:#f3e2d4; --bodyD:#dcc2ac;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+#app{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 24px;position:relative;min-height:100vh;box-sizing:border-box}
+#hud{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+#hearts{color:var(--red);font-size:20px;letter-spacing:2px}
+#caseNo{text-align:center;font-family:var(--mono);font-size:13px;color:var(--muted)}
+#score{font-weight:700;font-size:18px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:100%;background:var(--ok)}
+.ticket{margin-top:10px;background:var(--paper);border:1.5px solid var(--ink);border-radius:6px;padding:12px 14px;font-size:14px;position:relative}
+.ticket .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--muted);display:flex;justify-content:space-between}
+.ticket h2{font-family:var(--serif);font-size:24px;margin:6px 0 4px;line-height:1.25}
+.ticket h2 span{color:var(--red)}
+.who{color:var(--muted);font-size:13px}
+.clues{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:5px}
+.clues li{font-size:14px;line-height:1.5;padding-left:20px;position:relative}
+.clues li::before{content:"›";position:absolute;left:4px;font-family:var(--mono);color:var(--ok);font-weight:700}
+.clues li.locked{color:var(--line)}
+.clues li.locked::before{content:"…";color:var(--line)}
+.ask{margin-top:8px;font-weight:700;font-size:14px}
+#mapWrap{margin-top:10px;display:flex;justify-content:center}
+svg#map{width:100%;max-width:330px;height:auto;touch-action:manipulation}
+.zone{cursor:pointer}
+.zone .hit{fill:transparent}
+.zone .ring{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-dasharray:4 4;opacity:.35}
+.zone:hover .ring,.zone:focus .ring{opacity:1;stroke:var(--ok)}
+.zone:focus{outline:none}
+.zone text{font-size:12px;fill:var(--muted);font-family:var(--sans);pointer-events:none}
+.zone.right .ring{stroke:var(--ok);stroke-width:4;stroke-dasharray:none;opacity:1}
+.zone.wrong .ring{stroke:var(--red);stroke-width:4;stroke-dasharray:none;opacity:1}
+.pain{fill:var(--red);opacity:.55;animation:pulse 1.1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{opacity:.2;transform:scale(1.35)}}
+.chainLine{stroke:var(--hl);stroke-width:7;stroke-linecap:round;fill:none;stroke-dasharray:600;stroke-dashoffset:600;transition:stroke-dashoffset 1.2s ease}
+.chainLine.on{stroke-dashoffset:0}
+.ov{position:absolute;inset:0;background:rgba(233,236,232,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;z-index:5}
+.ov h1{font-family:var(--serif);font-weight:900;font-size:46px;margin:0;line-height:1.1}
+.ov h1 em{font-style:normal;color:var(--red)}
+.ov p{margin:0;line-height:1.75;color:var(--muted);font-size:15px;max-width:30em}
+.ov p b{color:var(--ink)}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted)}
+#verdict{position:static;inset:auto;margin-top:10px;background:var(--paper);border:1.5px solid var(--ink);border-radius:6px;padding:14px;gap:10px;text-align:left;align-items:stretch}
+#verdict h3{margin:0;font-family:var(--serif);font-size:22px}
+#verdict.good h3{color:var(--ok)} #verdict.bad h3{color:var(--red)}
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.chain span{background:var(--bg);border-radius:12px;padding:3px 10px}
+.chain span.src{background:var(--ink);color:#fff}
+.chain span.dst{background:var(--red);color:#fff}
+.chain b{color:var(--muted);font-weight:400}
+.say{font-size:14px;line-height:1.7}
+button,.btn{font:inherit;font-weight:700;font-size:16px;border:0;border-radius:26px;padding:12px 26px;cursor:pointer;background:var(--red);color:#fff;text-decoration:none;display:inline-block;text-align:center}
+button:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn.alt{background:var(--paper);color:var(--ink);border:1.5px solid var(--line)}
+.btn.line{background:#06c755}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#shareImg{width:min(100%,290px);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);-webkit-touch-callout:default}
+@media (prefers-reduced-motion:reduce){.pain{animation:none}.chainLine{transition:none}}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <div id="hud">
+    <div id="hearts">♥♥♥</div>
+    <div id="caseNo">CASE 1 / 6</div>
+    <div id="score">0</div>
+  </div>
+  <div class="bar"><i id="timer"></i></div>
+
+  <div class="ticket" id="ticket">
+    <div class="tag"><span>BODY BUG REPORT</span><span id="tid">#001</span></div>
+    <h2>主訴：<span id="complaint"></span></h2>
+    <div class="who" id="who"></div>
+    <ul class="clues" id="clues"></ul>
+    <div class="ask">痛的地方 ≠ 痛的原因。點出<b>真正的源頭</b>：</div>
+  </div>
+
+  <div id="verdict" class="ov" hidden></div>
+
+  <div id="mapWrap">
+    <svg id="map" viewBox="0 0 300 560" role="group" aria-label="人體圖，點選源頭">
+      <g id="figure" fill="var(--body)" stroke="var(--bodyD)" stroke-width="3">
+        <circle cx="150" cy="52" r="32"/>
+        <rect x="137" y="80" width="26" height="24" rx="6"/>
+        <path d="M92 108 Q150 96 208 108 L214 196 Q206 250 196 268 L104 268 Q94 250 86 196 Z"/>
+        <path d="M92 110 Q70 120 66 170 L58 262 Q56 276 66 276 Q74 276 76 262 L90 176"/>
+        <path d="M208 110 Q230 120 234 170 L242 262 Q244 276 234 276 Q226 276 224 262 L210 176"/>
+        <path d="M104 266 L196 266 L198 300 Q150 318 102 300 Z"/>
+        <path d="M104 296 L146 306 L140 410 L134 500 L112 500 L108 410 Z"/>
+        <path d="M196 296 L154 306 L160 410 L166 500 L188 500 L192 410 Z"/>
+        <path d="M110 498 L136 498 L140 528 Q124 540 96 532 Q94 518 110 498 Z"/>
+        <path d="M190 498 L164 498 L160 528 Q176 540 204 532 Q206 518 190 498 Z"/>
+      </g>
+      <g id="chainLayer"></g>
+      <g id="painLayer"></g>
+      <g id="zones"></g>
+    </svg>
+  </div>
+
+  <div class="ov" id="ovStart">
+    <div class="mono">鈞衡舍 ChunBalance</div>
+    <h1>結構<em>偵</em>探</h1>
+    <p>客人說痛的地方，常常不是問題的源頭。身體會一路<b>代償</b>，把歪掉的地方往上或往下傳。</p>
+    <p>每個案件看主訴和線索，在人體圖上<b>點出真正的源頭</b>。線索會一條一條出現，越早破案分數越高。點錯扣一顆愛心。</p>
+    <button id="btnStart">開始辦案</button>
+  </div>
+
+  <div class="ov" id="ovEnd" hidden>
+    <h1 id="endTitle" style="font-size:36px"></h1>
+    <img id="shareImg" alt="結構偵探成績卡">
+    <p style="font-size:12px">長按圖片可以存起來或傳給朋友</p>
+    <p>遊戲裡是別人的案子。<b>你身上的 Bug</b>，讓馬克幫你從腳開始找。</p>
+    <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 找馬克</a></div>
+    <div class="row">
+      <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+      <button class="btn alt" id="btnAgain">再辦一輪</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+// body regions: id, label, centre, radius (label side)
+const Z={
+ neck:{n:'脖子',x:150,y:92,r:22,lx:-1},
+ shoulder:{n:'肩膀',x:208,y:116,r:22,lx:1},
+ tspine:{n:'胸椎・上背',x:150,y:160,r:28,lx:1},
+ low:{n:'腰',x:150,y:236,r:26,lx:-1},
+ pelvis:{n:'骨盆',x:150,y:288,r:26,lx:1},
+ knee:{n:'膝蓋',x:118,y:410,r:22,lx:-1},
+ ankle:{n:'腳踝',x:178,y:498,r:18,lx:1},
+ foot:{n:'腳・足弓',x:118,y:528,r:22,lx:-1},
+};
+// cases: complaint, who, clues, pain zone, answer zone, chain bottom→top, Mark's line
+const CASES=[
+ {c:'脖子痠、常頭痛',who:'38 歲・工程師',pain:'neck',ans:'tspine',
+  clues:['每天低頭滑手機、打電腦超過 8 小時','靠牆站，後腦勺要抬下巴才碰得到牆','肩膀往前圓，背有點駝'],
+  chain:['tspine','shoulder','neck'],say:'胸椎一彎，頭就自然往前掉。只按脖子，舒服兩天又回來。要先把背打開，頭才有地方回家。'},
+ {c:'腰痠，站久更痠',who:'45 歲・業務',pain:'low',ans:'foot',
+  clues:['足弓低，站著腳掌往內倒','膝蓋往內靠，有點 X 型腿','骨盆一邊高一邊低'],
+  chain:['foot','knee','pelvis','low'],say:'足弓低是「塌陷鏈」：腳一塌，膝蓋往內，骨盆跟著歪，最後腰來扛。地基不穩，上面一路都在補。'},
+ {c:'肩頸很硬',who:'33 歲・設計師',pain:'shoulder',ans:'foot',
+  clues:['足弓很高，腳底很硬','膝蓋往外開，有點 O 型腿','骨盆前傾，背駝'],
+  chain:['foot','knee','pelvis','tspine','shoulder'],say:'足弓高是「僵硬鏈」：腳吸不了震，一路僵上去，最後卡在肩頸。同樣是肩膀痠，原因完全不同。'},
+ {c:'膝蓋內側痛',who:'52 歲・愛健走',pain:'knee',ans:'foot',
+  clues:['走路越久膝蓋越痛','鞋子內側磨得特別快','站著時內側足弓幾乎貼地'],
+  chain:['foot','ankle','knee'],say:'內側足弓一塌，小腿往內轉，膝蓋就被往內拉。膝蓋只是被連累的那個。'},
+ {c:'右邊腰痠',who:'29 歲・櫃檯人員',pain:'low',ans:'pelvis',
+  clues:['站著習慣三七步，重心放右腳','坐著一定翹腳','褲管總是一邊長一邊短'],
+  chain:['pelvis','low'],say:'三七步和翹腳讓骨盆一直歪一邊，腰就單邊在加班。先把骨盆擺正，再改習慣。'},
+ {c:'腳踝常扭到',who:'24 歲・打籃球',pain:'ankle',ans:'foot',
+  clues:['鞋子外側磨得很快','站著重量都壓在小拇趾外側','單腳站晃很大'],
+  chain:['foot','ankle'],say:'重量常跑到外側縱弓，像一直在翻腳刀。三個承重點沒有平均出力，腳踝當然不穩。'},
+ {c:'下背痛，起身要扶腰',who:'41 歲・久坐主管',pain:'low',ans:'pelvis',
+  clues:['一天坐超過 9 小時','屁股扁扁的、使不上力','骨盆往前傾，肚子往前凸'],
+  chain:['pelvis','low'],say:'久坐讓屁股沒力、骨盆前傾，腰只好一直撐。腰是受害者，骨盆才是源頭。'},
+ {c:'前腳掌痛、長繭',who:'36 歲・常穿高跟鞋',pain:'foot',ans:'foot',
+  clues:['一週穿高跟鞋 5 天','重心常衝在前腳掌','大拇趾開始往外歪'],
+  chain:['foot'],say:'這題源頭就在腳：重心一直衝到前腳掌，橫弓被壓扁。不是每次都要往上找，但一定要先看腳。'},
+ {c:'肩膀痠、呼吸很淺',who:'31 歲・行政',pain:'shoulder',ans:'tspine',
+  clues:['吸氣時肩膀會一起聳起來','胸口常覺得悶緊','背駝、胸椎轉不太動'],
+  chain:['tspine','shoulder'],say:'胸椎和肋骨卡住，吸氣只好用肩膀幫忙，肩膀當然一直痠。先讓胸椎動起來。'},
+];
+const PER_GAME=6,CASE_T=24,CLUE_EVERY=5;
+let S,tick=null;
+
+function buildZones(){
+  const g=$('zones');g.innerHTML='';
+  for(const k in Z){const z=Z[k];
+    const el=document.createElementNS('http://www.w3.org/2000/svg','g');el.setAttribute('class','zone');el.dataset.k=k;
+    el.setAttribute('tabindex','0');el.setAttribute('role','button');el.setAttribute('aria-label',z.n);
+    const tx=z.x+z.lx*(z.r+8);
+    el.innerHTML=`<circle class="hit" cx="${z.x}" cy="${z.y}" r="${z.r+6}"/><circle class="ring" cx="${z.x}" cy="${z.y}" r="${z.r}"/>`+
+      `<text x="${tx}" y="${z.y+4}" text-anchor="${z.lx<0?'end':'start'}">${z.n}</text>`;
+    el.addEventListener('click',()=>pick(k));el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(k);}});
+    g.appendChild(el);}
+}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+let ac=null;function beep(f,d,t='sine',v=.07){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}
+
+function newGame(){S={list:shuffle(CASES).slice(0,PER_GAME),i:0,hearts:3,score:0,solved:0,streak:0,best:0,fast:0};loadCase();}
+function loadCase(){
+  const cs=S.list[S.i];S.t=0;S.busy=false;S.miss=0;
+  $('caseNo').textContent=`CASE ${S.i+1} / ${PER_GAME}`;$('tid').textContent='#'+String(Math.floor(Math.random()*900)+100);
+  $('complaint').textContent=cs.c;$('who').textContent='回報人：'+cs.who;
+  $('clues').innerHTML=cs.clues.map((t,i)=>`<li class="${i?'locked':''}" data-t="${t}">${i?'線索解鎖中':t}</li>`).join('');
+  document.querySelectorAll('.zone').forEach(z=>z.classList.remove('right','wrong'));
+  $('chainLayer').innerHTML='';const p=Z[cs.pain];
+  $('painLayer').innerHTML=`<circle class="pain" cx="${p.x}" cy="${p.y}" r="${p.r-4}"/>`;
+  $('verdict').hidden=true;$('ticket').hidden=false;
+  clearInterval(tick);tick=setInterval(step,100);render();
+}
+function step(){if(S.busy)return;S.t+=.1;
+  const n=Math.min(3,1+Math.floor(S.t/CLUE_EVERY));
+  document.querySelectorAll('#clues li').forEach((li,i)=>{if(i<n&&li.classList.contains('locked')){li.classList.remove('locked');li.textContent=li.dataset.t;beep(700,.05);}});
+  if(S.t>=CASE_T){verdict(false,'時間到，案子沒破');}
+  render();}
+function render(){$('hearts').textContent='♥'.repeat(S.hearts)+'♡'.repeat(3-S.hearts);$('score').textContent=S.score;
+  const left=Math.max(0,1-S.t/CASE_T);const t=$('timer');t.style.width=left*100+'%';t.style.background=left<.3?'var(--red)':'var(--ok)';}
+function pick(k){if(!S||S.busy)return;const cs=S.list[S.i],el=document.querySelector(`.zone[data-k="${k}"]`);
+  if(k===cs.ans){el.classList.add('right');const clues=Math.min(3,1+Math.floor(S.t/CLUE_EVERY));
+    const pts=100+Math.round((CASE_T-S.t)*5)+(3-clues)*40-S.miss*30;S.streak++;S.best=Math.max(S.best,S.streak);
+    const bonus=S.streak>=3?50:0;S.score+=Math.max(30,pts)+bonus;S.solved++;if(clues===1)S.fast++;
+    beep(660,.12);setTimeout(()=>beep(990,.2),120);verdict(true,bonus?`破案！連破 ${S.streak} 案 +${bonus}`:'破案！');}
+  else{if(el.classList.contains('wrong'))return;el.classList.add('wrong');S.hearts--;S.miss++;S.streak=0;beep(120,.3,'square',.09);
+    if(navigator.vibrate)try{navigator.vibrate(120)}catch(e){}
+    render();if(S.hearts<=0)verdict(false,'愛心用完了');}
+}
+function drawChain(cs){const pts=cs.chain.map(k=>Z[k]);if(pts.length<2)return;
+  const d=pts.map((p,i)=>(i?'L':'M')+p.x+' '+p.y).join(' ');
+  $('chainLayer').innerHTML=`<path class="chainLine" d="${d}"/>`+pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="6" fill="var(--ink)"/>`).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const l=document.querySelector('.chainLine');if(l)l.classList.add('on');}));}
+function verdict(ok,head){S.busy=true;clearInterval(tick);render();const cs=S.list[S.i];
+  document.querySelectorAll('#clues li').forEach(li=>{li.classList.remove('locked');li.textContent=li.dataset.t;});
+  document.querySelector(`.zone[data-k="${cs.ans}"]`).classList.add('right');drawChain(cs);
+  const chain=cs.chain.map((k,i)=>`<span class="${i===0?'src':i===cs.chain.length-1?'dst':''}">${Z[k].n}</span>`).join('<b>→</b>');
+  const v=$('verdict');v.className='ov '+(ok?'good':'bad');
+  const last=S.hearts<=0||S.i+1>=PER_GAME;
+  v.innerHTML=`<h3>${head}</h3><div class="mono">源頭：${Z[cs.ans].n}　｜　痛點：${Z[cs.pain].n}</div>`+
+    `<div class="chain">${chain}</div><div class="say"><b>馬克說：</b>${cs.say}</div>`+
+    `<button id="btnNext">${last?'看結果':'下一案'}</button>`;
+  v.hidden=false;$('btnNext').onclick=()=>{if(last)end();else{S.i++;loadCase();}};
+  setTimeout(()=>v.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+}
+function rank(){const s=S.solved;if(s===PER_GAME&&S.hearts===3)return '首席結構偵探';if(s>=5)return '資深結構偵探';if(s>=3)return '結構偵探';if(s>=1)return '見習偵探';return '還在找線索';}
+function end(){clearInterval(tick);const r=rank();$('endTitle').textContent=r;$('shareImg').src=card(r);$('ovEnd').hidden=false;window.scrollTo(0,0);}
+function card(r){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  c.fillStyle='#e9ece8';c.fillRect(0,0,1080,1350);
+  c.fillStyle='#fbfbf8';c.strokeStyle='#1f2a2e';c.lineWidth=5;c.beginPath();c.roundRect?c.roundRect(90,110,900,960,18):c.rect(90,110,900,960);c.fill();c.stroke();
+  c.textAlign='left';c.fillStyle='#5f6b6a';c.font='500 34px "JetBrains Mono",monospace';c.fillText('BODY BUG REPORT',150,190);
+  c.textAlign='right';c.fillText('STATUS: SOLVED',930,190);
+  c.textAlign='center';c.fillStyle='#1f2a2e';c.font='900 88px "Noto Serif TC",serif';c.fillText('結構偵探',540,330);
+  c.fillStyle='#c1553d';c.font='900 110px "Noto Serif TC",serif';c.fillText(r,540,500);
+  c.fillStyle='#1f2a2e';c.font='bold 60px sans-serif';c.fillText(`破案 ${S.solved} / ${PER_GAME}`,540,630);
+  c.font='bold 44px sans-serif';c.fillStyle='#5f6b6a';c.fillText(`${S.score} 分｜最多連破 ${S.best} 案`,540,710);
+  c.strokeStyle='#cfd6d2';c.lineWidth=3;c.beginPath();c.moveTo(150,790);c.lineTo(930,790);c.stroke();
+  c.fillStyle='#1f2a2e';c.font='bold 54px "Noto Serif TC",serif';c.fillText('痛的地方 ≠ 痛的原因',540,890);
+  c.font='36px sans-serif';c.fillStyle='#5f6b6a';c.fillText('從腳開始，一路往上找源頭',540,960);
+  c.fillStyle='#1f2a2e';c.fillRect(0,1210,1080,140);c.fillStyle='#fff';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);
+  return k.toDataURL('image/jpeg',.9);}
+
+buildZones();
+$('btnStart').onclick=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();}catch(e){}$('ovStart').hidden=true;newGame();};
+$('btnAgain').onclick=()=>{$('ovEnd').hidden=true;newGame();};
+// resting preview behind the start screen
+S={list:[CASES[1]],i:0,hearts:3,score:0};const cs=CASES[1];$('complaint').textContent=cs.c;$('who').textContent='回報人：'+cs.who;
+$('clues').innerHTML=`<li>${cs.clues[0]}</li><li class="locked">線索解鎖中</li><li class="locked">線索解鎖中</li>`;
+$('painLayer').innerHTML=`<circle class="pain" cx="${Z.low.x}" cy="${Z.low.y}" r="22"/>`;S=null;
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>

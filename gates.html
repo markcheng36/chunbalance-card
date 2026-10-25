@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="合力、環鬆、串勁、收軸、拆解，用兩隻手指闖過身體結構五關。｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="結構五關">
+<meta property="og:description" content="合力、環鬆、串勁、收軸、拆解，用兩隻手指闖過身體結構五關。｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/gates.html">
+<title>結構五關｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&display=swap">
+<style>
+/* Layout: one-screen game. HUD + gate strip, meters, hint, canvas stage (two-finger play), choice panel for 拆解; overlays */
+:root{
+  --bg:#ece9e2; --paper:#faf8f3; --ink:#232a2c; --muted:#666c69; --line:#d4d0c6;
+  --red:#c1553d; --ok:#3f8f6b; --gold:#c99a2e; --blue:#4a7fa8;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;box-sizing:border-box;position:relative;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px}
+#hud{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+#hearts{color:var(--red);font-size:20px;letter-spacing:2px}
+#score{font-weight:700;font-size:18px;text-align:right}
+#gates{display:flex;justify-content:center;gap:4px}
+#gates span{font-family:var(--serif);font-weight:700;font-size:14px;width:30px;height:30px;line-height:30px;text-align:center;border-radius:50%;background:var(--paper);color:var(--muted);border:1.5px solid var(--line)}
+#gates span.now{background:var(--ink);color:#fff;border-color:var(--ink)}
+#gates span.done{background:var(--ok);color:#fff;border-color:var(--ok)}
+#meters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;font-size:11px;color:var(--muted)}
+.bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%;width:0;background:var(--ok)}
+#mB i{background:var(--red)}
+#hint{margin-top:6px;text-align:center;font-size:15px;font-weight:700;min-height:22px;line-height:1.4}
+#stage{flex:1;min-height:0;position:relative}
+canvas{width:100%;height:100%;display:block;touch-action:none}
+#choices{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+#choices button{font:inherit;font-size:13px;font-weight:700;padding:9px 4px;border-radius:8px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);cursor:pointer}
+#choices button.wrong{border-color:var(--red);color:var(--red)}
+#choices button:focus-visible{outline:3px solid var(--ink)}
+.ov{position:absolute;inset:0;background:rgba(236,233,226,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;z-index:5;overflow-y:auto}
+.ov h1{font-family:var(--serif);font-weight:900;font-size:46px;margin:0;line-height:1.1}
+.ov h1 em{font-style:normal;color:var(--red)}
+.ov h2{font-family:var(--serif);font-size:34px;margin:0}
+.ov p{margin:0;line-height:1.75;color:var(--muted);font-size:15px;max-width:30em}
+.ov p b{color:var(--ink)}
+.ov blockquote{margin:0;font-family:var(--serif);font-size:16px;line-height:1.7;max-width:26em;border-left:3px solid var(--gold);padding-left:12px;text-align:left}
+.five{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.five span{font-family:var(--serif);font-weight:700;background:var(--paper);border:1.5px solid var(--line);border-radius:8px;padding:6px 10px}
+.mini{font-size:12px!important}
+.how{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-align:left;max-width:26em;font-size:15px;line-height:1.7}
+.how b{color:var(--red)}
+button.main,.btn{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:28px;padding:13px 30px;cursor:pointer;background:var(--red);color:#fff;text-decoration:none;display:inline-block}
+button.main:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn.alt{background:var(--paper);color:var(--ink);border:1.5px solid var(--line)}
+.btn.line{background:#06c755}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#shareImg{width:min(100%,290px);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);-webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <div id="hud">
+    <div id="hearts">♥♥♥</div>
+    <div id="gates"><span>合</span><span>環</span><span>串</span><span>收</span><span>拆</span></div>
+    <div id="score">0</div>
+  </div>
+  <div id="meters">
+    <div><span id="mAlabel">進度</span><div class="bar" id="mA"><i></i></div></div>
+    <div><span id="mBlabel">太用力</span>　<span id="tleft"></span><div class="bar" id="mB"><i></i></div></div>
+  </div>
+  <div id="hint"></div>
+  <div id="stage">
+    <canvas id="c" width="600" height="760"></canvas>
+
+    <div class="ov" id="ovStart">
+      <div class="mini" style="color:var(--muted);letter-spacing:.1em">鈞衡舍 ChunBalance</div>
+      <h1>結構<em>五</em>關</h1>
+      <div class="five"><span>合力</span><span>環鬆</span><span>串勁</span><span>收軸</span><span>拆解</span></div>
+      <p>你是調整師，<b>兩隻手指就是你的上手和下手</b>，要合作才能過關。五關全過就拿到認證。</p>
+      <p class="mini">手機上請用兩根手指玩。電腦版：先點一下放下第一指（會釘住），再用滑鼠當第二指。<br>遊戲是簡化版，真正的手法要經過專業訓練。</p>
+      <button class="main" id="btnStart">開始闖關</button>
+    </div>
+
+    <div class="ov" id="ovGate" hidden>
+      <div class="mini" id="gNum" style="color:var(--muted);letter-spacing:.1em"></div>
+      <h2 id="gTitle"></h2>
+      <blockquote id="gQuote"></blockquote>
+      <div class="how" id="gHow"></div>
+      <button class="main" id="btnGo">開始</button>
+    </div>
+
+    <div class="ov" id="ovEnd" hidden>
+      <h2 id="endTitle"></h2>
+      <img id="shareImg" alt="結構五關成績卡">
+      <p class="mini">長按圖片可以存起來或傳給朋友</p>
+      <p>遊戲裡你是調整師。想親身感受五關的鬆，讓馬克幫你調一次。</p>
+      <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 找馬克</a></div>
+      <div class="row">
+        <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+        <button class="btn alt" id="btnAgain">再闖一次</button>
+      </div>
+    </div>
+  </div>
+  <div id="choices" hidden></div>
+</div>
+
+<script>
+(()=>{
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),W=600,H=760,$=id=>document.getElementById(id);
+const C={ink:'#232a2c',muted:'#666c69',line:'#d4d0c6',red:'#c1553d',ok:'#3f8f6b',gold:'#c99a2e',blue:'#4a7fa8',skin:'#f1dccb',skinD:'#d9bba3',paper:'#faf8f3'};
+const N={tip:[50,520],hand:[118,505],wrist:[170,520],elbow:[405,520],delt:[425,345],sh:[430,250]};
+const NAME={wrist:'腕',elbow:'肘',delt:'三角肌止點',sh:'肩'};
+const GATES=[
+ {k:'合力',q:'彼此的鬆感互相滲入，力量像水一樣流動，柔和卻有方向，在鬆中找到重心。',
+  how:'手指按住手臂就是抓住它，拖動時關節會跟著轉。<br><b>下手</b>抓前臂、<b>上手</b>抓上臂靠肘，兩手一起把手臂帶到<b>肘彎 90 度</b>（虛線），然後穩住。<br>個案的張力會一直變，兩手要一起微調。',T:45},
+ {k:'環鬆',q:'像風箏的線，始終牽著，不緊繃、不放掉，卻維持著穩定的張力。',
+  how:'一指抓<b>上臂</b>帶著肩關節轉，一指抓<b>前臂</b>帶著肘關節轉，兩邊<b>一起來回轉</b>。<br>轉著轉著筋膜皺褶會攤開，合力線<b>拉成一直線</b>。轉太快會緊繃。',T:45},
+ {k:'串勁',q:'把旋轉扭曲的拉力線一路攤平，跨關節串到肩上的三角肌止點。',
+  how:'一指<b>按住上方關節</b>（金色圈），另一指<b>拖著手臂</b>走：<br>① 按住肘，把手肘拉直<br>② 按住肩，把整隻手臂舉到斜上方<br>③ 按住肩，慢慢放下<b>卸勁</b><br>按住的手指放開，勁就散了。',T:60},
+ {k:'收軸',q:'以坐骨為重心支點，脊椎一節一節往上延伸，回到平衡。',
+  how:'<b>前置：先確認呼吸</b>。按住吸氣、放開吐氣，要吸到<b>肚臍以下</b>才算，做 3 次。<br>呼吸到位後，脊椎一節一節晃，<b>對準坐骨正上方</b>時點一下疊上去。',T:75},
+ {k:'拆解',q:'找出根源結構失衡的部位，共六項判斷依據。',
+  how:'前四關做完，手臂上還有幾個<b>沒鬆開的卡點</b>。<br>一指沿著手臂<b>慢慢摸</b>，拉力線抖動的地方就是卡點。<br>在卡點上<b>按住不動</b>，它就會被拆開，並告訴你它是哪一種根源。',T:60},
+];
+let S;function reset(){S={g:0,hearts:3,score:0,run:false,passed:0,stats:[]};}reset();
+
+// ---------- multi-finger input (touch = real fingers; mouse click = pin a finger, drag = second finger)
+const F=new Map();let pinSeq=0,mouseDown=null;
+const view={s:1,ox:0,oy:0,dpr:1};
+function toLocal(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left-view.ox)/view.s,(e.clientY-r.top-view.oy)/view.s];}
+function newF(id,x,y,pin){return{id,x,y,vx:0,vy:0,sp:0,t:performance.now(),pin:!!pin,born:performance.now()};}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);const [x,y]=toLocal(e);
+  if(e.pointerType==='mouse'){mouseDown={x,y,t:performance.now(),moved:false};F.set('m',newF('m',x,y));}
+  else F.set(e.pointerId,newF(e.pointerId,x,y));G&&G.down&&G.down(F.get(e.pointerType==='mouse'?'m':e.pointerId));});
+cv.addEventListener('pointermove',e=>{const id=e.pointerType==='mouse'?'m':e.pointerId,f=F.get(id);if(!f)return;const [x,y]=toLocal(e),now=performance.now(),dt=Math.max(1,now-f.t)/1000;
+  f.vx=f.vx*.6+(x-f.x)/dt*.4;f.vy=f.vy*.6+(y-f.y)/dt*.4;f.sp=Math.hypot(f.vx,f.vy);f.x=x;f.y=y;f.t=now;
+  if(mouseDown&&id==='m'&&Math.hypot(x-mouseDown.x,y-mouseDown.y)>8)mouseDown.moved=true;});
+function lift(e){const id=e.pointerType==='mouse'?'m':e.pointerId,f=F.get(id);if(!f)return;F.delete(id);G&&G.up&&G.up(f);
+  if(id==='m'&&mouseDown&&!mouseDown.moved&&performance.now()-mouseDown.t<300&&G&&G.pins){
+    const hit=[...F.values()].find(p=>p.pin&&Math.hypot(p.x-f.x,p.y-f.y)<30);
+    if(hit){F.delete(hit.id);G.up&&G.up(hit);}else{const p=newF('pin'+(++pinSeq),f.x,f.y,true);F.set(p.id,p);G.down&&G.down(p);}}
+  mouseDown=null;}
+cv.addEventListener('pointerup',lift);cv.addEventListener('pointercancel',lift);
+const fingers=()=>[...F.values()];
+function fit(){const r=cv.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);
+  const s=Math.min(r.width/W,r.height/H);Object.assign(view,{s,ox:(r.width-W*s)/2,oy:(r.height-H*s)/2,dpr:d});}
+addEventListener('resize',fit);
+
+let ac=null;function beep(f,d,t='sine',v=.07){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}
+function hint(t,col){const h=$('hint');if(h.innerHTML!==t)h.innerHTML=t;h.style.color=col||'var(--ink)';}
+function meters(a,b,la,lb){$('mA').firstElementChild.style.width=Math.min(100,a*100)+'%';$('mB').firstElementChild.style.width=Math.min(100,b*100)+'%';if(la)$('mAlabel').textContent=la;if(lb!==undefined)$('mBlabel').textContent=lb;}
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+
+// ---------- drawing helpers
+function drawArm(c){
+  c.save();c.lineCap='round';c.lineJoin='round';
+  c.strokeStyle=C.skinD;c.lineWidth=96;c.beginPath();c.moveTo(N.wrist[0],N.wrist[1]);c.lineTo(N.elbow[0],N.elbow[1]);c.lineTo(N.sh[0],N.sh[1]-10);c.stroke();
+  c.strokeStyle=C.skin;c.lineWidth=90;c.stroke();
+  c.fillStyle=C.skin;c.strokeStyle=C.skinD;c.lineWidth=3;c.beginPath();c.ellipse(115,520,62,40,0,0,7);c.fill();c.stroke();
+  for(let i=0;i<4;i++){c.beginPath();c.ellipse(52,498+i*15,26,7,0,0,7);c.fill();c.stroke();}
+  c.beginPath();c.ellipse(140,478,30,12,-.6,0,7);c.fill();c.stroke();
+  c.beginPath();c.arc(N.sh[0],N.sh[1]-20,62,Math.PI,0);c.fill();
+  c.restore();
+}
+function label(c,t,x,y,col,size=16){c.font=`bold ${size}px sans-serif`;c.textAlign='center';const w=c.measureText(t).width+14;
+  c.fillStyle='rgba(250,248,243,.92)';c.fillRect(x-w/2,y-size-2,w,size+10);c.fillStyle=col||C.ink;c.fillText(t,x,y+2);}
+function ring(c,p,r,col,dash,lw=3){c.beginPath();c.arc(p[0],p[1],r,0,7);c.setLineDash(dash?[6,6]:[]);c.strokeStyle=col;c.lineWidth=lw;c.stroke();c.setLineDash([]);}
+function drawFingers(c){fingers().forEach(f=>{c.beginPath();c.arc(f.x,f.y,24,0,7);c.fillStyle=f.pin?'rgba(201,154,46,.35)':'rgba(35,42,44,.15)';c.fill();
+  if(f.pin){c.strokeStyle=C.gold;c.lineWidth=2;c.stroke();}});}
+function wavy(c,a,b,amp,col,lw,phase=0){c.beginPath();const L=dist(a,b),nx=-(b[1]-a[1])/L,ny=(b[0]-a[0])/L;
+  for(let j=0;j<=30;j++){const t=j/30,p=lerp(a,b,t),w=Math.sin(t*Math.PI*5+phase)*amp*Math.sin(t*Math.PI);j?c.lineTo(p[0]+nx*w,p[1]+ny*w):c.moveTo(p[0]+nx*w,p[1]+ny*w);}
+  c.strokeStyle=col;c.lineWidth=lw;c.lineCap='round';c.stroke();}
+// zone ownership helper: assign a finger to each named zone when it lands inside
+function Owners(zones){const own={};return{
+  update(){for(const k in zones){if(own[k]&&!F.has(own[k]))own[k]=null;}
+    fingers().forEach(f=>{if(Object.values(own).includes(f.id))return;for(const k in zones){const z=zones[k];if(!own[k]&&dist([f.x,f.y],z.p)<z.r){own[k]=f.id;f.y0=f.y;f.lastA=null;f.om=0;break;}}});},
+  get(k){return own[k]?F.get(own[k]):null;},clear(){for(const k in own)own[k]=null;}};}
+
+// ================= Kinematic arm (gates 1-3): fingers grab a segment and drag it, joints follow =================
+const SH=[440,290],LU=190,LF=170,LH=60,PI=Math.PI;
+const ARM={tU:PI/2,phi:0,grab:new Map(),grav:true,whole:false,
+  reset(tU=PI/2,phi=0){this.tU=tU;this.phi=phi;this.grab.clear();},
+  get E(){return[SH[0]+Math.cos(this.tU)*LU,SH[1]+Math.sin(this.tU)*LU];},
+  get tF(){return this.tU+this.phi;},
+  get Wr(){const E=this.E;return[E[0]+Math.cos(this.tF)*LF,E[1]+Math.sin(this.tF)*LF];},
+  get Hd(){const w=this.Wr;return[w[0]+Math.cos(this.tF)*LH,w[1]+Math.sin(this.tF)*LH];},
+  pt(seg,t){if(seg==='U')return lerp(SH,this.E,t);const E=this.E,h=this.Hd;return lerp(E,h,t);}};
+const near=(a,b)=>{let d=a-b;while(d>PI)d-=2*PI;while(d<-PI)d+=2*PI;return d;};
+function segHit(p,a,b){const ab=[b[0]-a[0],b[1]-a[1]],L2=ab[0]**2+ab[1]**2,t=clamp(((p[0]-a[0])*ab[0]+(p[1]-a[1])*ab[1])/L2,0,1);return{t,d:dist(p,lerp(a,b,t))};}
+function armGrab(f){const p=[f.x,f.y];if(dist(p,SH)<40){ARM.grab.set(f.id,{seg:'S'});return;}
+  const u=segHit(p,SH,ARM.E),fo=segHit(p,ARM.E,ARM.Hd);
+  if(fo.d<55&&(fo.d<=u.d||fo.t>.15))ARM.grab.set(f.id,{seg:'F',t:Math.max(.25,fo.t)});
+  else if(u.d<55)ARM.grab.set(f.id,{seg:'U',t:Math.max(.3,u.t)});}
+function armRelease(f){ARM.grab.delete(f.id);}
+const grabbed=seg=>{for(const [id,g] of ARM.grab){if(g.seg===seg&&F.has(id))return F.get(id);}return null;};
+function armStep(dt,drift=[0,0]){
+  for(const id of [...ARM.grab.keys()])if(!F.has(id))ARM.grab.delete(id);
+  const fu=grabbed('U'),ff=grabbed('F');const pU=ARM.tU,pP=ARM.phi;
+  if(ARM.whole&&ff&&!fu){ARM.tU=clamp(ARM.tU+near(Math.atan2(ff.y-SH[1],ff.x-SH[0]),ARM.tU)+drift[0],PI/2-.35,PI+1);}
+  else{
+    if(fu)ARM.tU=clamp(ARM.tU+near(Math.atan2(fu.y-SH[1],fu.x-SH[0])+drift[0],ARM.tU),PI/2-.35,PI+1);
+    else if(ARM.grav)ARM.tU+=near(PI/2,ARM.tU)*Math.min(1,dt*1.5);
+    if(ff){const E=ARM.E;ARM.phi=clamp(near(Math.atan2(ff.y-E[1],ff.x-E[0])+drift[1],ARM.tU),0,2.6);}
+    else if(ARM.grav)ARM.phi=clamp(ARM.phi+near(PI/2,ARM.tF)*Math.min(1,dt*1.5),0,2.6);}
+  ARM.wU=near(ARM.tU,pU)/dt;ARM.wF=(ARM.phi-pP)/dt;
+}
+function drawKArm(c,opt={}){
+  const E=ARM.E,Wr=ARM.Wr,Hd=ARM.Hd;c.save();c.lineCap='round';c.lineJoin='round';
+  // torso edge
+  c.fillStyle=C.skin;c.strokeStyle=C.skinD;c.lineWidth=3;c.beginPath();c.moveTo(600,200);c.quadraticCurveTo(470,205,455,270);c.lineTo(480,760);c.lineTo(600,760);c.closePath();c.fill();c.stroke();
+  const limb=(a,b,w)=>{c.strokeStyle=C.skinD;c.lineWidth=w+6;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();c.strokeStyle=C.skin;c.lineWidth=w;c.stroke();};
+  limb(SH,E,84);limb(E,Wr,70);
+  c.fillStyle=C.skin;c.strokeStyle=C.skinD;c.lineWidth=3;c.beginPath();c.arc(SH[0],SH[1],50,0,7);c.fill();
+  c.beginPath();c.arc(E[0],E[1],38,0,7);c.fill();
+  c.save();c.translate(Hd[0],Hd[1]);c.rotate(ARM.tF);c.beginPath();c.ellipse(-28,0,48,32,0,0,7);c.fill();c.stroke();
+  for(let i=0;i<4;i++){c.beginPath();c.ellipse(26,-18+i*12,22,6,0,0,7);c.fill();c.stroke();}c.beginPath();c.ellipse(-30,-34,22,10,-.8,0,7);c.fill();c.stroke();c.restore();
+  if(opt.wrinkle>0){c.globalAlpha=opt.wrinkle;c.strokeStyle='#b98f74';c.lineWidth=2.5;
+    [[SH,E,6],[E,Wr,6]].forEach(([a,b,n])=>{const ang=Math.atan2(b[1]-a[1],b[0]-a[0]);for(let i=1;i<=n;i++){const p=lerp(a,b,i/(n+1));c.save();c.translate(p[0],p[1]);c.rotate(ang);c.beginPath();for(let y=-26;y<=26;y+=6)c.lineTo(Math.sin((y+i*7)/5)*6,y);c.stroke();c.restore();}});c.globalAlpha=1;}
+  // joints
+  [[SH,'肩'],[E,'肘'],[Wr,'腕']].forEach(([p,n])=>{c.beginPath();c.arc(p[0],p[1],7,0,7);c.fillStyle=C.ink;c.fill();c.fillStyle=C.muted;c.font='bold 14px sans-serif';c.textAlign='center';c.fillText(n,p[0]+(n==='肩'?-60:0),p[1]+(n==='肩'?5:-44));});
+  c.restore();
+  // grabbed handles
+  for(const [id,g] of ARM.grab){const f=F.get(id);if(!f||g.seg==='S')continue;const p=ARM.pt(g.seg,g.t);c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(f.x,f.y);c.strokeStyle='rgba(35,42,44,.3)';c.lineWidth=2;c.stroke();
+    c.beginPath();c.arc(p[0],p[1],12,0,7);c.fillStyle=g.seg==='F'?C.blue:C.gold;c.fill();}
+}
+function ghost(c,tU,phi,col){const E=[SH[0]+Math.cos(tU)*LU,SH[1]+Math.sin(tU)*LU],tF=tU+phi,H=[E[0]+Math.cos(tF)*(LF+LH),E[1]+Math.sin(tF)*(LF+LH)];
+  c.save();c.setLineDash([10,8]);c.strokeStyle=col;c.lineWidth=4;c.lineCap='round';c.beginPath();c.moveTo(SH[0],SH[1]);c.lineTo(E[0],E[1]);c.lineTo(H[0],H[1]);c.stroke();c.restore();}
+const armGate=o=>Object.assign({pins:true,down(f){armGrab(f);},up(f){armRelease(f);}},o);
+
+// ================= Gate 1 合力: drag the arm into 90° and hold it together =================
+function gate1(){
+  ARM.reset(PI/2,0);ARM.grav=true;ARM.whole=false;
+  let prog=0,hard=0,drift=[0,0],dT=[0,0];
+  return armGate({lA:'合力',lB:'硬力',
+    step(dt){for(let i=0;i<2;i++){if(Math.random()<dt*.7)dT[i]=(Math.random()-.5)*.36;drift[i]+=(dT[i]-drift[i])*dt*1.2;}
+      armStep(dt,drift);const fu=grabbed('U'),ff=grabbed('F');
+      const okU=Math.abs(near(ARM.tU,PI/2))<.16,okF=Math.abs(ARM.phi-PI/2)<.2;this.okU=okU;this.okF=okF;
+      const sp=Math.max(fu?fu.sp:0,ff?ff.sp:0);
+      if(sp>900){hard+=dt;hint('太用力了，慢慢帶','var(--red)');}else hard=Math.max(0,hard-dt*.5);
+      if(!fu&&!ff)hint('一指按住<b>前臂（下手）</b>、一指按住<b>上臂靠肘（上手）</b>');
+      else if(!fu||!ff)hint(`還差一指：${!ff?'前臂（下手）':'上臂靠肘（上手）'}`,'var(--muted)');
+      else if(sp<=900){if(okU&&okF&&sp<350){prog+=dt/3;hint('兩手力量一致，合力場形成了','var(--ok)');}
+        else{prog=Math.max(0,prog-dt*.1);hint(!okF?'帶著前臂，把肘彎到 90 度（虛線）':!okU?'上手把上臂扶正，垂直往下':'穩住，不要晃','var(--muted)');}}
+      if(hard>=1.2){hard=0;this.hurt('硬力推拉，個案一緊，合力場散了');}
+      if(prog>=1)this.win(220);this.mA=prog;this.mB=hard/1.2;},
+    draw(c){ghost(c,PI/2,PI/2,this.okU&&this.okF?C.ok:C.gold);label(c,'目標：肘彎 90°',SH[0]-250,SH[1]+LU-14,C.gold,15);drawKArm(c);
+      if(grabbed('U')&&grabbed('F')&&this.okU&&this.okF){const E=ARM.E;c.globalAlpha=.2+.1*Math.sin(performance.now()/300);c.beginPath();c.arc(E[0],E[1],110,0,7);c.fillStyle=C.blue;c.fill();c.globalAlpha=1;}
+      drawFingers(c);}});
+}
+// ================= Gate 2 環鬆: both fingers keep turning the shoulder and elbow joints =================
+function gate2(){
+  ARM.reset(PI/2+.25,PI/2);ARM.grav=false;ARM.whole=false;let prog=0,danger=0,wu=0,wf=0;
+  const st=(w,lo=.6)=>w>6.5?'fast':w>=lo?'ok':'slow';
+  return armGate({lA:'合力線拉直',lB:'緊繃',
+    step(dt){armStep(dt);const fu=grabbed('U'),ff=grabbed('F');
+      wu=wu*.9+Math.abs(ARM.wU||0)*.1;wf=wf*.9+Math.abs(ARM.wF||0)*.1;this.su=fu?st(wu,.3):'none';this.sf=ff?st(wf):'none';
+      if(!fu||!ff){hint(!fu&&!ff?'一指抓<b>上臂</b>轉肩、一指抓<b>前臂</b>轉肘':`另一指也要抓住${!fu?'上臂':'前臂'}`,'var(--muted)');prog=Math.max(0,prog-dt*.05);}
+      else if(this.su==='fast'||this.sf==='fast'){danger+=dt*.6;hint('轉太快了，線繃緊了','var(--red)');}
+      else if(this.su==='ok'&&this.sf==='ok'){prog+=dt/8;danger=Math.max(0,danger-dt*.5);hint('肩和肘一起轉開了，越轉越鬆','var(--ok)');}
+      else{danger=Math.max(0,danger-dt*.3);hint(this.su!=='ok'&&this.sf!=='ok'?'兩指帶著手臂來回轉':(this.su!=='ok'?'上臂那指也要帶著轉':'前臂那指也要帶著轉'),'var(--muted)');}
+      if(danger>=1){danger=0;this.hurt('張力繃太緊了');}
+      if(prog>=1)this.win(220);this.mA=prog;this.mB=danger;},
+    draw(c){drawKArm(c,{wrinkle:1-prog});
+      const E=ARM.E;wavy(c,ARM.Wr,E,(1-prog)*18,prog>.85?C.ok:C.red,prog>.85?7:4,performance.now()/400);wavy(c,E,SH,(1-prog)*18,prog>.85?C.ok:C.red,prog>.85?7:4,performance.now()/400+1);
+      [['U',this.su,SH,'轉肩'],['F',this.sf,E,'轉肘']].forEach(([k,s,p,n])=>{const col=s==='ok'?C.ok:s==='fast'?C.red:s==='none'?C.gold:C.muted;
+        c.beginPath();c.arc(p[0],p[1],62,PI*.6,PI*1.9);c.strokeStyle=col;c.lineWidth=4;c.setLineDash([8,6]);c.stroke();c.setLineDash([]);
+        label(c,n+(s==='ok'?' ✓':s==='fast'?' 太快':''),p[0]-(k==='U'?100:0),p[1]-(k==='U'?-4:70),s==='ok'?C.ok:C.ink,15);});
+      drawFingers(c);}});
+}
+// ================= Gate 3 串勁: hold the upper joint, drag the arm to line up the pull line =================
+function gate3(){
+  ARM.reset(PI/2,PI/2);ARM.grav=false;ARM.whole=false;
+  const STEPS=[
+   {dir:'向上串勁',hold:'elbow',txt:'按住<b>肘</b>，另一指拖著前臂把手肘<b>拉直</b>',goal:()=>ARM.phi<.12,whole:false},
+   {dir:'向上串勁',hold:'sh',txt:'按住<b>肩</b>，拖著整隻手臂<b>舉到斜上方虛線</b>',goal:()=>ARM.phi<.2&&Math.abs(near(ARM.tU,PI+.6))<.15,whole:true},
+   {dir:'向下卸勁',hold:'sh',txt:'按住<b>肩</b>，拖著手臂<b>慢慢放下</b>到垂直',goal:()=>Math.abs(near(ARM.tU,PI/2))<.15,whole:true,slow:true}];
+  let k=0,flash=0,msg=0,started=false;
+  const holdPt=()=>STEPS[k].hold==='sh'?SH:ARM.E;
+  const holder=()=>fingers().find(f=>dist([f.x,f.y],holdPt())<55);
+  function fail(m){hint(m,'var(--red)');msg=1.3;flash=1;beep(150,.2,'square',.06);for(const id of [...ARM.grab.keys()]){const g=ARM.grab.get(id);if(g.seg==='F')ARM.grab.delete(id);}}
+  return{lA:'拉力線攤平',lB:'',pins:true,
+    down(f){if(k>=STEPS.length)return;const s=STEPS[k],p=[f.x,f.y];
+      if(dist(p,holdPt())<55)return;
+      const h=holder();if(!h)return;
+      const fo=segHit(p,ARM.E,ARM.Hd),u=segHit(p,SH,ARM.E);
+      if(fo.d<60)ARM.grab.set(f.id,{seg:'F',t:Math.max(.3,fo.t)});else if(s.whole&&u.d<60)ARM.grab.set(f.id,{seg:'F',t:.5});},
+    up(f){armRelease(f);},
+    step(dt){msg=Math.max(0,msg-dt);flash=Math.max(0,flash-dt*2);if(k>=STEPS.length)return;const s=STEPS[k];ARM.whole=s.whole;
+      const h=holder(),ff=grabbed('F');
+      if(ff&&!h){fail(`按住的手指放開了，勁散了`);}
+      else if(ff&&s.slow&&ff.sp>750){fail('太快了，斷勁！慢慢放');}
+      if(h&&!grabbed('F')&&!msg){const o=fingers().find(f=>f!==h&&dist([f.x,f.y],holdPt())>=55);if(o){const fo=segHit([o.x,o.y],ARM.E,ARM.Hd),u=segHit([o.x,o.y],SH,ARM.E);if(fo.d<60)ARM.grab.set(o.id,{seg:'F',t:Math.max(.3,fo.t)});else if(s.whole&&u.d<60)ARM.grab.set(o.id,{seg:'F',t:.5});}}
+      armStep(dt);
+      if(s.goal()&&h){done(this);return;}
+      if(!msg){if(!h)hint(`${s.dir}：一指先按住${s.hold==='sh'?'<b>肩</b>':'<b>肘</b>'}（金色圈）`);else if(!ff)hint(s.txt,'var(--ok)');else hint(`${s.dir}中…`,'var(--ok)');}
+      this.mA=k/STEPS.length;this.mB=0;
+      function done(g){beep(600+k*150,.18);S.score+=40;k++;ARM.grab.clear();if(k>=STEPS.length){beep(990,.3);g.win(200);}else{hint(k===2?'串上肩了！現在<b>往下卸勁</b>':'串接好了，下一段','var(--ok)');msg=1.3;}}},
+    draw(c){const s=STEPS[Math.min(k,STEPS.length-1)];
+      if(k===1)ghost(c,PI+.6,0,C.gold);if(k===2)ghost(c,PI/2,0,C.gold);
+      drawKArm(c);
+      const E=ARM.E,Wr=ARM.Wr,straightF=ARM.phi<.12;
+      wavy(c,Wr,E,straightF?0:10,straightF?C.ok:C.red,straightF?7:4,performance.now()/300);
+      wavy(c,E,SH,k>=1&&straightF&&Math.abs(near(ARM.tU,PI+.6))<.2||k>=2?0:10,k>=2?C.ok:C.red,k>=2?7:4,performance.now()/300+1);
+      if(k<STEPS.length){const hp=holdPt();ring(c,hp,40,C.gold,false,5);label(c,'按住',hp[0]+(s.hold==='sh'?70:0),hp[1]+(s.hold==='sh'?-50:62),C.gold,15);}
+      if(flash){c.fillStyle=`rgba(193,85,61,${flash*.2})`;c.fillRect(0,0,W,H);}
+      drawFingers(c);}};
+}
+// ================= Gate 4 收軸 (breath check first, then stack) =================
+function gate4(){
+  const base=[300,600],segs=['腰椎','T12–L1','胸椎下段','胸椎中段','胸椎上段','頸椎','寰樞・頭'],SEGH=56,NAVEL=.72;
+  let phase='breath',lvl=0,breaths=0,holding=false,exh=0,over=0,stack=[],cur=0,ph=0,spd=1.5,end=0,fall=0,lastMsg=null;
+  const curX=()=>base[0]+Math.sin(ph)*120;
+  return{lA:'呼吸到位',lB:'',pins:false,
+    down(){if(phase==='breath'){if(breaths>=3)return;exh=0;holding=true;lvl=0;over=0;return;}
+      if(end||fall>0)return;const x=curX(),top=stack.length?stack[stack.length-1]:base[0],offC=x-base[0];
+      if(Math.abs(offC)>58||Math.abs(x-top)>52){fall=.7;beep(130,.3,'square',.08);this.hurt('歪掉了，這節沒疊上');return;}
+      stack.push(x);beep(420+stack.length*70,.1);S.score+=Math.max(5,40-Math.round(Math.abs(offC)));cur++;spd+=.22;ph=Math.random()*6;
+      if(cur>=segs.length){end=.01;hint('脊椎立起來了。雙手斜上推掌…吸～吐～','var(--ok)');}},
+    up(){if(phase!=='breath'||!holding)return;holding=false;
+      if(lvl>=NAVEL&&over<.8){breaths++;beep(500+breaths*150,.2);lastMsg=['吸到肚臍以下了 ✓','var(--ok)'];}
+      else if(lvl<NAVEL)lastMsg=['只吸到胸口，再吸深一點、慢一點','var(--red)'];
+      else lastMsg=['憋太久了，吸到位就吐氣','var(--red)'];
+      exh=1.6;if(breaths>=3){setTimeout(()=>{phase='stack';this.lA='脊椎延展';$('mAlabel').textContent='脊椎延展';},1500);}},
+    step(dt){
+      if(phase==='breath'){
+        if(holding){lvl=Math.min(1,lvl+dt/3.2);if(lvl>=1)over+=dt;hint(lvl<NAVEL?'吸～讓氣往下走…':over>.8?'吸太久了，放開吐氣':'到肚臍以下了，放開吐氣','var(--ok)');}
+        else if(exh>0){exh-=dt;lvl=Math.max(0,lvl-dt/1.4);if(lastMsg)hint(lastMsg[0],lastMsg[1]);}
+        else hint(`按住吸氣、放開吐氣（${breaths}/3）`);
+        this.mA=breaths/3;this.mB=0;return;}
+      if(end){end+=dt;if(end>2.4)this.win(150);return;}
+      if(fall>0){fall-=dt;return;}ph+=dt*spd;this.mA=stack.length/segs.length;
+      if(cur<segs.length)hint(`對準坐骨正上方，點一下疊上「${segs[cur]}」`);},
+    draw(c){
+      c.fillStyle=C.line;c.fillRect(170,620,260,18);c.fillRect(180,638,14,110);c.fillRect(406,638,14,110);
+      c.strokeStyle=C.skinD;c.lineWidth=40;c.lineCap='round';c.beginPath();c.moveTo(300,612);c.lineTo(450,612);c.lineTo(455,740);c.stroke();
+      c.fillStyle=C.skin;c.beginPath();c.ellipse(300,600,70,34,0,0,7);c.fill();c.strokeStyle=C.skinD;c.lineWidth=3;c.stroke();
+      c.fillStyle=C.gold;c.beginPath();c.arc(base[0],base[1]+16,9,0,7);c.fill();c.fillStyle=C.ink;c.font='bold 14px sans-serif';c.textAlign='center';c.fillText('坐骨',base[0]-50,base[1]+40);
+      if(phase==='breath'){
+        // seated torso side view with breath fill
+        const tx=300,top=200,bot=580;c.fillStyle=C.skin;c.strokeStyle=C.skinD;c.lineWidth=3;
+        c.beginPath();c.arc(tx,top-40,40,0,7);c.fill();c.stroke();
+        c.beginPath();c.moveTo(tx-70,top+10);c.quadraticCurveTo(tx,top-10,tx+70,top+10);c.lineTo(tx+80,bot-20);c.quadraticCurveTo(tx,bot+10,tx-80,bot-20);c.closePath();c.fill();c.stroke();
+        c.save();c.clip();const fillTo=top+(bot-top)*lvl;const g=c.createLinearGradient(0,top,0,bot);g.addColorStop(0,'rgba(74,127,168,.55)');g.addColorStop(1,'rgba(63,143,107,.65)');
+        c.fillStyle=g;c.fillRect(tx-90,top-20,180,fillTo-top+20);c.restore();
+        const ny=top+(bot-top)*NAVEL;c.setLineDash([6,6]);c.strokeStyle=C.red;c.lineWidth=2;c.beginPath();c.moveTo(tx-120,ny);c.lineTo(tx+120,ny);c.stroke();c.setLineDash([]);
+        label(c,'肚臍',tx+150,ny+6,C.red,15);label(c,'胸口',tx+150,top+60,C.muted,14);
+        for(let i=0;i<3;i++){c.beginPath();c.arc(tx-40+i*40,130,11,0,7);c.fillStyle=i<breaths?C.ok:C.line;c.fill();}
+        drawFingers(c);return;}
+      c.setLineDash([5,7]);c.strokeStyle=C.gold;c.lineWidth=2;c.beginPath();c.moveTo(base[0],base[1]);c.lineTo(base[0],70);c.stroke();c.setLineDash([]);
+      const blk=(x,y,lb,col,isHead)=>{if(isHead){c.beginPath();c.arc(x,y-14,34,0,7);c.fillStyle=col;c.fill();c.strokeStyle=C.ink;c.lineWidth=2;c.stroke();}
+        else{c.fillStyle=col;c.strokeStyle=C.ink;c.lineWidth=2;c.beginPath();c.roundRect?c.roundRect(x-34,y-SEGH+8,68,SEGH-10,10):c.rect(x-34,y-SEGH+8,68,SEGH-10);c.fill();c.stroke();}
+        c.fillStyle=isHead?C.ink:'#fff';c.font='bold 13px sans-serif';c.textAlign='center';c.fillText(lb,x,y-(isHead?10:SEGH/2-4));};
+      stack.forEach((x,i)=>blk(x,base[1]-30-i*SEGH,segs[i],i===segs.length-1?C.paper:C.ink,i===segs.length-1));
+      if(cur<segs.length){const y=base[1]-30-stack.length*SEGH;const x=fall>0?curX()+(Math.random()-.5)*20:curX();blk(x,y,segs[cur],fall>0?C.red:C.ok,cur===segs.length-1);}
+      if(end){const top=base[1]-30-(segs.length-1)*SEGH,t=Math.min(1,end/1.2);c.strokeStyle=C.gold;c.lineWidth=8;c.lineCap='round';
+        [-1,1].forEach(s=>{c.beginPath();c.moveTo(300,top+150);c.lineTo(300+s*(40+t*110),top+150-t*190);c.stroke();});}
+    }};
+}
+// ================= Gate 5 拆解: feel along the arm for knots, hold to take them apart =================
+function gate5(){
+  ARM.reset(PI/2,PI/2);ARM.grav=false;ARM.whole=false;
+  const TYPES=['董氏奇穴・全息反應點','肌筋膜貼不住骨頭','皮膚不平整','疤痕組織','纖維致密化','舊傷'];
+  const spots=[['U',.45],['U',.8],['F',.3],['F',.7]].map((q,i)=>({seg:q[0],t:q[1]+(Math.random()-.5)*.12,feel:0,hold:0,ok:false}));
+  const types=TYPES.slice().sort(()=>Math.random()-.5);spots.forEach((s,i)=>s.type=types[i]);
+  let pops=[];
+  return{lA:'拆開卡點',lB:'',pins:false,
+    step(dt){const f=fingers()[0];let near=null,nd=1e9;
+      spots.forEach(s=>{if(s.ok)return;const p=ARM.pt(s.seg,s.t);const d=f?dist([f.x,f.y],p):1e9;if(d<nd){nd=d;near=s;}s.feel=Math.max(0,s.feel-dt*1.2);});
+      if(f&&near&&nd<80)near.feel=Math.min(1,near.feel+dt*3*(1-nd/80));
+      if(f&&near&&nd<38){if(f.sp<180){near.hold+=dt;hint('就是這裡，按住別動…拆開中','var(--gold)');
+          if(near.hold>=1.1){near.ok=true;pops.push({s:near,t:2});beep(760,.15);S.score+=50;}}
+        else hint('卡點在這附近，停下來按住','var(--gold)');}
+      else{spots.forEach(s=>s.hold=Math.max(0,s.hold-dt));
+        hint(!f?'一指沿著手臂<b>慢慢摸</b>，找出還沒鬆開的卡點':(near&&nd<80?'附近有卡卡的感覺，慢慢靠近':'慢慢摸…拉力線抖的地方就是卡點'),!f?'var(--ink)':'var(--muted)');}
+      pops.forEach(p=>p.t-=dt);pops=pops.filter(p=>p.t>0);
+      const n=spots.filter(s=>s.ok).length;this.mA=n/spots.length;this.mB=0;
+      if(n>=spots.length&&!this.done){this.done=true;hint('卡點全部拆開，拉力線順了','var(--ok)');setTimeout(()=>this.win(150),900);}},
+    draw(c){drawKArm(c);
+      const n=spots.filter(s=>s.ok).length,all=n===spots.length;
+      // pull line with bumps at unresolved knots
+      [['U',SH,ARM.E],['F',ARM.E,ARM.Hd]].forEach(([seg,a,b])=>{c.beginPath();const L=dist(a,b),nx=-(b[1]-a[1])/L,ny=(b[0]-a[0])/L;
+        for(let j=0;j<=60;j++){const t=j/60;let w=0;spots.forEach(s=>{if(s.seg!==seg||s.ok)return;const d=Math.abs(t-s.t);if(d<.12)w+=(1-d/.12)*(8+s.feel*10)*Math.sin(performance.now()/(60-s.feel*30)+j);});
+          const p=lerp(a,b,t);j?c.lineTo(p[0]+nx*w,p[1]+ny*w):c.moveTo(p[0]+nx*w,p[1]+ny*w);}
+        c.strokeStyle=all?C.ok:C.red;c.lineWidth=all?7:4;c.lineCap='round';c.stroke();});
+      spots.forEach(s=>{const p=ARM.pt(s.seg,s.t);
+        if(s.ok){c.beginPath();c.arc(p[0],p[1],9,0,7);c.fillStyle=C.ok;c.fill();}
+        else if(s.feel>.05){c.globalAlpha=s.feel;ring(c,p,16+s.feel*10,C.gold,true,3);c.globalAlpha=1;
+          if(s.hold>0){c.beginPath();c.arc(p[0],p[1],30,-PI/2,-PI/2+2*PI*s.hold/1.1);c.strokeStyle=C.gold;c.lineWidth=6;c.stroke();}}});
+      pops.forEach(q=>{const p=ARM.pt(q.s.seg,q.s.t);c.globalAlpha=Math.min(1,q.t);label(c,'拆開：'+q.s.type,clamp(p[0]-120,110,490),p[1]-34,C.ok,16);c.globalAlpha=1;});
+      drawFingers(c);}};
+}
+
+const MAKERS=[gate1,gate2,gate3,gate4,gate5];
+let G=null;
+function gateDots(){[...$('gates').children].forEach((s,i)=>{s.className=i<S.g?'done':i===S.g?'now':'';});}
+function showGate(){const g=GATES[S.g];gateDots();$('choices').hidden=true;$('gNum').textContent=`第 ${S.g+1} 關 / 5`;$('gTitle').textContent=g.k;$('gQuote').textContent='「'+g.q+'」';$('gHow').innerHTML=g.how;$('ovGate').hidden=false;}
+function startGate(){$('ovGate').hidden=true;F.clear();G=MAKERS[S.g]();G.t=0;G.mA=0;G.mB=0;
+  G.win=pts=>{if(!S.run)return;S.run=false;S.score+=pts+Math.max(0,Math.round((GATES[S.g].T-G.t)*3));S.passed++;S.stats.push(true);hint(GATES[S.g].k+' 過關！','var(--ok)');beep(880,.3);next();};
+  G.hurt=msg=>{if(!S.run)return;S.hearts--;hint(msg,'var(--red)');beep(110,.35,'square',.1);if(S.hearts<=0){S.run=false;setTimeout(end,900);}};
+  meters(0,0,G.lA,G.lB||' ');$('mB').style.visibility=G.lB?'visible':'hidden';S.run=true;}
+function next(){if(S.g+1>=5){setTimeout(end,900);return;}S.g++;setTimeout(showGate,900);}
+function timeUp(){S.run=false;S.hearts--;beep(110,.35,'square',.1);if(S.hearts<=0){hint('時間到，愛心用完了','var(--red)');setTimeout(end,800);return;}hint('時間到，這關沒過，重新來','var(--red)');setTimeout(()=>{showGate();$('gNum').textContent=`第 ${S.g+1} 關 / 5・重新挑戰`;},900);}
+
+const TITLES=['還在調身','見習調整師','合格調整師','資深調整師','結構引導師','五關認證・結構大師'];
+function end(){S.run=false;gateDots();$('choices').hidden=true;const t=TITLES[S.passed];$('endTitle').textContent=t;$('shareImg').src=card(t);$('ovEnd').hidden=false;}
+function card(t){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  c.fillStyle='#ece9e2';c.fillRect(0,0,1080,1350);c.textAlign='center';
+  c.fillStyle=C.ink;c.font='900 100px "Noto Serif TC",serif';c.fillText('結構五關',540,170);
+  ['合力','環鬆','串勁','收軸','拆解'].forEach((n,i)=>{const x=180+i*180,y=330,ok=S.stats[i];
+    c.beginPath();c.arc(x,y,72,0,7);c.fillStyle=ok?C.ok:'#faf8f3';c.fill();c.lineWidth=4;c.strokeStyle=ok?C.ok:C.line;c.stroke();
+    c.fillStyle=ok?'#fff':C.muted;c.font='bold 44px "Noto Serif TC",serif';c.fillText(n,x,y+15);});
+  c.fillStyle=C.red;c.font='900 92px "Noto Serif TC",serif';c.fillText(t,540,560);
+  c.fillStyle=C.ink;c.font='bold 60px sans-serif';c.fillText(`過關 ${S.passed} / 5｜${S.score} 分`,540,680);
+  c.fillStyle=C.muted;c.font='40px "Noto Serif TC",serif';c.fillText('不是用力推拉，',540,840);c.fillText('是讓身體自己回到原本的平衡',540,900);
+  c.fillStyle=C.ink;c.fillRect(0,1210,1080,140);c.fillStyle='#fff';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);return k.toDataURL('image/jpeg',.9);}
+
+$('btnStart').onclick=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();}catch(e){}reset();$('ovStart').hidden=true;showGate();};
+$('btnGo').onclick=startGate;
+$('btnAgain').onclick=()=>{reset();$('ovEnd').hidden=true;showGate();};
+
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+  if(S.run&&G){G.t+=dt;G.step(dt);if(S.run&&G.t>=GATES[S.g].T)timeUp();meters(G.mA,G.mB);}
+  $('hearts').textContent='♥'.repeat(Math.max(0,S.hearts))+'♡'.repeat(3-Math.max(0,S.hearts));$('score').textContent=S.score;
+  $('tleft').textContent=G&&S.run?Math.max(0,Math.ceil(GATES[S.g].T-G.t))+' 秒':'';
+  const c=ctx;c.setTransform(view.dpr,0,0,view.dpr,0,0);c.clearRect(0,0,cv.width,cv.height);c.translate(view.ox,view.oy);c.scale(view.s,view.s);
+  if(G)G.draw(c);else drawKArm(c);
+  requestAnimationFrame(loop);}
+fit();gateDots();requestAnimationFrame(loop);
+if(document.fonts)document.fonts.ready.then(fit);
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="用腳底三個足弓分擔體重，挑戰低頭滑手機、單腳站、閉眼站，看你站得穩嗎？｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="站得穩挑戰">
+<meta property="og:description" content="用腳底三個足弓分擔體重，挑戰低頭滑手機、單腳站、閉眼站，看你站得穩嗎？｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/stand.html">
+<title>站得穩挑戰｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&display=swap">
+<style>
+/* Layout: one-screen game, HUD strip on top, sole-view canvas fills the rest; overlays for start / level / result */
+:root{
+  --bg:#e6ecea; --panel:#f6f8f7; --ink:#1f2a2e; --muted:#5d6b6f;
+  --red:#c1553d; --ok:#3f8f6b; --under:#4a7fa8; --line:#c9d3d0;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#app{height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:8px;box-sizing:border-box;position:relative}
+#hud{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+#hearts{font-size:20px;letter-spacing:2px;color:var(--red)}
+#lvl{font-weight:700;font-size:14px;text-align:center}
+#score{font-weight:700;font-size:18px;text-align:right}
+#bars{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;font-size:11px;color:var(--muted)}
+.bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px}
+.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .1s linear}
+#danger i{background:var(--red)}
+#stage{flex:1;min-height:0;position:relative;margin-top:6px}
+canvas#c{width:100%;height:100%;display:block;touch-action:none}
+#banner{position:absolute;left:50%;top:6px;transform:translateX(-50%);background:var(--ink);color:#fff;
+  padding:6px 14px;border-radius:20px;font-size:14px;font-weight:700;white-space:nowrap;pointer-events:none;transition:opacity .3s}
+.ov{position:absolute;inset:0;background:rgba(230,236,234,.96);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;gap:14px;padding:20px;z-index:5;overflow-y:auto}
+.ov h1{font-family:var(--serif);font-weight:900;font-size:44px;margin:0;line-height:1.1;text-wrap:balance}
+.ov h1 em{font-style:normal;color:var(--red)}
+.ov h2{font-family:var(--serif);font-size:28px;margin:0}
+.ov p{margin:0;max-width:30em;line-height:1.7;color:var(--muted);font-size:15px}
+.ov p b{color:var(--ink)}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:360px;width:100%;font-size:13px}
+.tri div{background:var(--panel);border-radius:10px;padding:8px 4px;line-height:1.4}
+.tri b{display:block;color:var(--ok);font-size:14px}
+button,.btn{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:28px;padding:13px 30px;cursor:pointer;
+  background:var(--red);color:#fff;text-decoration:none;display:inline-block}
+button:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn.alt{background:var(--panel);color:var(--ink);border:1.5px solid var(--line)}
+.btn.line{background:#06c755}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#shareImg{width:min(100%,300px);border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.15);
+  -webkit-user-select:auto;user-select:auto;-webkit-touch-callout:default}
+.small{font-size:12px!important}
+.brand{font-size:12px;color:var(--muted);letter-spacing:.08em}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <div id="hud">
+    <div id="hearts">♥♥♥</div>
+    <div id="lvl">第 1 關</div>
+    <div id="score">0</div>
+  </div>
+  <div id="bars">
+    <div>站穩時間 <span id="tleft">20</span> 秒<div class="bar" id="timebar"><i></i></div></div>
+    <div>足弓壓力<div class="bar" id="danger"><i></i></div></div>
+  </div>
+  <div id="stage">
+    <canvas id="c" width="600" height="860"></canvas>
+    <div id="banner" style="opacity:0"></div>
+
+    <div class="ov" id="ovStart">
+      <div class="brand">鈞衡舍 ChunBalance</div>
+      <h1>站得<em>穩</em>挑戰</h1>
+      <p>腳底有三個足弓，三個承重點要<b>平均出力</b>，身體才站得穩。</p>
+      <div class="tri">
+        <div><b>內側縱弓</b>腳跟 ↔ 大拇趾球</div>
+        <div><b>外側縱弓</b>腳跟 ↔ 小拇趾球</div>
+        <div><b>橫弓</b>大拇趾球 ↔ 小拇趾球</div>
+      </div>
+      <p>手指在畫面上<b>拖動紅色重心</b>，對抗生活中的各種干擾。三個足弓都亮綠燈、大拇趾和小拇趾亮紅，就是站穩了。足弓塌太久或重心跑出腳外，就扣一顆愛心。</p>
+      <button id="btnStart">開始站</button>
+    </div>
+
+    <div class="ov" id="ovLevel" hidden>
+      <div class="brand" id="lvNum">第 2 關</div>
+      <h2 id="lvTitle"></h2>
+      <p id="lvDesc"></p>
+      <button id="btnGo">開始</button>
+    </div>
+
+    <div class="ov" id="ovEnd" hidden>
+      <h2 id="endTitle"></h2>
+      <img id="shareImg" alt="站得穩挑戰成績卡">
+      <p class="small">長按圖片可以存起來或傳給朋友</p>
+      <p id="endTip"></p>
+      <div class="row">
+        <a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約足部張力檢測</a>
+      </div>
+      <div class="row">
+        <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+        <button class="btn alt" id="btnAgain">再站一次</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const W=600,H=860;
+const $=id=>document.getElementById(id);
+
+// ---- foot geometry (sole view, toes up). local u: medial +, v: 0 heel -> 1 toe tip
+const FL=440,FW=190,HEEL_Y=800;
+const FEET=[{cx:170,side:1,name:'左'},{cx:430,side:-1,name:'右'}];
+const PTS={heel:[0,.12],mt1:[.30,.70],mt5:[-.33,.63]};
+const OUTLINE=[[0,0],[.2,.03],[.27,.14],[.2,.3],[.21,.45],[.35,.64],[.38,.76],[.3,.83],[0,.86],[-.3,.79],[-.4,.68],[-.38,.5],[-.3,.3],[-.26,.12],[-.18,.03]];
+const TOES=[[.25,.92,.11,.085],[.06,.95,.065,.06],[-.09,.935,.058,.055],[-.21,.9,.052,.05],[-.32,.85,.05,.045]];
+const g=(f,u,v)=>[f.cx+f.side*u*FW, HEEL_Y-v*FL];
+FEET.forEach(f=>{f.p={};for(const k in PTS)f.p[k]=g(f,...PTS[k]);
+  f.c=[(f.p.heel[0]+f.p.mt1[0]+f.p.mt5[0])/3,(f.p.heel[1]+f.p.mt1[1]+f.p.mt5[1])/3];});
+const MID=[(FEET[0].c[0]+FEET[1].c[0])/2,(FEET[0].c[1]+FEET[1].c[1])/2];
+
+const LEVELS=[
+ {t:'雙腳站好',d:'先熟悉一下。輕輕拖動重心，讓三個點平均出力。',drift:45,ev:[],single:false},
+ {t:'低頭滑手機',d:'頭一低，重心就往前衝，前腳掌和橫弓壓力變大。',drift:60,ev:['phone','heels','bus'],single:false},
+ {t:'單肩背包、三七步',d:'重量一直被拉到一邊，小心內外側足弓輪流塌。',drift:70,ev:['bag','lean37','sit'],single:false},
+ {t:'單腳站',d:'只剩左腳。三角形變小了，三點更要平均。',drift:55,ev:['phone','bag','sit'],single:true},
+ {t:'閉眼站',d:'看不到重心點了！只能靠足弓顏色和身體感覺。',drift:70,ev:['phone','bag','quake','bus'],single:false,blind:true},
+];
+const EVENTS={
+ phone:{n:'📱 低頭滑手機',f:[0,-90],d:3},
+ heels:{n:'👠 穿高跟鞋',f:[0,-130],d:2.5},
+ bus:{n:'🚌 公車急煞',f:[0,-220],d:.7},
+ bag:{n:'👜 單肩背包',f:[110,0],d:3,rs:1},
+ lean37:{n:'🧍 站三七步',f:[-100,40],d:3,rs:1},
+ sit:{n:'🪑 久坐剛起身',f:[0,100],d:2.5},
+ quake:{n:'🌏 地震！',f:[0,0],d:3,shake:1},
+};
+const LV_TIME=20;
+const COLL_NAMES={med:'內側縱弓',lat:'外側縱弓',tr:'橫弓',back:'後跟',side:'單邊承重'};
+
+let S;
+function reset(){
+  S={lv:0,hearts:3,score:0,combo:0,perfSec:0,run:false,t:0,P:[...MID],V:[0,0],F:[0,0],Ft:[0,0],nextF:0,
+     ev:null,evT:0,nextEv:4,danger:0,invul:0,trail:[],coll:{med:0,lat:0,tr:0,back:0,side:0},
+     loads:null,status:null,shake:0,flash:0,cleared:0,totalPerfect:0};
+}
+reset();
+
+// ---- geometry helpers
+function bary(p,a,b,c){
+  const v0=[b[0]-a[0],b[1]-a[1]],v1=[c[0]-a[0],c[1]-a[1]],v2=[p[0]-a[0],p[1]-a[1]];
+  const d=v0[0]*v1[1]-v1[0]*v0[1];
+  const lb=(v2[0]*v1[1]-v1[0]*v2[1])/d, lc=(v0[0]*v2[1]-v2[0]*v0[1])/d;
+  let w=[1-lb-lc,lb,lc].map(x=>Math.max(0,x));const s=w[0]+w[1]+w[2]||1;return w.map(x=>x/s);
+}
+function hull(pts){pts=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];
+  for(const p of pts){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p);}
+  for(const p of pts.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p);}
+  return lo.slice(0,-1).concat(up.slice(0,-1));}
+function outside(p,h){ // signed max distance outside convex polygon (ccw or cw)
+  let area=0;for(let i=0;i<h.length;i++){const a=h[i],b=h[(i+1)%h.length];area+=a[0]*b[1]-b[0]*a[1];}
+  const s=area>0?1:-1;let m=-1e9;
+  for(let i=0;i<h.length;i++){const a=h[i],b=h[(i+1)%h.length];const ex=b[0]-a[0],ey=b[1]-a[1],L=Math.hypot(ex,ey);
+    const d=-s*(ex*(p[1]-a[1])-ey*(p[0]-a[0]))/L;m=Math.max(m,d);}return m;}
+
+function activeFeet(){return LEVELS[S.lv].single?[FEET[0]]:FEET;}
+function support(){const pts=[];activeFeet().forEach(f=>pts.push(f.p.heel,f.p.mt1,f.p.mt5));return hull(pts);}
+
+function computeLoads(){
+  const lv=LEVELS[S.lv],res=[];
+  if(lv.single){const f=FEET[0];res.push({f,w:1,l:bary(S.P,f.p.heel,f.p.mt1,f.p.mt5)});res.push({f:FEET[1],w:0,l:[0,0,0]});}
+  else{
+    const xl=FEET[0].c[0],xr=FEET[1].c[0];let wl=(xr-S.P[0])/(xr-xl);wl=Math.min(1,Math.max(0,wl));
+    FEET.forEach((f,i)=>{const lp=[f.c[0]+(S.P[0]-MID[0])*.55,S.P[1]];res.push({f,w:i?1-wl:wl,l:bary(lp,f.p.heel,f.p.mt1,f.p.mt5)});});
+  }
+  return res;
+}
+// per-foot status: perfect / good / collapse type
+function footStatus(l){
+  const [h,m1,m5]=l;
+  if(h<.12)return 'tr'; if(m1>.58)return 'med'; if(m5>.58)return 'lat'; if(h>.6)return 'back';
+  if(Math.min(h,m1,m5)>=.22&&Math.max(h,m1,m5)<=.45)return 'perfect';
+  return 'good';
+}
+function evaluate(){
+  const L=computeLoads();S.loads=L;let worst='perfect';
+  const rank={perfect:0,good:1,tr:2,med:2,lat:2,back:2,side:2};
+  const per=L.map(x=>x.w>.12?footStatus(x.l):'idle');
+  per.forEach(s=>{if(s!=='idle'&&rank[s]>rank[worst])worst=s;});
+  if(!LEVELS[S.lv].single){const wl=L[0].w;if(wl<.28||wl>.72)worst='side';}
+  S.per=per;S.status=worst;return worst;
+}
+
+// ---- input: relative drag
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};cv.setPointerCapture(e.pointerId);});
+cv.addEventListener('pointermove',e=>{if(!drag||!S.run)return;const r=cv.getBoundingClientRect();const k=view.s?1/view.s:1;
+  S.P[0]+=(e.clientX-drag.x)*k*.85;S.P[1]+=(e.clientY-drag.y)*k*.85;drag={x:e.clientX,y:e.clientY};});
+['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>drag=null));
+const keys={};addEventListener('keydown',e=>{keys[e.key]=1;});addEventListener('keyup',e=>{keys[e.key]=0;});
+
+// ---- audio
+let ac=null;function beep(f,d,type='sine',v=.08){if(!ac)return;const o=ac.createOscillator(),gn=ac.createGain();o.type=type;o.frequency.value=f;
+  gn.gain.setValueAtTime(v,ac.currentTime);gn.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(gn).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}
+
+// ---- view fit
+const view={s:1,ox:0,oy:0};
+function fit(){const r=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);
+  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);
+  const s=Math.min(r.width/W,r.height/H);view.s=s;view.ox=(r.width-W*s)/2;view.oy=(r.height-H*s)/2;view.dpr=dpr;}
+addEventListener('resize',fit);
+
+function banner(t){const b=$('banner');b.textContent=t;b.style.opacity=t?1:0;}
+
+// ---- game flow
+function startLevel(){S.t=0;S.P=[...(LEVELS[S.lv].single?FEET[0].c:MID)];S.V=[0,0];S.F=[0,0];S.Ft=[0,0];S.ev=null;S.nextEv=3+Math.random()*2;
+  S.danger=0;S.invul=1;S.trail=[];S.run=true;banner('');$('lvl').textContent=`第 ${S.lv+1} 關・${LEVELS[S.lv].t}`;}
+function showLevel(){const lv=LEVELS[S.lv];$('lvNum').textContent=`第 ${S.lv+1} / ${LEVELS.length} 關`;$('lvTitle').textContent=lv.t;$('lvDesc').textContent=lv.d;$('ovLevel').hidden=false;}
+$('btnStart').onclick=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();}catch(e){}
+  reset();$('ovStart').hidden=true;showLevel();};
+$('btnGo').onclick=()=>{$('ovLevel').hidden=true;startLevel();};
+$('btnAgain').onclick=()=>{reset();$('ovEnd').hidden=true;showLevel();};
+
+function loseHeart(why){S.hearts--;S.flash=1;S.combo=0;beep(110,.35,'square',.1);banner(why);setTimeout(()=>{if(!S.ev)banner('');},1400);
+  if(S.hearts<=0){S.run=false;setTimeout(end,700);return;}
+  S.P=[...(LEVELS[S.lv].single?FEET[0].c:MID)];S.V=[0,0];S.danger=0;S.invul=1.2;}
+
+function levelClear(){S.run=false;S.cleared=S.lv+1;S.score+=200+S.hearts*50;beep(660,.15);setTimeout(()=>beep(880,.25),150);
+  if(S.lv+1>=LEVELS.length){setTimeout(end,600);return;}S.lv++;setTimeout(showLevel,500);}
+
+let acc=0;
+function step(dt){
+  const lv=LEVELS[S.lv];S.t+=dt;S.invul=Math.max(0,S.invul-dt);
+  // random drift force
+  S.nextF-=dt;if(S.nextF<=0){const a=Math.random()*Math.PI*2,m=lv.drift*(.5+Math.random()*.8);S.Ft=[Math.cos(a)*m,Math.sin(a)*m];S.nextF=.6+Math.random()*.7;}
+  S.F[0]+=(S.Ft[0]-S.F[0])*Math.min(1,dt*3);S.F[1]+=(S.Ft[1]-S.F[1])*Math.min(1,dt*3);
+  let fx=S.F[0],fy=S.F[1];
+  // life events
+  if(lv.ev.length){S.nextEv-=dt;
+    if(!S.ev&&S.nextEv<=0){const k=lv.ev[Math.floor(Math.random()*lv.ev.length)],e=EVENTS[k];
+      S.ev={...e,dir:e.rs&&Math.random()<.5?-1:1};S.evT=e.d;banner(e.n);beep(440,.12,'triangle');}
+    if(S.ev){S.evT-=dt;fx+=S.ev.f[0]*S.ev.dir;fy+=S.ev.f[1];
+      if(S.ev.shake){fx+=(Math.random()-.5)*900;fy+=(Math.random()-.5)*900;S.shake=6;}
+      if(S.evT<=0){S.ev=null;banner('');S.nextEv=2+Math.random()*2.5;S.shake=0;}}}
+  // keyboard
+  const kk=260;if(keys.ArrowLeft)S.P[0]-=kk*dt;if(keys.ArrowRight)S.P[0]+=kk*dt;if(keys.ArrowUp)S.P[1]-=kk*dt;if(keys.ArrowDown)S.P[1]+=kk*dt;
+  S.V[0]+=fx*dt;S.V[1]+=fy*dt;const damp=Math.exp(-1.6*dt);S.V[0]*=damp;S.V[1]*=damp;
+  S.P[0]+=S.V[0]*dt;S.P[1]+=S.V[1]*dt;
+  S.trail.push([...S.P]);if(S.trail.length>40)S.trail.shift();
+  const st=evaluate();
+  if(S.invul<=0){
+    if(outside(S.P,support())>14){loseHeart('重心跑出腳外，跌倒了！');return;}
+    if(st==='perfect'){S.danger=Math.max(0,S.danger-dt*.8);S.perfSec+=dt;S.totalPerfect+=dt;
+      if(S.perfSec>=1){S.perfSec-=1;S.combo=Math.min(5,S.combo+1);S.score+=10*S.combo;beep(520+S.combo*60,.06,'sine',.04);}}
+    else if(st==='good'){S.danger=Math.max(0,S.danger-dt*.4);S.perfSec=0;S.score+=dt*3;S.combo=Math.max(0,S.combo-dt);}
+    else{S.danger+=dt/1.6;S.perfSec=0;S.combo=0;S.coll[st]+=dt;
+      if(S.danger>=1){loseHeart(`${COLL_NAMES[st]}${st==='side'||st==='back'?'太重':'塌了'}！扣一顆愛心`);return;}}
+  }
+  if(S.t>=LV_TIME)levelClear();
+}
+
+// ---- drawing
+const C={ink:'#1f2a2e',muted:'#5d6b6f',red:'#c1553d',ok:'#3f8f6b',under:'#4a7fa8',line:'#c9d3d0',skin:'#f3e2d4',skinD:'#e2c6b0',panel:'#f6f8f7'};
+function footPath(c,f,ox=0,oy=0,sc=1){
+  const pts=OUTLINE.map(([u,v])=>g(f,u,v));c.beginPath();
+  const T=p=>[ox+p[0]*sc,oy+p[1]*sc];
+  for(let i=0;i<pts.length;i++){const a=T(pts[i]),b=T(pts[(i+1)%pts.length]),m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+    if(i===0)c.moveTo(m[0],m[1]);else c.quadraticCurveTo(a[0],a[1],m[0],m[1]);}
+  const a=T(pts[0]),b=T(pts[1]);c.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2);c.closePath();
+}
+function loadColor(x){return x>.45?C.red:x<.2?C.under:C.ok;}
+function drawFoot(c,f,load,status,idle,blind){
+  c.save();if(idle)c.globalAlpha=.28;
+  footPath(c,f);c.fillStyle=C.skin;c.fill();c.lineWidth=3;c.strokeStyle=C.skinD;c.stroke();
+  // toes
+  const perfect=status==='perfect'&&!idle;
+  TOES.forEach(([u,v,rw,rh],i)=>{const [x,y]=g(f,u,v);c.beginPath();c.ellipse(x,y,rw*FW,rh*FL*.55,0,0,Math.PI*2);
+    const sig=(i===0||i===4);c.fillStyle=sig&&perfect?C.red:C.skin;c.fill();c.strokeStyle=sig?C.red:C.skinD;c.lineWidth=sig?3:2;c.stroke();});
+  if(!idle){
+    const p=f.p,cen=f.c;
+    const arch=(a,b,key,label,lo)=>{const coll=status===key;const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+      const dx=cen[0]-m[0],dy=cen[1]-m[1],dl=Math.hypot(dx,dy)||1,bul=coll?4:26;
+      const cp=[m[0]+dx/dl*bul,m[1]+dy/dl*bul];
+      c.beginPath();c.moveTo(a[0],a[1]);c.quadraticCurveTo(cp[0],cp[1],b[0],b[1]);
+      c.lineWidth=coll?12:9;c.lineCap='round';c.strokeStyle=coll?C.red:(status==='perfect'?C.ok:'#8fb7a4');c.stroke();
+      if(coll){c.fillStyle=C.red;c.font='bold 22px '+getComputedStyle(document.body).fontFamily;c.textAlign='center';
+        c.fillText(label+'塌',cp[0]+lo[0],cp[1]+lo[1]);}};
+    arch(p.heel,p.mt1,'med','內側',[f.side*44,0]);arch(p.heel,p.mt5,'lat','外側',[-f.side*44,0]);arch(p.mt1,p.mt5,'tr','橫弓',[0,-30]);
+    ['heel','mt1','mt5'].forEach((k,i)=>{const [x,y]=p[k],v=load[i];
+      c.beginPath();c.arc(x,y,12+v*34,0,Math.PI*2);c.fillStyle=loadColor(v)+'cc';c.fill();
+      if(!blind){c.fillStyle='#fff';c.font='bold 20px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(Math.round(v*100)+'%',x,y);}});
+    c.textBaseline='alphabetic';
+  }
+  c.restore();
+}
+function drawFigure(c){
+  // front-view figure leaning with weight shift; head drops forward when weight goes to forefoot
+  const lv=LEVELS[S.lv],dx=(S.P[0]-(lv.single?FEET[0].c[0]:MID[0]))/120,dy=(S.P[1]-(lv.single?FEET[0].c[1]:MID[1]))/120;
+  const bx=300,by=300,ang=Math.max(-.5,Math.min(.5,dx*.35)),st=S.status;
+  c.save();c.translate(bx,by);c.scale(1.25,1.25);c.rotate(ang);
+  c.strokeStyle=C.ink;c.lineWidth=7;c.lineCap='round';c.lineJoin='round';
+  const hip=[0,-90],sh=[0,-180-Math.min(0,dy)*-6];
+  c.beginPath();if(lv.single){c.moveTo(-14,0);c.lineTo(-14,hip[1]);c.moveTo(14,hip[1]);c.lineTo(34,-40);c.lineTo(20,-10);}
+  else{c.moveTo(-28,0);c.lineTo(-14,hip[1]);c.moveTo(28,0);c.lineTo(14,hip[1]);}
+  c.moveTo(-16,hip[1]);c.lineTo(16,hip[1]);c.moveTo(0,hip[1]);c.lineTo(0,sh[1]);
+  const arm=lv.blind?-0.3:0.25+Math.abs(ang);c.moveTo(-26,sh[1]);c.lineTo(26,sh[1]);
+  c.moveTo(-26,sh[1]);c.lineTo(-26-50*Math.sin(arm+.6),sh[1]+50*Math.cos(arm+.6));
+  c.moveTo(26,sh[1]);c.lineTo(26+50*Math.sin(arm+.6),sh[1]+50*Math.cos(arm+.6));c.stroke();
+  const hy=sh[1]-36+Math.max(0,-dy)*8;c.beginPath();c.arc(0,hy,26,0,Math.PI*2);c.fillStyle=C.panel;c.fill();c.stroke();
+  c.fillStyle=C.ink;
+  if(lv.blind){c.lineWidth=3;c.beginPath();c.moveTo(-14,hy-2);c.lineTo(-4,hy-2);c.moveTo(4,hy-2);c.lineTo(14,hy-2);c.stroke();}
+  else{c.beginPath();c.arc(-9,hy-3,3.5,0,7);c.arc(9,hy-3,3.5,0,7);c.fill();}
+  c.lineWidth=3;c.beginPath();const happy=st==='perfect';c.arc(0,hy+(happy?4:14),9,happy?0.2:Math.PI+0.3,happy?Math.PI-0.2:2*Math.PI-0.3);c.stroke();
+  if(st&&st!=='perfect'&&st!=='good'){c.fillStyle=C.under;c.beginPath();c.ellipse(34,hy-16,5,8,0,0,7);c.fill();}
+  c.restore();
+  c.fillStyle=C.line;c.fillRect(170,by+5,260,5);
+}
+function draw(){
+  const c=ctx,d=view.dpr||1;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,cv.width,cv.height);
+  c.translate(view.ox,view.oy);c.scale(view.s,view.s);
+  if(S.shake){c.translate((Math.random()-.5)*S.shake,(Math.random()-.5)*S.shake);}
+  const lv=LEVELS[S.lv];
+  if(!S.loads)evaluate();
+  drawFigure(c);
+  // support polygon
+  const h=support();c.beginPath();h.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.closePath();
+  c.setLineDash([8,8]);c.strokeStyle=C.muted+'88';c.lineWidth=2;c.stroke();c.setLineDash([]);
+  S.loads.forEach((x,i)=>drawFoot(c,x.f,x.l,S.per?S.per[i]:'perfect',x.w<=.12&&lv.single&&i===1,lv.blind));
+  if(!lv.single&&S.loads){c.fillStyle=C.muted;c.font='bold 22px sans-serif';c.textAlign='center';
+    c.fillText(`左 ${Math.round(S.loads[0].w*100)}%`,FEET[0].cx,HEEL_Y+40);c.fillText(`右 ${Math.round(S.loads[1].w*100)}%`,FEET[1].cx,HEEL_Y+40);}
+  if(!lv.blind){
+    c.beginPath();S.trail.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.strokeStyle=C.red+'55';c.lineWidth=4;c.stroke();
+    const [x,y]=S.P;c.beginPath();c.arc(x,y,16,0,7);c.fillStyle=C.red;c.fill();c.lineWidth=4;c.strokeStyle='#fff';c.stroke();
+    c.beginPath();c.arc(x,y,26,0,7);c.strokeStyle=C.red;c.lineWidth=2;c.stroke();
+  }
+  if(S.flash>0){c.fillStyle=`rgba(193,85,61,${S.flash*.35})`;c.fillRect(-50,-50,W+100,H+100);S.flash=Math.max(0,S.flash-.05);}
+}
+function hud(){$('hearts').textContent='♥'.repeat(Math.max(0,S.hearts))+'♡'.repeat(3-Math.max(0,S.hearts));
+  $('score').textContent=Math.round(S.score)+(S.combo>=2?` ×${Math.floor(S.combo)}`:'');
+  $('tleft').textContent=Math.max(0,Math.ceil(LV_TIME-S.t));
+  $('timebar').firstElementChild.style.width=Math.min(100,S.t/LV_TIME*100)+'%';
+  $('danger').firstElementChild.style.width=Math.min(100,S.danger*100)+'%';}
+
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(S.run)step(dt);draw();hud();requestAnimationFrame(loop);}
+
+// ---- end + share card
+const TIPS={
+ med:'你最常塌的是<b>內側縱弓</b>：重量一直壓在大拇趾那一側，膝蓋容易跟著往內倒。',
+ lat:'你最常塌的是<b>外側縱弓</b>：重量常跑到小拇趾外側，像在翻腳刀，腳踝比較容易不穩。',
+ tr:'你最常塌的是<b>橫弓</b>：重心常衝到前腳掌，前腳掌容易累、長繭。',
+ back:'你的重心常<b>往後跟坐</b>：身體只好往前彎來平衡，肩頸容易緊。',
+ side:'你的重量常<b>偏一邊</b>：跟站三七步一樣，骨盆容易跟著歪。',
+};
+function rating(){const sc=S.score;if(S.cleared>=LEVELS.length)return '站穩大師';if(sc>=900)return '穩如泰山';if(sc>=500)return '站姿模範生';if(sc>=200)return '偶爾晃一下';return '搖搖欲墜';}
+function end(){S.run=false;banner('');
+  const worst=Object.entries(S.coll).sort((a,b)=>b[1]-a[1])[0];
+  const title=rating();$('endTitle').textContent=title;
+  $('endTip').innerHTML=(worst[1]>.3?TIPS[worst[0]]+'<br>':'你三個足弓都撐得很好！<br>')+'這是遊戲裡的你。真實的足弓要看你的腳，來做<b>足部張力檢測</b>就知道。';
+  $('shareImg').src=card(title,worst[1]>.3?worst[0]:null);$('ovEnd').hidden=false;}
+function card(title,worst){
+  const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  c.fillStyle='#e6ecea';c.fillRect(0,0,1080,1350);
+  c.fillStyle=C.ink;c.textAlign='center';
+  c.font='900 92px "Noto Serif TC",serif';c.fillText('站得穩挑戰',540,150);
+  c.font='bold 40px sans-serif';c.fillStyle=C.muted;c.fillText(`過了 ${S.cleared} / ${LEVELS.length} 關`,540,215);
+  // two feet with toes
+  c.save();c.translate(540-300*1.15,180);c.scale(1.15,1.15);c.translate(0,-300);
+  FEET.forEach(f=>{const coll=worst&&worst!=='side'&&worst!=='back'?worst:null;
+    drawFoot(c,f,[1/3,1/3,1/3],coll||'perfect',false,true);});
+  c.restore();
+  c.fillStyle=C.red;c.font='900 120px "Noto Serif TC",serif';c.fillText(title,540,1000);
+  c.fillStyle=C.ink;c.font='bold 56px sans-serif';c.fillText(`${Math.round(S.score)} 分`,540,1080);
+  c.font='bold 36px sans-serif';c.fillStyle=C.muted;
+  c.fillText(worst?`最常塌：${COLL_NAMES[worst]}`:'三個足弓都撐住了',540,1140);
+  c.fillStyle=C.ink;c.fillRect(0,1210,1080,140);
+  c.fillStyle='#fff';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);
+  return k.toDataURL('image/jpeg',.9);
+}
+
+fit();evaluate();requestAnimationFrame(loop);
+if(document.fonts)document.fonts.ready.then(fit);
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>
