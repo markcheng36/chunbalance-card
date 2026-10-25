@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="上傳站姿照片、點出關節，看看你的身體歪在哪裡（僅供娛樂）。｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="身體平衡報告">
+<meta property="og:description" content="上傳站姿照片、點出關節，看看你的身體歪在哪裡（僅供娛樂）。｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/posture.html">
+<title>身體平衡報告｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: steps in one column — choose view → upload → tap landmarks on photo → report card. Report styled like a diagnostic printout. */
+:root{
+  --bg:#e9ece8; --paper:#fbfbf8; --ink:#1f2a2e; --muted:#5f6b6a; --line:#cfd6d2;
+  --red:#c1553d; --ok:#3f8f6b; --warn:#c99a2e; --plumb:#2f7fb0;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+#app{max-width:540px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 32px}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted)}
+h1{font-family:var(--serif);font-weight:900;font-size:40px;margin:6px 0 4px;line-height:1.15}
+h1 em{font-style:normal;color:var(--red)}
+p{line-height:1.75;color:var(--muted);font-size:15px;margin:0}
+p b{color:var(--ink)}
+section{margin-top:16px}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.opt{font:inherit;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;color:var(--ink)}
+.opt b{display:block;font-family:var(--serif);font-size:20px}
+.opt small{color:var(--muted);font-size:12px}
+.opt.on{border-color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.opt:focus-visible,button:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+button.main,.btn{font:inherit;font-weight:700;font-size:16px;border:0;border-radius:26px;padding:12px 24px;cursor:pointer;background:var(--red);color:#fff;text-decoration:none;display:inline-block;text-align:center}
+button.alt{font:inherit;font-weight:700;font-size:16px;border-radius:26px;padding:12px 24px;cursor:pointer}
+.btn.alt,button.alt{background:var(--paper);color:var(--ink);border:1.5px solid var(--line)}
+.btn.line{background:#06c755}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.tip{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.7;color:var(--muted);margin-top:12px}
+#stageWrap{position:relative;margin-top:10px;background:#d8ddd9;border-radius:8px;overflow:hidden}
+canvas#c{display:block;max-width:100%;max-height:calc(100vh - 200px);width:auto;height:auto;margin:0 auto;touch-action:none}
+#guide{position:sticky;top:0;z-index:5;display:flex;gap:12px;align-items:center;background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:8px 10px;margin-top:10px}
+#guide canvas{width:72px;height:120px;flex:none}
+#gStep{font-family:var(--mono);font-size:12px;color:var(--muted)}
+#gTxt{font-family:var(--serif);font-weight:900;font-size:22px;line-height:1.3;color:var(--red)}
+#gSub{font-size:13px;color:var(--muted);line-height:1.5;margin-top:2px}
+#gBtns{display:flex;gap:8px;margin-top:6px}
+#gBtns button{padding:6px 14px!important;font-size:14px!important}
+#how{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+#how div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:8px;font-size:13px;line-height:1.5;text-align:center}
+#how b{display:block;font-family:var(--serif);font-size:22px;color:var(--red)}
+#loupe{position:absolute;top:8px;width:120px;height:120px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.35);pointer-events:none;display:none;background:#000}
+#stepBar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+#stepTxt{font-weight:700;font-size:16px}
+#stepTxt span{color:var(--red)}
+#dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+#dots i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+#dots i.on{background:var(--ok)}
+.report{background:var(--paper);border:1.5px solid var(--ink);border-radius:6px;padding:14px;margin-top:12px}
+.report .head{display:flex;justify-content:space-between;align-items:baseline}
+.score{font-family:var(--serif);font-weight:900;font-size:56px;line-height:1}
+.score small{font-size:18px;color:var(--muted)}
+.title{font-family:var(--serif);font-weight:900;font-size:22px;color:var(--red);margin-top:4px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+td{padding:8px 4px;border-top:1px solid var(--line);vertical-align:top}
+td.v{font-family:var(--mono);text-align:right;white-space:nowrap}
+.pill{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:4px}
+.pill.ok{background:#e1efe7;color:var(--ok)}.pill.warn{background:#f6edd8;color:#8a6a1c}.pill.bad{background:#f6e3de;color:var(--red)}
+#shareImg{width:min(100%,300px);display:block;margin:12px auto 0;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);-webkit-touch-callout:default}
+.small{font-size:12px!important;text-align:center}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <div class="mono">鈞衡舍 ChunBalance・BODY BALANCE REPORT</div>
+  <h1>身體平衡<em>報告</em></h1>
+  <p class="mono" style="color:var(--red)">僅供娛樂・不是醫療診斷</p>
+  <p class="intro">拍一張站姿照片，點出幾個關節的位置，就能看出你的身體<b>歪在哪裡</b>。</p>
+  <div id="how" class="intro"><div><b>1</b>選正面<br>或側面</div><div><b>2</b>上傳一張<br>全身站姿照</div><div><b>3</b>照上方提示<br>在照片上點關節</div></div>
+
+  <section id="s1">
+    <div class="mono">STEP 1・選擇角度</div>
+    <div class="choice">
+      <button class="opt on" id="optFront"><b>正面</b><small>看高低肩、骨盆歪、重心偏哪邊</small></button>
+      <button class="opt" id="optSide"><b>側面</b><small>看頭往前、圓肩、骨盆前推</small></button>
+    </div>
+    <div id="faceDir" hidden>
+      <div class="mono" style="margin-top:12px">照片裡的人，臉朝哪一邊？</div>
+      <div class="choice"><button class="opt on" id="dirL"><b>← 朝左</b></button><button class="opt" id="dirR"><b>朝右 →</b></button></div>
+    </div>
+    <div class="tip" id="howShoot">拍照小撇步：請別人幫你拍，<b>全身入鏡</b>、手機與腰同高、鏡頭拿正。自然站好，不要刻意挺胸。穿貼身一點的衣服比較準。</div>
+    <div class="row">
+      <label class="btn" for="file">上傳照片</label>
+      <button class="alt" id="demo">用示範人形試玩</button>
+    </div>
+    <input type="file" id="file" accept="image/*" hidden>
+    <p class="small" style="margin-top:8px">照片只在你的手機裡處理，<b>不會上傳</b>到任何地方。</p>
+  </section>
+
+  <section id="s2" hidden>
+    <div id="guide"><canvas id="gc" width="144" height="240"></canvas>
+      <div style="flex:1"><div id="gStep"></div><div id="gTxt"></div><div id="gSub"></div>
+      <div id="dots"></div>
+      <div id="gBtns"><button class="alt" id="undo">上一步</button><button class="main" id="go" hidden>看報告</button></div></div></div>
+    <div id="stageWrap"><canvas id="c"></canvas><canvas id="loupe" width="240" height="240"></canvas></div>
+    <p class="small" style="margin-top:6px">在照片上<b>點一下</b>就放好一個點。點歪了？<b>按住紅點拖過去</b>就能修正，手指下方的放大鏡會幫你對準。</p>
+  </section>
+
+  <section id="s3" hidden>
+    <div class="report" id="report"></div>
+    <img id="shareImg" alt="身體平衡報告分享卡">
+    <p class="small" style="margin-top:6px">長按圖片可以存起來或傳給朋友</p>
+    <div class="tip">這是用照片估算的<b>趣味報告</b>，不是醫療診斷。拍照角度、衣服都會影響結果。想知道歪掉的真正原因，要從腳開始看：來做一次<b>足部張力檢測</b>。</div>
+    <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約足部張力檢測</a></div>
+    <div class="row">
+      <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+      <button class="alt" id="again">再測一張</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d');
+const STEPS={
+ front:[['eyeL','左邊的眼睛','照片中靠左的那隻眼睛'],['eyeR','右邊的眼睛','照片中靠右的那隻眼睛'],['shL','左邊的肩膀','肩頭最外側的點'],['shR','右邊的肩膀','肩頭最外側的點'],
+        ['hipL','左邊的骨盆','腰側摸得到的骨頭最高點'],['hipR','右邊的骨盆','腰側摸得到的骨頭最高點'],['knL','左邊的膝蓋','膝蓋正中間'],['knR','右邊的膝蓋','膝蓋正中間'],
+        ['anL','左邊的腳踝','腳踝骨正中間'],['anR','右邊的腳踝','腳踝骨正中間']],
+ side:[['ear','耳朵','耳垂的位置'],['sh','肩膀','肩頭正中間'],['hip','髖關節','褲子側縫、屁股最寬的地方'],['kn','膝蓋','膝蓋側面正中間'],['an','腳踝','外腳踝骨']]};
+const SHORT={eyeL:'左眼',eyeR:'右眼',shL:'左肩',shR:'右肩',hipL:'左骨盆',hipR:'右骨盆',knL:'左膝',knR:'右膝',anL:'左踝',anR:'右踝',ear:'耳',sh:'肩',hip:'髖',kn:'膝',an:'踝'};
+const GP={front:{eyeL:[60,24],eyeR:[84,24],shL:[38,58],shR:[106,58],hipL:[50,120],hipR:[94,120],knL:[54,172],knR:[90,172],anL:[54,222],anR:[90,222]},
+ side:{ear:[78,26],sh:[76,60],hip:[74,122],kn:[74,174],an:[74,222]}};
+const gc=$('gc'),gx=gc.getContext('2d');let pulse=0;
+function guide(){gx.clearRect(0,0,144,240);gx.strokeStyle='#9aa5a2';gx.fillStyle='#e3e7e4';gx.lineWidth=12;gx.lineCap='round';gx.lineJoin='round';
+  const P=GP[mode],ln=a=>{gx.beginPath();a.forEach((q,i)=>i?gx.lineTo(...q):gx.moveTo(...q));gx.stroke();};
+  if(mode==='front'){gx.beginPath();gx.arc(72,26,17,0,7);gx.fill();gx.lineWidth=2;gx.stroke();gx.lineWidth=12;
+    ln([[72,44],[72,120]]);ln([[38,58],[106,58]]);ln([[38,58],[30,130]]);ln([[106,58],[114,130]]);ln([[50,120],[94,120]]);ln([[50,120],[54,172],[54,226]]);ln([[94,120],[90,172],[90,226]]);}
+  else{const f=x=>dir<0?x:144-x;gx.beginPath();gx.arc(f(82),26,17,0,7);gx.fill();gx.lineWidth=2;gx.stroke();gx.lineWidth=12;
+    ln([[f(78),44],[f(76),60],[f(74),122],[f(74),174],[f(74),222]]);ln([[f(76),62],[f(74),120]]);gx.beginPath();gx.moveTo(f(74),226);gx.lineTo(f(52),226);gx.stroke();}
+  order.forEach(([key],i)=>{let [x,y]=P[key];if(mode==='side'&&dir>0)x=144-x;const cur=i===k;
+    gx.beginPath();gx.arc(x,y,cur?7+Math.sin(pulse)*2:5,0,7);gx.fillStyle=i<k?'#3f8f6b':cur?'#c1553d':'#c7cdca';gx.fill();
+    if(cur){gx.beginPath();gx.arc(x,y,13+Math.sin(pulse)*3,0,7);gx.strokeStyle='#c1553d';gx.lineWidth=2.5;gx.stroke();}});}
+(function tick(){pulse+=.15;if(!$('s2').hidden)guide();requestAnimationFrame(tick);})();
+let mode='front',dir=-1,img=null,pts={},order=[],k=0,scale=1,drag=null;
+
+function setMode(m){mode=m;$('optFront').classList.toggle('on',m==='front');$('optSide').classList.toggle('on',m==='side');$('faceDir').hidden=m!=='side';}
+$('optFront').onclick=()=>setMode('front');$('optSide').onclick=()=>setMode('side');
+$('dirL').onclick=()=>{dir=-1;$('dirL').classList.add('on');$('dirR').classList.remove('on');};
+$('dirR').onclick=()=>{dir=1;$('dirR').classList.add('on');$('dirL').classList.remove('on');};
+
+$('file').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>start(im,false);im.src=r.result;};r.readAsDataURL(f);e.target.value='';};
+$('demo').onclick=()=>{const im=new Image();im.onload=()=>start(im,true);im.src=demoFigure();};
+
+function demoFigure(){const W=600,H=1000,c=document.createElement('canvas');c.width=W;c.height=H;const g=c.getContext('2d');
+  g.fillStyle='#eef1ee';g.fillRect(0,0,W,H);g.fillStyle='#d6dcd8';g.fillRect(0,900,W,100);
+  g.fillStyle='#e8cdb6';g.strokeStyle='#c9a98f';g.lineWidth=3;
+  if(mode==='front'){
+    g.save();g.translate(300,140);g.rotate(.05);g.beginPath();g.ellipse(0,0,52,64,0,0,7);g.fill();g.stroke();
+    g.fillStyle='#333';g.beginPath();g.arc(-20,-6,5,0,7);g.arc(20,-6,5,0,7);g.fill();g.restore();
+    g.fillStyle='#e8cdb6';g.fillRect(282,195,36,40);
+    g.fillStyle='#7f9aa8';g.beginPath();g.moveTo(195,245);g.lineTo(410,232);g.lineTo(392,520);g.lineTo(210,520);g.closePath();g.fill();
+    g.fillStyle='#e8cdb6';[[195,245,160,500],[410,232,448,490]].forEach(([x,y,x2,y2])=>{g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.lineWidth=40;g.strokeStyle='#e8cdb6';g.lineCap='round';g.stroke();});
+    g.fillStyle='#41505a';g.beginPath();g.moveTo(205,510);g.lineTo(397,500);g.lineTo(390,600);g.lineTo(300,610);g.lineTo(210,600);g.closePath();g.fill();
+    [[250,600,245,880],[350,598,362,880]].forEach(([x,y,x2,y2])=>{g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.lineWidth=70;g.strokeStyle='#41505a';g.stroke();});
+    g.fillStyle='#222';g.fillRect(205,880,70,24);g.fillRect(330,880,74,24);
+  }else{
+    g.save();g.translate(250,150);g.beginPath();g.ellipse(0,0,55,64,0,0,7);g.fill();g.stroke();g.fillStyle='#333';g.beginPath();g.arc(-30,-8,5,0,7);g.fill();g.restore();
+    g.fillStyle='#e8cdb6';g.save();g.translate(285,215);g.rotate(.4);g.fillRect(-18,0,36,50);g.restore();
+    g.fillStyle='#7f9aa8';g.beginPath();g.moveTo(270,250);g.quadraticCurveTo(360,250,350,380);g.lineTo(335,520);g.lineTo(255,520);g.quadraticCurveTo(240,380,270,250);g.fill();
+    g.strokeStyle='#e8cdb6';g.lineWidth=36;g.lineCap='round';g.beginPath();g.moveTo(290,280);g.lineTo(285,480);g.stroke();
+    g.fillStyle='#41505a';g.beginPath();g.moveTo(255,500);g.lineTo(345,500);g.lineTo(350,600);g.lineTo(255,610);g.closePath();g.fill();
+    g.strokeStyle='#41505a';g.lineWidth=70;g.beginPath();g.moveTo(300,590);g.lineTo(312,740);g.lineTo(325,880);g.stroke();
+    g.fillStyle='#222';g.fillRect(260,880,110,24);dir=-1;$('dirL').onclick();
+  }
+  return c.toDataURL('image/png');}
+
+function start(im,isDemo){img=im;pts={};order=STEPS[mode];k=0;
+  const maxW=Math.min(1080,im.naturalWidth);scale=maxW/im.naturalWidth;cv.width=maxW;cv.height=Math.round(im.naturalHeight*scale);
+  document.querySelectorAll('.intro').forEach(e=>e.hidden=true);$('s1').hidden=true;$('s2').hidden=false;$('s3').hidden=true;$('dots').innerHTML=order.map(()=>'<i></i>').join('');step();draw();window.scrollTo(0,0);}
+function step(){[...$('dots').children].forEach((d,i)=>d.classList.toggle('on',i<k));const done=k>=order.length;
+  $('gStep').textContent=done?'全部點好了':`第 ${k+1} / ${order.length} 點`;$('gTxt').textContent=done?'檢查一下位置':`點「${order[k][1]}」`;
+  $('gSub').textContent=done?'紅點不準可以拖動修正，好了按「看報告」。':order[k][2]+'（看左邊小人的紅圈）';$('go').hidden=!done;}
+function toImg(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height];}
+const R=()=>Math.max(10,cv.width/45);
+cv.addEventListener('pointerdown',e=>{const p=toImg(e);
+  for(const key in pts){if(Math.hypot(pts[key][0]-p[0],pts[key][1]-p[1])<R()*2){drag=key;cv.setPointerCapture(e.pointerId);return;}}
+  if(k<order.length){pts[order[k][0]]=p;drag=order[k][0];cv.setPointerCapture(e.pointerId);k++;step();draw();}});
+cv.addEventListener('pointermove',e=>{if(!drag)return;pts[drag]=toImg(e);draw();});
+const endDrag=()=>{if(drag){drag=null;draw();}};cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);
+$('go').onclick=report;
+const lp=$('loupe'),lx=lp.getContext('2d');
+function loupe(){if(!drag){lp.style.display='none';return;}const [x,y]=pts[drag],z=Math.max(30,cv.width/10);
+  const r=cv.getBoundingClientRect(),w=$('stageWrap').getBoundingClientRect();lp.style.display='block';
+  const onLeft=(x/cv.width)>.5;lp.style.left=onLeft?(r.left-w.left+8)+'px':'';lp.style.right=onLeft?'':(w.right-r.right+8)+'px';
+  lx.fillStyle='#000';lx.fillRect(0,0,240,240);lx.drawImage(cv,x-z,y-z,z*2,z*2,0,0,240,240);
+  lx.strokeStyle='#fff';lx.lineWidth=2;lx.beginPath();lx.moveTo(120,90);lx.lineTo(120,150);lx.moveTo(90,120);lx.lineTo(150,120);lx.stroke();}
+$('undo').onclick=()=>{if(k>0){k--;delete pts[order[k][0]];step();draw();}else{$('s2').hidden=true;$('s1').hidden=false;document.querySelectorAll('.intro').forEach(e=>e.hidden=false);}};
+$('again').onclick=()=>{document.querySelectorAll('.intro').forEach(e=>e.hidden=false);$('s3').hidden=true;$('s1').hidden=false;window.scrollTo(0,0);};
+
+function overlay(g,s=1){const L=(a,b,col,w=4)=>{if(!pts[a]||!pts[b])return;g.beginPath();g.moveTo(pts[a][0]*s,pts[a][1]*s);g.lineTo(pts[b][0]*s,pts[b][1]*s);g.strokeStyle=col;g.lineWidth=w*s*cv.width/600;g.stroke();};
+  const u=cv.width/600*s;
+  if(mode==='front'){
+    [['eyeL','eyeR'],['shL','shR'],['hipL','hipR'],['knL','knR'],['anL','anR']].forEach(([a,b])=>{if(pts[a]&&pts[b]){const ang=Math.abs(Math.atan2(pts[b][1]-pts[a][1],pts[b][0]-pts[a][0])*180/Math.PI);L(a,b,ang<1.5?'#3f8f6b':ang<3?'#c99a2e':'#c1553d');}});
+    if(pts.anL&&pts.anR){const mx=(pts.anL[0]+pts.anR[0])/2*s;g.setLineDash([10*u,8*u]);g.beginPath();g.moveTo(mx,0);g.lineTo(mx,cv.height*s);g.strokeStyle='#2f7fb0';g.lineWidth=2.5*u;g.stroke();g.setLineDash([]);}
+  }else{
+    if(pts.an){const x=pts.an[0]*s;g.setLineDash([10*u,8*u]);g.beginPath();g.moveTo(x,0);g.lineTo(x,cv.height*s);g.strokeStyle='#2f7fb0';g.lineWidth=2.5*u;g.stroke();g.setLineDash([]);}
+    ['ear','sh','hip','kn'].forEach((a,i,arr)=>{if(i<arr.length)L(a,arr[i+1]||'an','#c1553d',3);});
+  }
+  if(s===1)for(const [key,name] of order)if(pts[key]){g.font=`bold ${Math.round(R()*1.3)}px sans-serif`;g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=R()/3;const tx=pts[key][0]+R()*.9,ty=pts[key][1]-R()*.6;const lb=SHORT[key]||name;g.strokeText(lb,tx,ty);g.fillText(lb,tx,ty);}
+  for(const key in pts){g.beginPath();g.arc(pts[key][0]*s,pts[key][1]*s,R()*.6*s,0,7);g.fillStyle='#c1553d';g.fill();g.lineWidth=3*u;g.strokeStyle='#fff';g.stroke();}}
+function draw(){ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(img,0,0,cv.width,cv.height);overlay(ctx);loupe();}
+
+const deg=(a,b)=>{let d=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;if(d>90)d-=180;if(d<-90)d+=180;return d;};
+function grade(v,ok,warn){v=Math.abs(v);return v<ok?'ok':v<warn?'warn':'bad';}
+const PILL={ok:'正常',warn:'注意',bad:'明顯'};
+function report(){let rows=[],pen=0,worst=null;
+  if(mode==='front'){
+    const H=Math.hypot(((pts.anL[0]+pts.anR[0])/2)-((pts.eyeL[0]+pts.eyeR[0])/2),((pts.anL[1]+pts.anR[1])/2)-((pts.eyeL[1]+pts.eyeR[1])/2));
+    const items=[['頭部傾斜','eyeL','eyeR',1],['高低肩','shL','shR',1.3],['骨盆傾斜','hipL','hipR',1.3],['膝蓋高低','knL','knR',.8],['腳踝高低','anL','anR',.5]];
+    items.forEach(([n,a,b,w])=>{const d=deg(pts[a],pts[b]);const g=grade(d,1.5,3);const hi=d>0?'畫面左邊較高':'畫面右邊較高';
+      const p=Math.min(22,Math.max(0,Math.abs(d)-.5)*2.4*w);pen+=p;if(!worst||p>worst.p)worst={n,p};
+      rows.push([n,`${Math.abs(d).toFixed(1)}°`,g,Math.abs(d)<.5?'很平':hi]);});
+    const midTop=((pts.shL[0]+pts.shR[0])/2),midBot=((pts.anL[0]+pts.anR[0])/2),sh=(midTop-midBot)/H*100;const g=grade(sh,2,4);
+    pen+=Math.min(15,Math.abs(sh)*2.5);rows.push(['重心偏移',`${Math.abs(sh).toFixed(1)}%`,g,Math.abs(sh)<1?'置中':(sh>0?'上身偏畫面右邊':'上身偏畫面左邊')]);
+    if(Math.abs(sh)*2.5>(worst?worst.p:0))worst={n:'重心偏移',p:Math.abs(sh)*2.5};
+  }else{
+    const H=Math.hypot(pts.ear[0]-pts.an[0],pts.ear[1]-pts.an[1]);const f=x=>(x-pts.an[0])*dir/H*100; // + = forward of ankle line
+    const ear=f(pts.ear[0]),sh=f(pts.sh[0]),hip=f(pts.hip[0]),kn=f(pts.kn[0]);
+    const items=[['頭往前（烏龜頸）',ear-sh,3,6,'耳朵在肩膀前面','耳朵在肩膀後面'],['圓肩・駝背',sh-hip,3,6,'肩膀在髖前面','肩膀在髖後面'],['骨盆前推',hip,3,6,'髖在腳踝前面','髖在腳踝後面'],['膝蓋位置',kn,3,6,'膝蓋往前彎','膝蓋往後鎖（超伸）']];
+    items.forEach(([n,v,a,b,pos,neg])=>{const g=grade(v,a,b);const p=Math.min(25,Math.max(0,Math.abs(v)-1)*3.2);pen+=p;if(!worst||p>worst.p)worst={n,p};
+      rows.push([n,`${Math.abs(v).toFixed(1)}%`,g,Math.abs(v)<1?'在線上':(v>0?pos:neg)]);});
+  }
+  const score=Math.max(35,Math.round(100-pen));
+  const title=score>=90?'站得穩・平衡模範生':score>=78?'小歪一下':score>=62?'身體在代償了':'結構警報響了';
+  $('report').innerHTML=`<div class="head"><div><div class="mono">${mode==='front'?'FRONT VIEW':'SIDE VIEW'}・平衡分數</div><div class="score">${score}<small> / 100</small></div><div class="title">${title}</div></div>
+    <div class="mono" style="text-align:right">${new Date().toLocaleDateString('zh-TW')}</div></div>
+    <table>${rows.map(r=>`<tr><td>${r[0]}<span class="pill ${r[2]}">${PILL[r[2]]}</span><br><small style="color:var(--muted)">${r[3]}</small></td><td class="v">${r[1]}</td></tr>`).join('')}</table>
+    <p style="margin-top:10px;font-size:14px">${worst&&worst.p>4?`最需要注意的是<b>${worst.n}</b>。歪的地方常常不是原因，身體會從腳一路往上代償。`:'整體很平衡，繼續保持！'}</p>`;
+  $('shareImg').src=card(score,title,rows);$('s2').hidden=true;$('s3').hidden=false;window.scrollTo(0,0);}
+function card(score,title,rows){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  c.fillStyle='#e9ece8';c.fillRect(0,0,1080,1350);
+  // photo panel
+  const ph=880,pw=Math.min(520,cv.width/cv.height*ph),px=60,py=150;c.save();c.beginPath();c.rect(px,py,pw,ph);c.clip();
+  const s=ph/cv.height;c.translate(px+(pw-cv.width*s)/2,py);c.drawImage(img,0,0,cv.width*s,cv.height*s);
+  const tmp={};overlay(c,s);c.restore();c.strokeStyle='#1f2a2e';c.lineWidth=4;c.strokeRect(px,py,pw,ph);
+  c.fillStyle='#5f6b6a';c.font='500 30px "JetBrains Mono",monospace';c.textAlign='left';c.fillText('BODY BALANCE REPORT',60,105);c.textAlign='right';c.fillStyle='#c1553d';c.font='bold 28px sans-serif';c.fillText('僅供娛樂',1020,105);c.textAlign='left';
+  const rx=px+pw+40;c.fillStyle='#1f2a2e';c.font='900 64px "Noto Serif TC",serif';c.fillText('身體平衡',rx,230);c.fillText('報告',rx,305);
+  c.font='900 150px "Noto Serif TC",serif';c.fillStyle='#c1553d';c.fillText(String(score),rx,480);
+  c.font='bold 34px sans-serif';c.fillStyle='#5f6b6a';c.fillText('/ 100',rx+(score>=100?260:180),480);
+  c.fillStyle='#1f2a2e';c.font='bold 38px "Noto Serif TC",serif';wrap(c,title,rx,550,1020-rx,46);
+  c.font='30px sans-serif';rows.slice(0,5).forEach((r,i)=>{const y=680+i*62;c.fillStyle=r[2]==='ok'?'#3f8f6b':r[2]==='warn'?'#c99a2e':'#c1553d';c.beginPath();c.arc(rx+10,y-10,10,0,7);c.fill();
+    c.fillStyle='#1f2a2e';c.fillText(r[0].replace(/（.*）/,''),rx+32,y);});
+  c.fillStyle='#1f2a2e';c.fillRect(0,1210,1080,140);c.fillStyle='#fff';c.textAlign='center';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);return k.toDataURL('image/jpeg',.9);}
+function wrap(c,t,x,y,w,lh){let line='';for(const ch of t){if(c.measureText(line+ch).width>w){c.fillText(line,x,y);line=ch;y+=lh;}else line+=ch;}c.fillText(line,x,y);}
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="宣宇門常用的董氏奇穴穴組，湊成一組、猜猜在哪個部位。｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="董氏奇穴連連看">
+<meta property="og:description" content="宣宇門常用的董氏奇穴穴組，湊成一組、猜猜在哪個部位。｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/tung-match.html">
+<title>董氏奇穴連連看｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<style>
+/* Layout: one column. HUD → question card → answer tiles. Overlays: start / end. Rice-paper + ink + seal red. */
+:root{
+  --bg:#f1ede4; --paper:#fbf9f4; --ink:#22262a; --muted:#6c6a63; --line:#d9d2c3;
+  --seal:#b8432f; --ok:#3d7f5f; --jade:#e4efe8;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+#app{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 28px;position:relative;min-height:100vh;box-sizing:border-box}
+#hud{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+#hearts{color:var(--seal);font-size:20px;letter-spacing:2px}
+#qno{text-align:center;font-family:var(--serif);color:var(--muted);font-size:14px}
+#score{font-weight:700;font-size:18px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:100%;background:var(--ok)}
+.card{margin-top:14px;background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:18px 16px;text-align:center;position:relative}
+.card .kind{font-size:12px;letter-spacing:.15em;color:var(--muted)}
+.card .q{font-family:var(--serif);font-weight:900;font-size:34px;margin:8px 0 4px;line-height:1.2;text-wrap:balance}
+.card .sub{font-size:14px;color:var(--muted)}
+.seal{position:absolute;right:12px;top:12px;width:40px;height:40px;border:2px solid var(--seal);color:var(--seal);font-family:var(--serif);font-weight:900;font-size:13px;line-height:17px;display:grid;place-items:center;transform:rotate(-6deg);border-radius:4px}
+#tiles{margin-top:14px;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+#tiles.parts{grid-template-columns:repeat(2,1fr)}
+.tile{font:inherit;background:var(--paper);color:var(--ink);border:1.5px solid var(--line);border-radius:6px;padding:14px 8px;font-family:var(--serif);font-weight:700;font-size:20px;cursor:pointer;transition:transform .08s}
+.tile small{display:block;font-family:var(--sans);font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
+.tile:active{transform:scale(.97)}
+.tile:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.tile.right{background:var(--jade);border-color:var(--ok);color:var(--ok)}
+.tile.wrong{background:#f6e3de;border-color:var(--seal);color:var(--seal)}
+.tile.reveal{border-color:var(--ok);border-style:dashed}
+.tile:disabled{cursor:default}
+#feedback{margin-top:14px;min-height:46px;text-align:center;font-size:15px;line-height:1.6}
+#feedback b{font-family:var(--serif)}
+#next{display:block;margin:6px auto 0}
+.ov{position:absolute;inset:0;background:rgba(241,237,228,.98);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;z-index:5;overflow-y:auto}
+.ov h1{font-family:var(--serif);font-weight:900;font-size:44px;margin:0;line-height:1.15}
+.ov h1 em{font-style:normal;color:var(--seal)}
+.ov p{margin:0;line-height:1.75;color:var(--muted);font-size:15px;max-width:30em}
+.ov p b{color:var(--ink)}
+.modes{display:grid;gap:8px;max-width:340px;width:100%;text-align:left;font-size:14px}
+.modes div{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px 12px;line-height:1.55}
+.modes b{font-family:var(--serif);font-size:16px}
+.mini{font-size:12px!important}
+button.main,.btn{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:28px;padding:13px 30px;cursor:pointer;background:var(--seal);color:#fff;text-decoration:none;display:inline-block}
+.btn.alt{background:var(--paper);color:var(--ink);border:1.5px solid var(--line)}
+.btn.line{background:#06c755}
+button.main:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#shareImg{width:min(100%,290px);border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.15);-webkit-touch-callout:default}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <div id="hud">
+    <div id="hearts">♥♥♥</div>
+    <div id="qno">第 1 / 10 題</div>
+    <div id="score">0</div>
+  </div>
+  <div class="bar"><i id="timer"></i></div>
+  <div class="card" id="card">
+    <div class="seal">倒馬<br>成組</div>
+    <div class="kind" id="kind">湊成一組</div>
+    <div class="q" id="q">靈骨</div>
+    <div class="sub" id="sub">點出跟它同一組的穴位</div>
+  </div>
+  <div id="tiles"></div>
+  <div id="feedback"></div>
+  <button class="main" id="next" hidden>下一題</button>
+
+  <div class="ov" id="ovStart">
+    <div class="mini" style="color:var(--muted);letter-spacing:.12em">鈞衡舍 ChunBalance</div>
+    <h1>董氏奇穴<br><em>連連看</em></h1>
+    <p>題目選自<b>宣宇門專用</b>的 44 組穴組。兩種題型混在一起出：</p>
+    <div class="modes">
+      <div><b>湊成一組</b>：給你一個穴位，點出跟它同一組（倒馬、穴組）的夥伴。</div>
+      <div><b>在哪個部位</b>：給你一組穴，點出它在董氏的哪個部位（一一到十十）。</div>
+    </div>
+    <p>每題 15 秒，答錯扣一顆愛心，越快答對分數越高。</p>
+    <p class="mini">這是認識穴名的小遊戲，請勿自行下針。</p>
+    <button class="main" id="btnStart">開始</button>
+  </div>
+
+  <div class="ov" id="ovEnd" hidden>
+    <h1 id="endTitle" style="font-size:36px"></h1>
+    <img id="shareImg" alt="董氏奇穴連連看成績卡">
+    <p class="mini">長按圖片可以存起來或傳給朋友</p>
+    <p>想知道這些穴位用在身體哪裡最有感？讓馬克實際幫你調一次。</p>
+    <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 找馬克</a></div>
+    <div class="row">
+      <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+      <button class="btn alt" id="btnAgain">再玩一次</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const PARTS=['一一部位・手指','二二部位・手掌','三三部位・下臂','四四部位・上臂','五五部位・足趾','六六部位・足掌','七七部位・小腿','八八部位・大腿','九九部位・耳朵','十十部位・頭面'];
+// 宣宇門專用穴組 → members, part index (part from the 董氏 bank)
+const G=[
+ ['制污三穴',null,0],['珠圓二穴',null,0],['止涎五穴',null,0],['婦科五穴',null,0],
+ ['靈骨、大白、重魁',['靈骨','大白','重魁'],1],['手解、上高、下高',['手解','上高','下高'],1],['骨關、木關',['骨關','木關'],1],
+ ['腕順一、二',['腕順一','腕順二'],1],['三叉一、二、三',['三叉一','三叉二','三叉三'],1],
+ ['心靈一、二、三',['心靈一','心靈二','心靈三'],2],['火串、火陵、火山',['火串','火陵','火山'],2],['手三士',['人士','地士','天士'],2],
+ ['曲陵、建力、中力',['曲陵','建力','中力'],2],['手五金、手千金',['手五金','手千金'],2],
+ ['分金、合金、內金',['分金','合金','內金'],3],['三宗',['人宗','地宗','天宗'],3],['正脊一、二、三',['正脊一','正脊二','正脊三'],3],
+ ['肩中、建中',['肩中','建中'],3],['雲白、李白',['雲白','李白'],3],['上曲、下曲',['上曲','下曲'],3],
+ ['火連、火菊、火散',['火連','火菊','火散'],5],['火硬、火主',['火硬','火主'],5],['木斗、木留',['木斗','木留'],5],['六完、水曲',['六完','水曲'],5],
+ ['正筋、正宗、正士',['正筋','正宗','正士'],6],['三重穴',['一重','二重','三重'],6],['四花上、中、下',['四花上','四花中','四花下'],6],
+ ['下三皇',['天皇','地皇','人皇'],6],['側三里、側下三里',['側三里','側下三里'],6],['足千金、足五金',['足千金','足五金'],6],['雙龍一、二',['雙龍一','雙龍二'],6],
+ ['上三黃',['天黃','明黃','其黃'],7],['駟馬上、中、下',['駟馬上','駟馬中','駟馬下'],7],['通心、通靈',['通心','通靈'],7],
+ ['通關、通山、通天',['通關','通山','通天'],7],['通腎、通胃、通背',['通腎','通胃','通背'],7],['上、中、下九里',['上九里','中九里','下九里'],7],
+ ['下泉、中泉、上泉',['下泉','中泉','上泉'],7],['姐妹一、二、三',['姐妹一','姐妹二','姐妹三'],7],['感冒一、二',['感冒一','感冒二'],7],['金前上、金前下',['金前上','金前下'],7],
+ ['三會',['正會','前會','後會'],9],['上里、四腑一、四腑二',['上里','四腑一','四腑二'],9],['水通、水金',['水通','水金'],9],
+];
+const N=10,QT=15;
+let S=null,tick=null,ac=null;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function beep(f,d,t='sine',v=.07){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}
+
+function makeQuestions(){
+  const qs=[],withM=G.filter(g=>g[1]);
+  shuffle(withM).slice(0,6).forEach(g=>qs.push({type:'group',g}));
+  shuffle(G.filter(g=>!qs.some(q=>q.g===g))).slice(0,N-6).forEach(g=>qs.push({type:'part',g}));
+  return shuffle(qs);
+}
+function newGame(){S={qs:makeQuestions(),i:0,hearts:3,score:0,right:0,streak:0,best:0};load();}
+function load(){
+  const q=S.qs[S.i];S.t=0;S.done=false;S.miss=0;$('next').hidden=true;$('feedback').innerHTML='';
+  $('qno').textContent=`第 ${S.i+1} / ${N} 題`;const tiles=$('tiles');tiles.innerHTML='';
+  if(q.type==='group'){
+    const [name,mem,part]=q.g;const pick=mem[Math.floor(Math.random()*mem.length)];q.pick=pick;q.need=mem.filter(m=>m!==pick);q.got=[];
+    $('kind').textContent='湊成一組';$('q').textContent=pick;$('sub').textContent=`點出跟它同一組的 ${q.need.length} 個穴位`;
+    document.querySelector('.seal').innerHTML='倒馬<br>成組';
+    const same=shuffle(G.filter(g=>g[1]&&g!==q.g&&g[2]===part).flatMap(g=>g[1]));
+    const other=shuffle(G.filter(g=>g[1]&&g!==q.g&&g[2]!==part).flatMap(g=>g[1]));
+    const dis=[...same.slice(0,4),...other].slice(0,8-q.need.length);
+    q.opts=shuffle([...q.need,...dis]);
+    q.opts.forEach(o=>tiles.appendChild(tile(o,'',()=>answerGroup(o))));
+  }else{
+    const [name,,part]=q.g;q.part=part;
+    $('kind').textContent='在哪個部位';$('q').textContent=name;$('sub').textContent='這組穴在董氏的哪個部位？';
+    document.querySelector('.seal').innerHTML='部位<br>辨識';
+    PARTS.forEach((p,i)=>{const [num,area]=p.split('・');tiles.appendChild(tile(area,num,()=>answerPart(i)));});
+  }
+  clearInterval(tick);tick=setInterval(step,100);render();
+}
+function tile(label,small,fn){const b=document.createElement('button');b.className='tile';b.innerHTML=label+(small?`<small>${small}</small>`:'');b.dataset.v=label;b.onclick=()=>{if(!S.done&&!b.disabled)fn(b);};return b;}
+function step(){if(S.done)return;S.t+=.1;if(S.t>=QT){lose('時間到');}render();}
+function render(){$('hearts').textContent='♥'.repeat(Math.max(0,S.hearts))+'♡'.repeat(3-Math.max(0,S.hearts));$('score').textContent=S.score;
+  const left=Math.max(0,1-S.t/QT),t=$('timer');t.style.width=left*100+'%';t.style.background=left<.3?'var(--seal)':'var(--ok)';}
+function btn(v){return [...document.querySelectorAll('.tile')].find(b=>b.dataset.v===v);}
+function answerGroup(o){const q=S.qs[S.i],b=btn(o);b.disabled=true;
+  if(q.need.includes(o)){b.classList.add('right');q.got.push(o);beep(560+q.got.length*120,.1);
+    if(q.got.length===q.need.length)win(`<b>${q.g[0]}</b>：${q.g[1].join('、')}　｜　${PARTS[q.g[2]]}`);}
+  else{b.classList.add('wrong');miss();}}
+function answerPart(i){const q=S.qs[S.i],b=document.querySelectorAll('.tile')[i];b.disabled=true;
+  if(i===q.part){b.classList.add('right');win(`<b>${q.g[0]}</b> 在 ${PARTS[i]}`);}
+  else{b.classList.add('wrong');miss();}}
+function miss(){S.hearts--;S.miss++;S.streak=0;beep(120,.3,'square',.09);if(navigator.vibrate)try{navigator.vibrate(100)}catch(e){}render();if(S.hearts<=0)lose('愛心用完了');}
+function win(msg){S.done=true;clearInterval(tick);S.right++;S.streak++;S.best=Math.max(S.best,S.streak);
+  const pts=Math.max(20,100+Math.round((QT-S.t)*6)-S.miss*30)+(S.streak>=3?30:0);S.score+=pts;render();
+  beep(660,.12);setTimeout(()=>beep(990,.2),110);
+  $('feedback').innerHTML=`<span style="color:var(--ok);font-weight:700">答對 +${pts}${S.streak>=3?`（連對 ${S.streak}）`:''}</span><br>${msg}`;showNext();}
+function lose(why){S.done=true;clearInterval(tick);const q=S.qs[S.i];
+  if(q.type==='group')q.need.forEach(n=>{const b=btn(n);if(b&&!b.classList.contains('right'))b.classList.add('reveal');});
+  else document.querySelectorAll('.tile')[q.part].classList.add('reveal');
+  document.querySelectorAll('.tile').forEach(b=>b.disabled=true);
+  $('feedback').innerHTML=`<span style="color:var(--seal);font-weight:700">${why}</span><br><b>${q.g[0]}</b>${q.g[1]?'：'+q.g[1].join('、'):''}　｜　${PARTS[q.g[2]]}`;render();showNext();}
+function showNext(){const last=S.hearts<=0||S.i+1>=N;$('next').textContent=last?'看結果':'下一題';$('next').hidden=false;
+  $('next').onclick=()=>{if(last)end();else{S.i++;load();}};}
+function rank(){const r=S.right;if(r===N&&S.hearts===3)return '董氏奇穴達人';if(r>=8)return '倒馬高手';if(r>=5)return '穴位認真生';if(r>=2)return '董氏入門';return '先從靈骨大白認識起';}
+function end(){clearInterval(tick);const t=rank();$('endTitle').textContent=t;$('shareImg').src=card(t);$('ovEnd').hidden=false;window.scrollTo(0,0);}
+function card(t){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  c.fillStyle='#f1ede4';c.fillRect(0,0,1080,1350);c.fillStyle='#fbf9f4';c.fillRect(80,90,920,1020);c.strokeStyle='#d9d2c3';c.lineWidth=3;c.strokeRect(80,90,920,1020);
+  c.textAlign='center';c.fillStyle='#22262a';c.font='900 96px "Noto Serif TC",serif';c.fillText('董氏奇穴',540,250);
+  c.fillStyle='#b8432f';c.font='900 80px "Noto Serif TC",serif';c.fillText('連連看',540,350);
+  c.save();c.translate(860,200);c.rotate(-.1);c.strokeStyle='#b8432f';c.lineWidth=6;c.strokeRect(-70,-70,140,140);c.fillStyle='#b8432f';c.font='900 46px "Noto Serif TC",serif';c.fillText('倒馬',0,-8);c.fillText('成組',0,48);c.restore();
+  c.fillStyle='#22262a';c.font='900 100px "Noto Serif TC",serif';c.fillText(t,540,560);
+  c.font='bold 58px sans-serif';c.fillText(`答對 ${S.right} / ${N}｜${S.score} 分`,540,690);
+  c.fillStyle='#6c6a63';c.font='40px "Noto Serif TC",serif';c.fillText('靈骨・大白・重魁',540,850);c.fillText('一組一組，認識董氏奇穴',540,910);
+  c.fillStyle='#22262a';c.fillRect(0,1210,1080,140);c.fillStyle='#fff';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);return k.toDataURL('image/jpeg',.9);}
+
+$('btnStart').onclick=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();}catch(e){}$('ovStart').hidden=true;newGame();};
+$('btnAgain').onclick=()=>{$('ovEnd').hidden=true;newGame();};
+// resting preview behind the start screen
+['大白','重魁','火串','人士','通關','天皇','肩中','水金'].forEach(o=>$('tiles').appendChild(Object.assign(document.createElement('button'),{className:'tile',textContent:o,disabled:true})));
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>

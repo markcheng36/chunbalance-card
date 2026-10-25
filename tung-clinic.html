@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="落枕、閃腰、腳踝扭到…客人上門了，你會選哪一組董氏奇穴？｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="董氏客人上門">
+<meta property="og:description" content="落枕、閃腰、腳踝扭到…客人上門了，你會選哪一組董氏奇穴？｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/tung-clinic.html">
+<title>董氏客人上門｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<style>
+/* Layout: one column. HUD → customer bubble → three point-group cards → feedback. Rice paper, ink, seal red. */
+:root{
+  --bg:#f1ede4; --paper:#fbf9f4; --ink:#22262a; --muted:#6c6a63; --line:#d9d2c3;
+  --seal:#b8432f; --ok:#3d7f5f; --jade:#e4efe8; --skin:#efd9c6;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --sans:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+html,body{min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-tap-highlight-color:transparent}
+#app{max-width:520px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 28px;position:relative;min-height:100vh;box-sizing:border-box}
+#hud{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-variant-numeric:tabular-nums}
+#hearts{color:var(--seal);font-size:20px;letter-spacing:2px}
+#qno{text-align:center;font-family:var(--serif);color:var(--muted);font-size:14px}
+#score{font-weight:700;font-size:18px}
+.bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:100%;background:var(--ok)}
+.scene{margin-top:14px;display:grid;grid-template-columns:76px 1fr;gap:12px;align-items:start}
+.face{width:76px;height:76px;border-radius:50%;background:var(--skin);border:2px solid var(--line);position:relative;display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:13px;color:var(--muted)}
+.face svg{width:76px;height:76px;position:absolute;inset:0}
+.who{font-size:12px;color:var(--muted);text-align:center;margin-top:4px;line-height:1.3}
+.bubble{background:var(--paper);border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:12px 14px;font-family:var(--serif);font-size:21px;font-weight:700;line-height:1.45;min-width:0}
+.ask{margin-top:12px;font-size:14px;color:var(--muted);text-align:center}
+#cards{margin-top:10px;display:grid;gap:10px}
+.card{font:inherit;text-align:left;background:var(--paper);color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.card b{font-family:var(--serif);font-size:20px}
+.card span{font-size:12px;color:var(--muted);grid-column:1}
+.card i{font-style:normal;grid-row:1/3;grid-column:2;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-weight:700;color:var(--muted)}
+.card:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.card.right{background:var(--jade);border-color:var(--ok)}
+.card.right i{background:var(--ok);border-color:var(--ok);color:#fff}
+.card.wrong{background:#f6e3de;border-color:var(--seal)}
+.card.wrong i{background:var(--seal);border-color:var(--seal);color:#fff}
+.card:disabled{cursor:default}
+#feedback{margin-top:14px;text-align:left;font-size:14px;line-height:1.7;background:var(--paper);border-left:3px solid var(--ok);padding:10px 12px;border-radius:4px}
+#feedback.bad{border-left-color:var(--seal)}
+#feedback .src{font-size:12px;color:var(--muted)}
+#next{display:block;margin:12px auto 0}
+.ov{position:absolute;inset:0;background:rgba(241,237,228,.98);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px;z-index:5;overflow-y:auto}
+.ov h1{font-family:var(--serif);font-weight:900;font-size:44px;margin:0;line-height:1.15}
+.ov h1 em{font-style:normal;color:var(--seal)}
+.ov p{margin:0;line-height:1.75;color:var(--muted);font-size:15px;max-width:30em}
+.ov p b{color:var(--ink)}
+.mini{font-size:12px!important}
+button.main,.btn{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:28px;padding:13px 30px;cursor:pointer;background:var(--seal);color:#fff;text-decoration:none;display:inline-block}
+.btn.alt{background:var(--paper);color:var(--ink);border:1.5px solid var(--line)}
+.btn.line{background:#06c755}
+button.main:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#shareImg{width:min(100%,290px);border-radius:8px;box-shadow:0 4px 18px rgba(0,0,0,.15);-webkit-touch-callout:default}
+</style>
+</head>
+<body>
+
+
+<div id="app">
+  <div id="hud">
+    <div id="hearts">♥♥♥</div>
+    <div id="qno">第 1 位客人 / 10</div>
+    <div id="score">0</div>
+  </div>
+  <div class="bar"><i id="timer"></i></div>
+
+  <div class="scene">
+    <div><div class="face" id="face"></div><div class="who" id="who">上班族</div></div>
+    <div class="bubble" id="say">早上起床落枕，脖子完全轉不過來…</div>
+  </div>
+  <div class="ask">馬克會選哪一組董氏穴位？</div>
+  <div id="cards"></div>
+  <div id="feedback" hidden></div>
+  <button class="main" id="next" hidden>下一位客人</button>
+
+  <div class="ov" id="ovStart">
+    <div class="mini" style="color:var(--muted);letter-spacing:.12em">鈞衡舍 ChunBalance</div>
+    <h1>董氏奇穴<br><em>客人上門</em></h1>
+    <p>你是今天的值班調整師。客人會用<b>生活裡的話</b>說他哪裡不舒服，從 3 組董氏穴位裡選出<b>最對症</b>的那一組。</p>
+    <p>每位客人 20 秒，選錯扣一顆愛心，越快選對分數越高。</p>
+    <p class="mini">主治依「董氏心氣神針傳承網」的記載，穴組選自宣宇門專用題庫。<br>這是認識董氏奇穴的小遊戲，不能取代看診，請勿自行下針。</p>
+    <button class="main" id="btnStart">開門營業</button>
+  </div>
+
+  <div class="ov" id="ovEnd" hidden>
+    <h1 id="endTitle" style="font-size:36px"></h1>
+    <img id="shareImg" alt="客人上門成績卡">
+    <p class="mini">長按圖片可以存起來或傳給朋友</p>
+    <p>遊戲裡的客人好多了。你身上的不舒服，讓馬克實際幫你看看。</p>
+    <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 找馬克</a></div>
+    <div class="row">
+      <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+      <button class="btn alt" id="btnAgain">再營業一天</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+// 穴組：名稱、部位、傳承網主治（節錄原文，用來排除重複的干擾選項）
+const G={
+ lingu:{n:'靈骨、大白、重魁',p:'二二部位・手掌',zz:'坐骨神經痛、腰痛、背痛、腳痛、頭痛、偏頭痛、經痛、月經不調'},
+ wanshun:{n:'腕順一、二',p:'二二部位・手掌',zz:'腎虧之頭痛眼花、坐骨神經痛、腰痛、背痛、骨刺、兩腿痛、耳鳴、頸項骨刺、鼻出血、落枕'},
+ zhengjin:{n:'正筋、正宗、正士',p:'七七部位・小腿',zz:'腰脊椎痛、閃腰、脊椎骨閃痛、頸項骨骨刺、扭轉不靈及頸項筋痛、岔氣、後腦頭痛'},
+ tongguan:{n:'通關、通山、通天',p:'八八部位・大腿',zz:'膝蓋痛、四肢痛、頭暈、眼花、胃病、心悸、心口痛'},
+ jianzhong:{n:'肩中、建中',p:'四四部位・上臂',zz:'膝蓋關節炎、膝蓋扭傷、皮膚病、肩痛、五十肩、流鼻血'},
+ yunbai:{n:'雲白、李白',p:'四四部位・上臂',zz:'腳扭傷、腳痛、小腿痛、狐臭、多汗症'},
+ ganmao:{n:'感冒一、二',p:'八八部位・大腿',zz:'重感冒、發高燒、流行性感冒、發冷畏寒、感冒頭痛'},
+ fenjin:{n:'分金、合金、內金',p:'四四部位・上臂',zz:'感冒、喉炎、過敏性鼻炎、鼻蓄膿症、咳嗽'},
+ zuqian:{n:'足千金、足五金',p:'七七部位・小腿',zz:'魚骨刺住喉管、喉炎、喉嚨生瘡、扁桃腺炎、肩背痛'},
+ quling:{n:'曲陵、建力、中力',p:'三三部位・下臂',zz:'抽筋、氣喘、肘關節炎、心悸、胸痛、背痛、重感冒、鼻塞、咳嗽'},
+ huochuan:{n:'火串、火陵、火山',p:'三三部位・下臂',zz:'胸痛、背痛、重聽、胸悶、手下臂痛、小腿前側痛'},
+ fuke:{n:'婦科五穴',p:'一一部位・手指',zz:'經痛、月經不調、月經過多或過少、不妊症'},
+ sihua:{n:'四花上、中、下',p:'七七部位・小腿',zz:'哮喘、牙痛、心悸、頭暈、胸悶、腸炎、腹脹、胃痛、睡中咬牙'},
+ sima:{n:'駟馬上、中、下',p:'八八部位・大腿',zz:'肋骨痛、胸背痛、坐骨神經痛、腰痛、鼻炎、耳鳴、各種皮膚病、青春痘、下肢扭傷'},
+ zhuyuan:{n:'珠圓二穴',p:'一一部位・手指',zz:'白內障、青光眼、角膜炎、結膜炎、弱視'},
+ zhixian:{n:'止涎五穴',p:'一一部位・手指',zz:'小孩流口水、胃寒胃痛、迎風流淚、牙痛'},
+ zhengji:{n:'正脊一、二、三',p:'四四部位・上臂',zz:'脊椎骨刺、僵直性脊椎不彎曲症、坐骨神經痛、頸椎骨刺、駝背'},
+ shuitong:{n:'水通、水金',p:'十十部位・頭面',zz:'疲勞、頭暈、眼花、腰痛、閃腰、岔氣、背痛、口乾、腹脹氣'},
+ shouwujin:{n:'手五金、手千金',p:'三三部位・下臂',zz:'坐骨神經痛、手腳麻木、小腿發脹、腳痛、項痛、頭痛、腹痛'},
+ shangli:{n:'上里、四腑一、四腑二',p:'十十部位・頭面',zz:'眼壓過高脹痛、頭痛、嘔吐、反胃、腹脹'},
+};
+// 生活情境：誰、說什麼、答案、判斷關鍵字（干擾選項的主治不能含它）、白話說明
+const Q=[
+ {w:'上班族',s:'早上起床落枕，脖子完全轉不過來…',a:'wanshun',k:['落枕','頸項'],e:'腕順一、二在傳承網記載「兼治鼻出血、落枕奇效」。'},
+ {w:'搬家工人',s:'搬箱子的時候閃到腰，彎都彎不下去',a:'zhengjin',k:'閃腰',e:'正筋、正宗主治「腰脊椎痛、閃腰、脊椎骨閃痛」。'},
+ {w:'業務',s:'坐車坐太久，屁股到大腿一路痠麻',a:'lingu',k:'坐骨神經痛',x:['wanshun','sima','zhengji','shouwujin'],e:'靈骨、大白是董氏最常用的倒馬組，主治有「坐骨神經痛、腰痛、背痛」。'},
+ {w:'登山客',s:'爬完山下來，兩邊膝蓋都在痛',a:'tongguan',k:'膝蓋',e:'通關、通山、通天主治第一個就是「膝蓋痛、四肢痛」。'},
+ {w:'阿姨',s:'肩膀抬不起來，醫生說是五十肩',a:'jianzhong',k:'五十肩',e:'肩中、建中主治有「肩痛、五十肩」，也治膝蓋扭傷。'},
+ {w:'籃球隊',s:'打球落地踩到別人的腳，腳踝扭到了',a:'yunbai',k:'扭傷',x:['jianzhong','sima'],e:'雲白、李白主治「腳扭傷（特效）、腳痛、小腿痛」。'},
+ {w:'學生',s:'重感冒發燒，全身一直發冷',a:'ganmao',k:['發高燒','感冒'],e:'感冒一、二主治「重感冒、發高燒、發冷畏寒、感冒頭痛」。'},
+ {w:'工程師',s:'過敏性鼻炎又犯了，一直打噴嚏咳嗽',a:'fenjin',k:['鼻炎','咳嗽','鼻塞'],e:'分金穴在傳承網寫是「感冒、喉炎、過敏性鼻炎、咳嗽之特效穴」。'},
+ {w:'吃貨',s:'吃魚吃太快，魚刺卡在喉嚨',a:'zuqian',k:'魚骨',e:'足千金、足五金主治第一條就是「魚骨刺住喉管」，也治喉炎、扁桃腺炎。'},
+ {w:'跑者',s:'半夜小腿抽筋，痛到醒過來',a:'quling',k:'抽筋',e:'曲陵、建力、中力主治第一個就是「抽筋」。'},
+ {w:'會計',s:'最近胸口悶悶的，背跟前臂也痠痛',a:'huochuan',k:['手下臂痛','胸悶','胸痛','背痛'],e:'火串、火陵、火山主治「胸痛、背痛、胸悶、手下臂痛」。'},
+ {w:'OL',s:'每個月經痛都好痛，週期也亂',a:'fuke',k:'經痛',x:['lingu'],e:'婦科五穴主治「經痛、月經不調、月經過多或過少」。'},
+ {w:'太太',s:'先生說我晚上睡覺一直磨牙',a:'sihua',k:'咬牙',e:'四花下穴主治有「睡中咬牙」，也治腸炎、腹脹。'},
+ {w:'高中生',s:'臉上一直冒青春痘，消不下去',a:'sima',k:['青春痘','皮膚病'],e:'駟馬穴主治有「各種皮膚病、青春痘」。'},
+ {w:'設計師',s:'眼睛紅紅的，醫生說是結膜炎',a:'zhuyuan',k:'結膜炎',e:'珠圓二穴主治「白內障、青光眼、角膜炎、結膜炎、弱視」。'},
+ {w:'新手爸媽',s:'寶寶口水一直流不停',a:'zhixian',k:'流口水',e:'止涎五穴主治第一個就是「小孩流口水」。'},
+ {w:'電腦族',s:'背越來越駝，脊椎硬到彎不下去',a:'zhengji',k:['駝背','脊椎'],e:'正脊一、二、三主治有「僵直性脊椎不彎曲症、駝背」。'},
+ {w:'健身教練',s:'打個噴嚏就岔氣，側腰卡住',a:'shuitong',k:'岔氣',x:['zhengjin'],e:'水通、水金主治有「閃腰、岔氣、背痛」。'},
+ {w:'外送員',s:'騎車騎到手腳都發麻，小腿脹脹的',a:'shouwujin',k:['小腿','麻'],e:'手五金、手千金主治有「手腳麻木、小腿發脹、腳痛」。'},
+ {w:'考生',s:'讀書讀到眼睛脹痛、頭痛、想吐',a:'shangli',k:['眼壓','頭痛','嘔吐'],e:'上里、四腑一、四腑二主治「眼壓過高脹痛、頭痛、嘔吐、反胃」。'},
+];
+const N=10,QT=20;
+let S=null,tick=null,ac=null;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function beep(f,d,t='sine',v=.07){if(!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}
+function face(mood){const m=mood==='happy'?'M26 48 Q38 58 50 48':mood==='sad'?'M26 54 Q38 44 50 54':'M27 51 L49 51';
+  const brow=mood==='sad'?'<path d="M22 28 L32 31 M54 28 L44 31" stroke="#22262a" stroke-width="2.5" stroke-linecap="round"/>':'';
+  $('face').innerHTML=`<svg viewBox="0 0 76 76">${brow}<circle cx="28" cy="36" r="3.5" fill="#22262a"/><circle cx="48" cy="36" r="3.5" fill="#22262a"/><path d="${m}" fill="none" stroke="#22262a" stroke-width="3" stroke-linecap="round"/>${mood==='hurt'||mood==='sad'?'<circle cx="60" cy="24" r="4" fill="#4a7fa8"/>':''}</svg>`;}
+function newGame(){S={qs:shuffle(Q).slice(0,N),i:0,hearts:3,score:0,right:0,streak:0,best:0};load();}
+function load(){const q=S.qs[S.i];S.t=0;S.done=false;S.miss=0;
+  $('qno').textContent=`第 ${S.i+1} 位客人 / ${N}`;$('who').textContent=q.w;$('say').textContent=q.s;face('hurt');
+  const pool=Object.keys(G).filter(k=>k!==q.a&&![].concat(q.k).some(w=>G[k].zz.includes(w))&&!(q.x||[]).includes(k));
+  q.opts=shuffle([q.a,...shuffle(pool).slice(0,2)]);
+  const box=$('cards');box.innerHTML='';
+  q.opts.forEach((k,i)=>{const b=document.createElement('button');b.className='card';b.dataset.k=k;
+    b.innerHTML=`<b>${G[k].n}</b><span>${G[k].p}</span><i>${'甲乙丙'[i]}</i>`;b.onclick=()=>pick(k,b);box.appendChild(b);});
+  $('feedback').hidden=true;$('next').hidden=true;clearInterval(tick);tick=setInterval(step,100);render();}
+function step(){if(S.done)return;S.t+=.1;if(S.t>=QT)fail('客人等太久，走掉了');render();}
+function render(){$('hearts').textContent='♥'.repeat(Math.max(0,S.hearts))+'♡'.repeat(3-Math.max(0,S.hearts));$('score').textContent=S.score;
+  const left=Math.max(0,1-S.t/QT),t=$('timer');t.style.width=left*100+'%';t.style.background=left<.3?'var(--seal)':'var(--ok)';}
+function pick(k,b){if(S.done||b.disabled)return;const q=S.qs[S.i];b.disabled=true;
+  if(k===q.a){b.classList.add('right');S.done=true;clearInterval(tick);S.right++;S.streak++;S.best=Math.max(S.best,S.streak);
+    const pts=Math.max(20,100+Math.round((QT-S.t)*5)-S.miss*30)+(S.streak>=3?30:0);S.score+=pts;face('happy');$('say').textContent='哇，好多了！謝謝馬克老師！';
+    beep(660,.12);setTimeout(()=>beep(990,.2),110);show(true,`答對 +${pts}${S.streak>=3?`（連對 ${S.streak}）`:''}`,q);}
+  else{b.classList.add('wrong');S.hearts--;S.miss++;S.streak=0;face('sad');beep(120,.3,'square',.09);if(navigator.vibrate)try{navigator.vibrate(100)}catch(e){}
+    render();if(S.hearts<=0)fail('愛心用完了');}}
+function fail(why){S.done=true;clearInterval(tick);const q=S.qs[S.i];
+  document.querySelectorAll('.card').forEach(b=>{b.disabled=true;if(b.dataset.k===q.a)b.classList.add('right');});face('sad');show(false,why,q);}
+function show(ok,head,q){const f=$('feedback');f.className=ok?'':'bad';f.hidden=false;
+  f.innerHTML=`<b style="color:var(--${ok?'ok':'seal'})">${head}</b><br>答案是<b>${G[q.a].n}</b>（${G[q.a].p}）。${q.e}<div class="src">主治出處：董氏心氣神針傳承網</div>`;
+  const last=S.hearts<=0||S.i+1>=N;$('next').textContent=last?'看今天的成績':'下一位客人';$('next').hidden=false;
+  $('next').onclick=()=>{if(last)end();else{S.i++;load();}};render();}
+function rank(){const r=S.right;if(r===N&&S.hearts===3)return '董氏神手';if(r>=8)return '人氣調整師';if(r>=5)return '值班調整師';if(r>=2)return '見習調整師';return '還在背穴位';}
+function end(){clearInterval(tick);const t=rank();$('endTitle').textContent=t;$('shareImg').src=card(t);$('ovEnd').hidden=false;window.scrollTo(0,0);}
+function card(t){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  c.fillStyle='#f1ede4';c.fillRect(0,0,1080,1350);c.fillStyle='#fbf9f4';c.fillRect(80,90,920,1020);c.strokeStyle='#d9d2c3';c.lineWidth=3;c.strokeRect(80,90,920,1020);
+  c.textAlign='center';c.fillStyle='#22262a';c.font='900 92px "Noto Serif TC",serif';c.fillText('董氏奇穴',540,240);
+  c.fillStyle='#b8432f';c.font='900 80px "Noto Serif TC",serif';c.fillText('客人上門',540,340);
+  c.fillStyle='#22262a';c.font='900 104px "Noto Serif TC",serif';c.fillText(t,540,560);
+  c.font='bold 56px sans-serif';c.fillText(`治好 ${S.right} / ${N} 位客人`,540,690);c.fillStyle='#6c6a63';c.font='bold 44px sans-serif';c.fillText(`${S.score} 分｜最多連對 ${S.best}`,540,770);
+  c.fillStyle='#6c6a63';c.font='40px "Noto Serif TC",serif';c.fillText('落枕、閃腰、五十肩…',540,900);c.fillText('董氏奇穴都有對應的穴組',540,960);
+  c.fillStyle='#22262a';c.fillRect(0,1210,1080,140);c.fillStyle='#fff';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);return k.toDataURL('image/jpeg',.9);}
+
+$('btnStart').onclick=()=>{try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();}catch(e){}$('ovStart').hidden=true;newGame();};
+$('btnAgain').onclick=()=>{$('ovEnd').hidden=true;newGame();};
+face('hurt');
+['wanshun','zhengjin','lingu'].forEach((k,i)=>{const b=document.createElement('button');b.className='card';b.disabled=true;b.innerHTML=`<b>${G[k].n}</b><span>${G[k].p}</span><i>${'甲乙丙'[i]}</i>`;$('cards').appendChild(b);});
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>
