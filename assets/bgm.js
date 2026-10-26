@@ -159,14 +159,18 @@
     setTimeout(function () { if (!timer && ctx) ctx.suspend(); }, 800);
   }
 
-  // 手機規定要先有人點畫面才能出聲
-  function firstTouch() {
-    window.removeEventListener('pointerdown', firstTouch, true);
-    window.removeEventListener('keydown', firstTouch, true);
+  // 手機規定要先有人碰畫面才能出聲；有些手機要等手指放開才算，所以每種觸碰都試，直到真的出聲為止
+  var EV = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'];
+  function unlock() {
+    if (off) return;
     start();
+    try { // iOS：在觸碰當下播一段無聲音訊來解鎖
+      var b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
+      s.buffer = b; s.connect(ctx.destination); s.start(0);
+    } catch (e) {}
+    if (ctx.state === 'running') EV.forEach(function (n) { window.removeEventListener(n, unlock, true); });
   }
-  window.addEventListener('pointerdown', firstTouch, true);
-  window.addEventListener('keydown', firstTouch, true);
+  EV.forEach(function (n) { window.addEventListener(n, unlock, true); });
 
   document.addEventListener('visibilitychange', function () {
     if (document.hidden) stop(); else if (started && !off) start();
