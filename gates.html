@@ -30,6 +30,7 @@ button{width:100%;margin-top:18px;font:inherit;font-weight:700;font-size:17px;bo
 #msg{min-height:1.6em;margin-top:10px;color:var(--red);font-weight:700;text-align:center}
 .foot{font-size:13px;text-align:center;margin:16px 0 0}
 .foot a{color:inherit;font-weight:700}
+#dots{display:flex;gap:6px;margin-top:6px}#dots i{flex:1;height:5px;border-radius:3px;background:var(--line)}#dots i.on{background:#3f8f6b}#dots i.cur{background:var(--red)}
 .shake{animation:sh .35s}
 @keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
@@ -38,12 +39,11 @@ button{width:100%;margin-top:18px;font:inherit;font-weight:700;font-size:17px;bo
 <main id="box">
 <div class="k">結構各關卡模擬遊戲</div>
 <h1>結構<em>調整</em></h1>
-<p>學員限定。答對下面三題就能開始玩。</p>
+<p>學員限定。一次一題，答對才進下一題，三題都過就能開始玩。</p>
 <form id="f" autocomplete="off">
-<label for="a1">1. 我們的老師是誰？</label><input id="a1">
-<label for="a2">2. 我們是什麼門？</label><input id="a2">
-<label for="a3">3. 未來要做什麼會？</label><input id="a3">
-<button type="submit" id="go">開始</button>
+<div id="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+<label for="ans" id="q"></label><input id="ans">
+<button type="submit" id="go">下一題</button>
 </form>
 <div id="msg" role="status"></div>
 <p class="foot">還沒上過課？想學這套身體結構技術，請洽 <a href="https://strxhunter.com/" target="_blank" rel="noopener">結構X獵人 strxhunter.com</a><br><a href="games.html">回遊戲間</a></p>
@@ -57,10 +57,20 @@ async function open(pw){const k0=await crypto.subtle.importKey('raw',new TextEnc
  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u(D.i)},k,u(D.c));return new TextDecoder().decode(pt);}
 function show(html){document.open();document.write(html);document.close();}
 try{localStorage.removeItem('chun-gates-pw')}catch(e){}
-document.getElementById('f').onsubmit=async e=>{e.preventDefault();const m=document.getElementById('msg');
- const pw=[norm(a1.value),norm(a2.value,'門'),norm(a3.value,'會')].join('|');m.textContent='確認中…';
- try{const html=await open(pw);show(html);}
- catch(err){m.textContent='答案不對，再想想看';const b=document.getElementById('box');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}};
+const Q=[['1. 我們的老師是誰？',''],['2. 我們是什麼門？','門'],['3. 未來要做什麼會？','會']],H=['30dd0372bc7006e0c905891c3f6a310bd73dcfc5f41a00089cc01e5443ef7835', '03f7b1af1ce94fe5fcc621dd012c95ff6d1319579d0d761ec78d1124c1284853', 'a44c3558a1c7be7876c34005c64218df0099cfd3f52f21470b0e535da8ce28e0'],SALT='7HNZaGFHwlM=';
+let step=0;const ans=[],$=id=>document.getElementById(id);
+const sha=async t=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)))].map(x=>x.toString(16).padStart(2,'0')).join('');
+function ask(){$('q').textContent=Q[step][0];$('ans').value='';$('go').textContent=step<2?'下一題':'開始';
+ [...$('dots').children].forEach((d,i)=>d.className=i<step?'on':i===step?'cur':'');$('ans').focus();}
+function bad(t){const m=$('msg');m.textContent=t;const b=$('box');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}
+$('f').onsubmit=async e=>{e.preventDefault();const v=norm($('ans').value,Q[step][1]);
+ if(!v){bad('請先作答');return;}
+ if(await sha(SALT+v)!==H[step]){bad('答案不對，再想想看');return;}
+ ans[step]=v;$('msg').textContent='';
+ if(step<2){step++;ask();return;}
+ $('msg').textContent='確認中…';$('go').disabled=true;
+ try{show(await open(ans.join('|')));}catch(err){$('go').disabled=false;step=0;ask();bad('出了點問題，請重新作答');}};
+ask();
 })();
 </script>
 </body>
