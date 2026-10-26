@@ -56,10 +56,10 @@ async function open(pw){const k0=await crypto.subtle.importKey('raw',new TextEnc
  const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:u(D.s),iterations:200000,hash:'SHA-256'},k0,{name:'AES-GCM',length:256},false,['decrypt']);
  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u(D.i)},k,u(D.c));return new TextDecoder().decode(pt);}
 function show(html){document.open();document.write(html);document.close();}
-try{const saved=localStorage.getItem('chun-gates-pw');if(saved)open(saved).then(show).catch(()=>{try{localStorage.removeItem('chun-gates-pw')}catch(e){}});}catch(e){}
+try{localStorage.removeItem('chun-gates-pw')}catch(e){}
 document.getElementById('f').onsubmit=async e=>{e.preventDefault();const m=document.getElementById('msg');
  const pw=[norm(a1.value),norm(a2.value,'門'),norm(a3.value,'會')].join('|');m.textContent='確認中…';
- try{const html=await open(pw);try{localStorage.setItem('chun-gates-pw',pw)}catch(e){}show(html);}
+ try{const html=await open(pw);show(html);}
  catch(err){m.textContent='答案不對，再想想看';const b=document.getElementById('box');b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}};
 })();
 </script>
