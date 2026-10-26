@@ -6,7 +6,7 @@
 <meta name="description" content="上傳一張臉或選卡通人物，按住粉刺黑頭把它擠出來的小遊戲｜鈞衡舍 ChunBalance">
 <meta property="og:title" content="擠痘痘大作戰">
 <meta property="og:description" content="上傳一張臉，把粉刺和黑頭通通擠乾淨｜鈞衡舍 ChunBalance">
-<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:image" content="https://chunbalance.com/images/og-gains-logo.jpg">
 <meta property="og:image:width" content="600">
 <meta property="og:image:height" content="600">
 <meta property="og:type" content="website">
@@ -264,7 +264,7 @@ input,textarea{-webkit-user-select:text;user-select:text}
     <img id="shareImg" alt="擠痘痘大作戰戰績圖">
     <p class="dexSub" id="shareHint">按「儲存圖片」存到手機，或長按圖片</p>
     <a class="go linkbtn" id="saveImg" href="#" download="擠痘痘戰績.jpg">儲存圖片</a>
-    <a class="go alt linkbtn" id="openExt" href="https://markcheng36.github.io/chunbalance-card/pimple.html?openExternalBrowser=1" target="_blank" rel="noopener" hidden>用手機瀏覽器打開</a>
+    <a class="go alt linkbtn" id="openExt" href="https://chunbalance.com/pimple.html?openExternalBrowser=1" target="_blank" rel="noopener" hidden>用手機瀏覽器打開</a>
     <a class="small center linkbtn" id="lineShare" href="https://line.me/R/share" target="_blank" rel="noopener">把遊戲連結分享到 LINE</a>
   </div>
 </div>
@@ -696,7 +696,7 @@ function sndSquelch(){
 function sndClear(){[660,830,990,1320].forEach((f,i)=>setTimeout(()=>tone(f,.18,'triangle',.12),i*90));}
 
 /* ---------- state ---------- */
-const GAME_URL='https://markcheng36.github.io/chunbalance-card/pimple.html';
+const GAME_URL='https://chunbalance.com/pimple.html';
 let char=makeChar();
 let G=null;
 let screen='pick';
@@ -1168,7 +1168,7 @@ async function buildShare(){
   k.fillStyle='#ffffff';k.font=`54px ${UI}`;k.fillText('鈞衡舍 ChunBalance',W/2,by+70);
   k.fillStyle='#cfe7e1';k.font=`32px ${UI}`;k.fillText('身體平衡找馬克・站得穩才走的久',W/2,by+120);
   k.fillStyle='#ffb3a6';k.font=`34px ${UI}`;k.fillText('加官方 LINE「鈞衡舍」@chunbalance',W/2,by+168);
-  k.fillStyle='#9fc2bb';k.font=`24px ${UI}`;k.fillText('markcheng36.github.io/chunbalance-card/pimple.html',W/2,by+208);
+  k.fillStyle='#9fc2bb';k.font=`24px ${UI}`;k.fillText('chunbalance.com/pimple.html',W/2,by+208);
   return c;
 }
 let shareUrl=null;
