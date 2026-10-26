@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="上傳站姿照片、點出關節，看看你的身體歪在哪裡（僅供娛樂）。｜鈞衡舍 ChunBalance">
-<meta property="og:title" content="身體平衡報告">
+<meta property="og:title" content="身體累了嗎">
 <meta property="og:description" content="上傳站姿照片、點出關節，看看你的身體歪在哪裡（僅供娛樂）。｜鈞衡舍 ChunBalance">
 <meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/posture.html">
-<title>身體平衡報告｜鈞衡舍</title>
+<title>身體累了嗎｜鈞衡舍</title>
 <style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
@@ -82,7 +82,7 @@ td.v{font-family:var(--mono);text-align:right;white-space:nowrap}
 
 <div id="app">
   <div class="mono">鈞衡舍 ChunBalance・BODY BALANCE REPORT</div>
-  <h1>身體平衡<em>報告</em></h1>
+  <h1>身體<em>累了嗎</em></h1>
   <p class="mono" style="color:var(--red)">僅供娛樂・不是醫療診斷</p>
   <p class="intro">拍一張站姿照片，點出幾個關節的位置，就能看出你的身體<b>歪在哪裡</b>。</p>
   <div id="how" class="intro"><div><b>1</b>選正面<br>或側面</div><div><b>2</b>上傳一張<br>全身站姿照</div><div><b>3</b>照上方提示<br>在照片上點關節</div></div>
@@ -117,7 +117,7 @@ td.v{font-family:var(--mono);text-align:right;white-space:nowrap}
 
   <section id="s3" hidden>
     <div class="report" id="report"></div>
-    <img id="shareImg" alt="身體平衡報告分享卡">
+    <img id="shareImg" alt="身體累了嗎分享卡">
     <p class="small" style="margin-top:6px">長按圖片可以存起來或傳給朋友</p>
     <div class="tip">這是用照片估算的<b>趣味報告</b>，不是醫療診斷。拍照角度、衣服都會影響結果。想知道歪掉的真正原因，要從腳開始看：來做一次<b>足部張力檢測</b>。</div>
     <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約足部張力檢測</a></div>
@@ -254,7 +254,7 @@ function card(score,title,rows){const k=document.createElement('canvas');k.width
   const s=ph/cv.height;c.translate(px+(pw-cv.width*s)/2,py);c.drawImage(img,0,0,cv.width*s,cv.height*s);
   const tmp={};overlay(c,s);c.restore();c.strokeStyle='#1f2a2e';c.lineWidth=4;c.strokeRect(px,py,pw,ph);
   c.fillStyle='#5f6b6a';c.font='500 30px "JetBrains Mono",monospace';c.textAlign='left';c.fillText('BODY BALANCE REPORT',60,105);c.textAlign='right';c.fillStyle='#c1553d';c.font='bold 28px sans-serif';c.fillText('僅供娛樂',1020,105);c.textAlign='left';
-  const rx=px+pw+40;c.fillStyle='#1f2a2e';c.font='900 64px "Noto Serif TC",serif';c.fillText('身體平衡',rx,230);c.fillText('報告',rx,305);
+  const rx=px+pw+40;c.fillStyle='#1f2a2e';c.font='900 64px "Noto Serif TC",serif';c.fillText('身體',rx,230);c.fillText('累了嗎',rx,305);
   c.font='900 150px "Noto Serif TC",serif';c.fillStyle='#c1553d';c.fillText(String(score),rx,480);
   c.font='bold 34px sans-serif';c.fillStyle='#5f6b6a';c.fillText('/ 100',rx+(score>=100?260:180),480);
   c.fillStyle='#1f2a2e';c.font='bold 38px "Noto Serif TC",serif';wrap(c,title,rx,550,1020-rx,46);
