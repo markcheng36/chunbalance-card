@@ -99,6 +99,13 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 @keyframes pop{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.card{animation:none}#hpBox.hit{animation:none}}
 </style>
+<style id="noSelect">/* taps never select text or zoom */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,button,a,input,label,canvas{touch-action:manipulation}
+canvas{touch-action:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+#shareImg{-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}</style>
+<script>document.addEventListener('dblclick',function(e){e.preventDefault()});</script>
 </head>
 <body>
 

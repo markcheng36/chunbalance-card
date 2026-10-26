@@ -143,6 +143,13 @@ a.small{color:var(--ink)}
 #meter.on .mlabel{color:var(--ink)}
 </style>
 
+<style id="noSelect">/* taps never select text or zoom */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,button,a,input,label,canvas{touch-action:manipulation}
+canvas{touch-action:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+#shareImg{-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}</style>
+<script>document.addEventListener('dblclick',function(e){e.preventDefault()});</script>
 </head>
 <body>
 <section id="pick" class="screen">
