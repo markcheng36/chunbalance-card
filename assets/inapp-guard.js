@@ -22,6 +22,8 @@
     if (e.touches.length === 1) startY = e.touches[0].clientY;
   }, { passive: true });
   document.addEventListener('touchmove', function (e) {
+    // 在遊戲畫布上拖曳：一律不交給瀏覽器，LINE 就不會把它當成關閉手勢
+    if (e.target && e.target.tagName === 'CANVAS' && e.cancelable) { e.preventDefault(); return; }
     if (e.touches.length !== 1) return;
     var dy = e.touches[0].clientY - startY;
     if (dy <= 0) return; // 往上滑：正常捲動
