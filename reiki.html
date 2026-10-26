@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="靈氣小遊戲：跟著呼吸，點亮七大脈輪、幫自己或別人補氣。新手、熟手、老手三種難度。｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="今天療癒了嗎">
+<meta property="og:description" content="靈氣小遊戲：跟著呼吸，點亮七大脈輪、幫自己或別人補氣。新手、熟手、老手三種難度。｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://markcheng36.github.io/chunbalance-card/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://markcheng36.github.io/chunbalance-card/reiki.html">
+<title>今天療癒了嗎｜鈞衡舍</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<style>
+/* Layout: one-screen calm game. Top: step label + hint. Middle: canvas (seated figure, breath level, seven chakras). Overlays for start / between steps / end card. Dark night palette by design. */
+:root{--bg:#141a26;--panel:#1d2535;--ink:#eef0f4;--muted:#9aa3b5;--line:#2c364a;--gold:#e8c46a;--red:#c1553d;color-scheme:dark}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,button,a{touch-action:manipulation}
+#app{position:relative;height:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
+#top{text-align:center;min-height:62px}
+#step{font-size:12px;letter-spacing:.14em;color:var(--muted)}
+#hint{font-size:17px;font-weight:700;line-height:1.5;margin-top:4px;min-height:52px}
+#stage{position:relative;flex:1;min-height:0}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#freeBar{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;z-index:1}
+.ov{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px 8px;background:rgba(20,26,38,.94);overflow-y:auto;z-index:2}
+.ov h1{font-family:"Noto Serif TC",serif;font-weight:900;font-size:42px;margin:6px 0 8px}
+.ov h1 em{font-style:normal;color:var(--gold)}
+.ov h2{font-family:"Noto Serif TC",serif;font-size:30px;margin:4px 0 8px;color:var(--gold)}
+.ov p{color:var(--muted);line-height:1.75;margin:0 0 12px;font-size:15px;max-width:400px}
+.ov p b{color:var(--ink)}
+.mini{font-size:12px;color:var(--muted);letter-spacing:.12em}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:4px 0 14px;max-width:400px}
+.chips span{font-size:13px;border-radius:14px;padding:3px 10px;color:#141a26;font-weight:700}
+button.main,.btn{font:inherit;font-weight:700;font-size:17px;border:0;border-radius:26px;padding:12px 28px;cursor:pointer;background:var(--gold);color:#141a26;text-decoration:none;display:inline-block}
+button.alt{font:inherit;font-weight:700;border-radius:26px;cursor:pointer}
+.btn.alt,button.alt{background:transparent;color:var(--ink);border:1.5px solid var(--line);font-size:15px;padding:10px 20px}
+.btn.line{background:#06c755;color:#fff}
+.row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+button:focus-visible,.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+#lvls{display:flex;flex-direction:column;gap:10px;width:min(100%,360px);margin:2px 0 8px}
+button.lv{font:inherit;text-align:left;border:1.5px solid var(--line);background:var(--panel);color:var(--ink);border-radius:14px;padding:10px 14px;cursor:pointer}
+#modes{display:flex;gap:8px;width:min(100%,360px);margin:0 0 10px}
+button.md{flex:1;font:inherit;font-weight:700;font-size:16px;border:2px solid var(--line);background:transparent;color:var(--muted);border-radius:22px;padding:9px 6px;cursor:pointer}
+button.md.on{border-color:var(--gold);color:var(--ink);background:#3a3420}
+button.lv b{display:block;font-family:"Noto Serif TC",serif;font-size:19px;color:var(--gold)}
+button.lv span{font-size:13px;color:var(--muted);line-height:1.5}
+#picks{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:420px;margin:4px 0 12px}
+button.pk{font:inherit;font-size:15px;font-weight:700;border-radius:18px;padding:7px 12px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.pk small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+button.pk.on{border-color:var(--gold);background:#3a3420}
+.case{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;max-width:400px;text-align:left;margin:6px 0 12px}
+.case b{font-family:"Noto Serif TC",serif;font-size:20px;color:var(--gold)}
+.case div{margin-top:6px;line-height:1.7;font-size:16px}
+.fb{max-width:400px;text-align:left;font-size:14px;line-height:1.7;color:var(--muted);margin:0 0 12px}
+.fb div{margin:3px 0}.fb .ok{color:#7fd39b}.fb .no{color:#f08c7a}
+.learn{font-size:14px;color:var(--muted);margin:10px 0 0}.learn a{color:var(--gold)}
+#shareImg{width:min(78%,300px);border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.5);-webkit-touch-callout:default}
+.svc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0 4px;max-width:400px;text-align:left}
+.svc b{display:block;font-family:"Noto Serif TC",serif;font-size:19px;color:var(--gold);margin-bottom:4px}
+.svc span{font-size:14px;line-height:1.7;color:var(--muted)}
+</style>
+<style id="noSelect">/* taps never select text or zoom */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,button,a,input,label,canvas{touch-action:manipulation}
+canvas{touch-action:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+#shareImg{-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto}</style>
+<script>document.addEventListener('dblclick',function(e){e.preventDefault()});</script>
+</head>
+<body>
+<div id="app">
+  <div id="top"><div id="step">今天療癒了嗎</div><div id="hint"></div></div>
+  <div id="stage">
+    <canvas id="c" width="600" height="760"></canvas>
+
+    <div class="ov" id="ovStart">
+      <div class="mini">靈氣・能量平衡體驗</div>
+      <h1>今天<em>療癒</em>了嗎</h1>
+      <p>找個舒服的姿勢，用一根手指就能玩。<br>先<b>把呼吸吸到肚臍以下</b>，再把光從<b>頭頂</b>一路帶到<b>海底輪</b>，點亮七大脈輪，最後補補身體需要的地方。</p>
+      <div class="chips" id="chips"></div>
+      <div class="mini" style="margin-bottom:6px">① 今天要療癒誰？</div>
+      <div id="modes"><button class="md on" data-m="self">療癒自己</button><button class="md" data-m="other">幫別人療癒</button></div>
+      <div class="mini" style="margin-bottom:6px">② 選難度</div>
+      <div id="lvls">
+        <button class="lv" data-lv="0"><b>新手</b><span id="d0"></span></button>
+        <button class="lv" data-lv="1"><b>熟手</b><span id="d1"></span></button>
+        <button class="lv" data-lv="2"><b>老手</b><span id="d2"></span></button>
+      </div>
+      <p class="mini">不比快，比穩。慢慢來就好。</p>
+    </div>
+
+    <div class="ov" id="ovReady" hidden>
+      <div class="mini">準備開始</div>
+      <h2 id="readyH"></h2>
+      <p id="readyText"></p>
+      <p class="mini">找個舒服的姿勢，肩膀放鬆，準備好再開始。</p>
+      <div class="row"><button class="main" id="btnReady">準備好了，開始</button></div>
+      <div class="row"><button class="alt" id="btnBack">← 回上一步重新選擇</button></div>
+    </div>
+
+    <div class="ov" id="ovCase" hidden>
+      <div class="mini" id="caseMini">今天有人來找你</div>
+      <div class="case"><b id="caseWho"></b><div id="caseText"></div></div>
+      <p>幫別人療癒之前，<b>先穩住自己的呼吸</b>。</p>
+      <button class="main" id="btnCase">開始</button>
+    </div>
+
+    <div class="ov" id="ovPick" hidden>
+      <div class="mini">判斷</div>
+      <h2 id="pickH"></h2>
+      <p id="pickCase" style="font-size:14px"></p>
+      <div id="picks"></div>
+      <button class="main" id="btnPick" disabled style="opacity:.4">確定</button>
+    </div>
+
+    <div class="ov" id="ovFb" hidden>
+      <div class="mini">判斷結果</div>
+      <h2 id="fbH"></h2>
+      <div class="fb" id="fbList"></div>
+      <p class="mini">遊戲情境，脈輪對應為靈氣常見說法，不能取代醫療。</p>
+      <button class="main" id="btnFb">開始導光</button>
+    </div>
+
+    <div class="ov" id="ovScan" hidden>
+      <div class="mini">第三步・感受身體</div>
+      <h2>現在，身體哪裡不舒服？</h2>
+      <p>先停一下，閉上眼睛做一次深呼吸。<br>從頭到腳<b>感覺一遍</b>：哪裡緊、哪裡痠、哪裡悶？<br>可以選很多個。</p>
+      <div id="scanPicks" class="chips" style="gap:8px"></div>
+      <div class="row"><button class="main" id="btnScan">去補氣</button></div>
+      <div class="row"><button class="alt" id="btnScanSkip">都還好，看結果</button></div>
+    </div>
+
+    <div class="ov" id="ovMid" hidden>
+      <div class="mini">第二步</div>
+      <h2>帶著光往下走</h2>
+      <p id="midText"></p>
+      <button class="main" id="btnGo">開始</button>
+    </div>
+
+    <div class="ov" id="ovFree" hidden>
+      <div class="mini" id="freeMini">第三步・可以跳過</div>
+      <h2 id="freeH">哪裡還需要補氣？</h2>
+      <p id="freeText"></p>
+      <p class="mini" id="freeNote">跟著現在身體的感覺走，沒有標準答案。</p>
+      <div class="row"><button class="main" id="btnFree">自由補氣</button></div>
+      <div class="row"><button class="alt" id="btnSkip">直接看結果</button></div>
+    </div>
+
+    <div id="freeBar" hidden><button class="main" id="btnDone">補好了</button></div>
+
+    <div class="ov" id="ovEnd" hidden>
+      <div class="mini">今天的能量狀態</div>
+      <h2 id="endTitle"></h2>
+      <img id="shareImg" alt="今天療癒了嗎成績卡">
+      <p class="mini" style="margin-top:8px">長按圖片可以存起來或傳給朋友</p>
+      <div class="svc"><b>這就是馬克的「能量平衡」</b><span>透過靈氣，從呼吸開始讓身體慢下來，沿著七大脈輪，再到身體需要的地方，找回平衡。遊戲只是體驗，真正的感受要親身試一次。</span></div>
+      <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約能量平衡</a></div>
+      <p class="learn">想學靈氣嗎？請洽 <a href="https://strxhunter.com" target="_blank" rel="noopener">結構X獵人 strxhunter.com</a></p>
+      <div class="row">
+        <a class="btn alt" href="https://markcheng36.github.io/chunbalance-card/book.html" target="_blank" rel="noopener">線上預約</a>
+        <button class="alt" id="btnAgain">再療癒一次</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d'),W=600,H=760;
+const CH=[
+ {n:'頂輪',k:'放空',c:'#a678e8',y:92},
+ {n:'眉心輪',k:'專注',c:'#6c72e0',y:142},
+ {n:'喉輪',k:'表達',c:'#3f9be0',y:212},
+ {n:'心輪',k:'溫柔',c:'#4fbf7f',y:292},
+ {n:'太陽神經叢',k:'自信',c:'#f0c43a',y:362},
+ {n:'臍輪',k:'活力',c:'#f08c3a',y:428},
+ {n:'海底輪',k:'安定',c:'#e0524a',y:512}];
+const CX=300,NAVEL=428,BREATH_NEED=3;
+// three stages: 新手 guided / 熟手 breath+light combined / 老手 sense by hand + find the 卡點
+// skill: 新手 full guidance / 熟手 breath+light combined / 老手 hidden chakras, sense the 卡點 by hand
+const LV=[
+ {n:'新手',spd:700,need:1.1,sync:false,hide:false,knot:false,pick:1},
+ {n:'熟手',spd:600,need:1.2,sync:true,hide:false,knot:false,pick:2},
+ {n:'老手',spd:480,need:1.4,sync:true,hide:true,knot:true,pick:3}];
+const DESC={self:['跟著引導感受呼吸，找出身體不舒服的地方，幫自己補氣。','呼吸和導光合在一起：吐氣往下帶、吸氣停住點亮。再問問自己今天最需要什麼。','脈輪不顯示位置，靠感應找到它。最後用手找出身體藏起來的卡點。'],
+ other:['朋友說一句煩惱，選出他最需要的 1 個脈輪，幫他補氣。','朋友說出狀況，判斷 2 個脈輪，用呼吸帶光幫他補氣。','一段比較複雜的生活故事，判斷 3 個脈輪；脈輪不顯示，卡點要用手感應。']};
+let MODE='self';
+// 情境題: ch = chakra indexes they need, z = body zone that is stuck (遊戲情境, 常見靈氣對應)
+const CASES=[[
+ {who:'室友',t:'最近腦袋停不下來，躺著一直想事情，頭好脹。',ch:[0],z:'頭部',why:{0:'腦袋停不下來，需要「放空」'}},
+ {who:'同事',t:'明天要上台報告，喉嚨卡卡，話都講不出來，肩頸好硬。',ch:[2],z:'肩頸',why:{2:'講不出話，需要「表達」'}},
+ {who:'姊姊',t:'跟男朋友吵架，心裡好委屈，胸口悶悶的。',ch:[3],z:'胸背',why:{3:'委屈、關係卡住，需要「溫柔」'}},
+ {who:'學弟',t:'每天加班，整個人提不起勁，腰好痠。',ch:[5],z:'腰腹',why:{5:'提不起勁，需要「活力」'}}],[
+ {who:'同事小美',t:'下週要上台報告，一想到就緊張，喉嚨卡卡講不出話，肩頸也硬梆梆的。',ch:[2,4],z:'肩頸',why:{2:'講不出話，需要「表達」',4:'怕上台、緊張，需要「自信」'}},
+ {who:'朋友阿哲',t:'剛換工作，心裡一直不踏實，晚上躺著腦袋停不下來，頭很脹。',ch:[6,0],z:'頭部',why:{6:'心裡不踏實，需要「安定」',0:'腦袋停不下來，需要「放空」'}},
+ {who:'媽媽',t:'最近跟家人吵架，心裡很委屈，有話說不出口，胸口悶悶的。',ch:[3,2],z:'胸背',why:{3:'委屈、關係卡住，需要「溫柔」',2:'有話說不出口，需要「表達」'}},
+ {who:'學弟小陳',t:'天天加班，整個人提不起勁，對什麼都沒興趣，腰痠到坐不住。',ch:[5,4],z:'腰腹',why:{5:'提不起勁，需要「活力」',4:'被工作壓著，需要「自信」撐起來'}},
+ {who:'表妹小安',t:'快考試了，書一直讀不進去，注意力很散，坐太久雙腿又沉又麻。',ch:[1,6],z:'雙腿',why:{1:'注意力散，需要「專注」',6:'坐不住、心浮，需要「安定」'}}],[
+ {who:'王姐',t:'剛升主管，開會時總覺得自己不夠格，想法放在心裡不敢講，回家對小孩又特別沒耐心。',ch:[4,2,3],z:'肩頸',why:{4:'覺得自己不夠格，需要「自信」',2:'不敢講，需要「表達」',3:'對家人沒耐心，需要「溫柔」'}},
+ {who:'阿明',t:'創業第一年，錢的事讓他很不安，白天整個人沒動力，晚上躺下又想東想西。',ch:[6,5,0],z:'腰腹',why:{6:'對錢不安，需要「安定」',5:'白天沒動力，需要「活力」',0:'晚上想東想西，需要「放空」'}},
+ {who:'Lisa',t:'每天盯螢幕做企劃，腦袋常常一片混亂抓不到重點，有想法卻講不清楚，最近也沒什麼熱情。',ch:[1,2,5],z:'頭部',why:{1:'抓不到重點，需要「專注」',2:'講不清楚，需要「表達」',5:'沒熱情，需要「活力」'}}]];
+let L=LV[0];const CYC=8;// sync breath: 4s in / 4s out
+const needOf=i=>S.focus.includes(i)?L.need*1.7:L.need;
+const inhaleNow=()=>(S.bt%CYC)<CYC/2;
+$('chips').innerHTML=CH.map(c=>`<span style="background:${c.c}">${c.n}</span>`).join('');
+
+// ---------- audio (soft tones, optional)
+let ac=null;function tone(f,d=.6,v=.08){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0,ac.currentTime);g.gain.linearRampToValueAtTime(v,ac.currentTime+.05);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}catch(e){}}
+const NOTES=[784,698,659,587,523,440,392];
+
+// ---------- view / input
+const view={s:1,ox:0,oy:0,dpr:1};
+function fit(){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);cv.width=r.width*dpr;cv.height=r.height*dpr;view.dpr=dpr;view.s=Math.min(r.width/W,r.height/H);view.ox=(r.width-W*view.s)/2;view.oy=(r.height-H*view.s)/2;}
+addEventListener('resize',fit);
+let P=null;// pointer {x,y,sp,t,down}
+function loc(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left-view.ox)/view.s,(e.clientY-r.top-view.oy)/view.s];}
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);const [x,y]=loc(e);P={x,y,sp:0,vy:0,t:performance.now(),down:true};onDown();});
+cv.addEventListener('pointermove',e=>{if(!P)return;const [x,y]=loc(e),now=performance.now(),dt=Math.max(1,now-P.t)/1000;
+  const vx=(x-P.x)/dt,vy=(y-P.y)/dt;P.sp=P.sp*.5+Math.hypot(vx,vy)*.5;P.x=x;P.y=y;P.t=now;});
+const lift=()=>{if(P){P.down=false;onUp();}P=null;};
+cv.addEventListener('pointerup',lift);cv.addEventListener('pointercancel',lift);
+const still=()=>P&&(performance.now()-P.t>90||P.sp<60);
+
+// ---------- state
+let S;
+function reset(){S={free:[],focus:[],wrong:0,cs:null,targets:[],bt:0,sync:0,syncFlag:false,knotZ:null,phase:'idle',breath:0,inhale:false,good:0,peak:0,lit:0,orbY:CH[0].y,dragging:false,hold:0,breaks:0,breathMiss:0,t:0,flash:0,msg:''};}
+reset();
+function hint(t){if($('hint').innerHTML!==t)$('hint').innerHTML=t;}
+function setStep(t){$('step').textContent=t;}
+
+function onDown(){
+  if(S.phase==='breath'){S.inhale=true;S.peak=S.breath;}
+  if(S.phase==='chakra'){const target=S.lit===0?CH[0].y:S.orbY;if(Math.abs(P.y-target)<110&&Math.abs(P.x-CX)<140){S.dragging=true;S.grab=P.y-S.orbY;}}
+}
+function onUp(){
+  if(S.phase==='breath'&&S.inhale){S.inhale=false;
+    if(S.peak>=.78){S.exhaling=true;}else{S.breathMiss++;S.msg='再吸深一點，要吸到<b>肚臍以下</b>才算';}}
+  if(S.phase==='chakra'){S.dragging=false;S.hold=0;}
+}
+
+function step(dt){
+  S.t+=dt;S.flash=Math.max(0,S.flash-dt*2);
+  if(S.phase==='breath'){
+    if(S.inhale){S.breath=Math.min(1,S.breath+dt/3.6);S.peak=Math.max(S.peak,S.breath);
+      hint(S.breath<.3?'吸…感覺空氣從鼻子進來':S.breath<.55?'胸口慢慢打開…':S.breath<.78?'再往下，讓<b>肚子鼓起來</b>…':'到肚臍以下了，<b>放開手指</b>慢慢吐氣');}
+    else{S.breath=Math.max(0,S.breath-dt/3.2);
+      if(S.exhaling){hint(S.breath>.45?'慢慢吐…<b>肩膀放下來</b>':'把累的感覺，一起吐掉…');if(S.breath<.08){S.exhaling=false;S.good++;tone(330+S.good*60,.9,.06);
+          if(S.good>=BREATH_NEED){S.phase='mid';setTimeout(()=>{S.cs?showPick():LV.indexOf(L)===1?showSelfPick():($('ovMid').hidden=false);},500);hint('呼吸到位了');}}}
+      else hint(S.msg||`<b>按住畫面</b>吸氣，吸到肚臍以下再放開（${S.good}/${BREATH_NEED}）`);}
+    if(!S.inhale&&!S.exhaling&&S.breath<.05&&S.msg&&S.t%4<dt)S.msg='';
+  }
+  if(S.phase==='free')freeStep(dt);
+  if(S.phase==='chakra'){
+    S.bt+=dt;const cur=S.lit,next=CH[cur],inh=inhaleNow();
+    if(L.sync&&inh!==S.wasInh){S.wasInh=inh;S.syncFlag=false;tone(inh?262:196,.5,.03);}
+    if(cur===0){// light the crown first: hold on it
+      const ok=S.dragging&&P&&still()&&Math.abs(P.y-CH[0].y)<60;
+      if(ok&&(!L.sync||inh)){S.hold+=dt;hint(L.sync?'吸氣…停在頭頂讓它亮起來':'停在頭頂…感受它');if(S.hold>=needOf(0))light(0);}
+      else if(ok&&L.sync){hint('吐氣…<b>等下一次吸氣</b>再點亮');}
+      else{S.hold=Math.max(0,S.hold-dt);hint('<b>按住頭頂</b>的光，停一下讓頂輪亮起來');}
+      return;}
+    if(!next)return;
+    if(S.dragging&&P){
+      if(P.sp>L.spd&&!S.arrived){breakLight();return;}
+      const prevY=CH[cur-1].y;
+      if(L.sync&&inh&&!S.arrived){// inhale: the light stays put; moving now is out of sync
+        if(Math.abs(P.y-S.grab-S.orbY)>25&&!S.syncFlag){S.syncFlag=true;S.sync++;}
+        S.grab=P.y-S.orbY;S.hold=0;hint(S.syncFlag?'吸氣的時候<b>停住</b>，吐氣再往下帶':'吸氣…光停住，<b>等吐氣</b>再往下');return;}
+      S.orbY=Math.max(prevY,Math.min(next.y,P.y-S.grab));
+      S.arrived=Math.abs(S.orbY-next.y)<(L.hide?14:10);
+      const nm=L.hide?'這裡':next.n;
+      if(S.arrived){S.orbY=next.y;
+        if(still()&&(!L.sync||inh)){S.hold+=dt;hint(S.focus.includes(cur)?`這是對方需要的，<b>多停一下</b>…`:`停在${nm}…讓它亮起來`);if(S.hold>=needOf(cur))light(cur);}
+        else if(L.sync&&!inh){hint(`感覺到了，<b>等吸氣</b>停住點亮`);}
+        else{S.hold=Math.max(0,S.hold-dt);hint(`到${nm}了，<b>停住不動</b>`);}}
+      else{S.hold=0;hint(L.hide?'吐氣…慢慢往下，<b>感覺光變色</b>就是到了':(L.sync?`吐氣…慢慢往下帶到<b>${next.n}</b>`:`手指不用放開，慢慢往下帶到<b>${next.n}</b>`));}
+    }else{S.arrived=false;S.hold=Math.max(0,S.hold-dt*2);hint(L.hide?'<b>按住光</b>，慢慢往下找下一個脈輪':`<b>按住光</b>，慢慢往下帶到<b>${next.n}</b>`);}
+  }
+}
+// ---------- free 補氣: any body area, guided by how the body feels
+const ZONES=[
+ {n:'頭部',l:[300,72],p:[[300,130,52]]},
+ {n:'肩頸',l:[452,240],p:[[300,214,34],[238,246,34],[362,246,34]]},
+ {n:'手臂',l:[476,470],p:[[188,360,30],[174,460,30],[412,360,30],[426,460,30]]},
+ {n:'胸背',l:[300,306],p:[[300,300,58]]},
+ {n:'腰腹',l:[300,400],p:[[300,395,56]]},
+ {n:'雙腿',l:[300,630],p:[[180,545,46],[300,560,46],[420,545,46]]}];
+function zoneAt(x,y){for(const z of ZONES)for(const q of z.p)if(Math.hypot(x-q[0],y-q[1])<q[2]+10)return z;return null;}
+function freeStep(dt){
+  if(!P||!P.down){hint(S.knotZ&&!S.knotDone?(L.hide?(S.cs?'對方':'你')+'身上有一個地方<b>卡住了</b>，用手慢慢感應':`${S.cs.who}說哪裡不舒服？<b>到那裡補氣</b>`):S.targets.length&&S.targets.some(n=>ZONES.find(z=>z.n===n).f<1)?`先補你剛剛覺得不舒服的：<b>${S.targets.join('、')}</b>`:'身體哪裡想補氣？<b>在那裡慢慢滑</b>');S.cur=null;return;}
+  const z=zoneAt(P.x,P.y);S.cur=z;
+  if(!z){hint('滑到<b>身體上</b>你想補氣的地方');return;}
+  if(P.sp>450){hint('慢一點，讓能量<b>滲進去</b>');return;}
+  if(S.targets.includes(z.n)&&!z.f)S.tHit=true;
+  const isK=z===S.knotZ,was=z.f||0;z.f=Math.min(1,was+dt/(isK?4.2:2.6));
+  if(isK&&was<1&&z.f>=1){tone(392,.6,.07);setTimeout(()=>tone(659,1.2,.07),250);S.knotDone=true;$('freeBar').hidden=false;hint(L.hide?`找到了！${S.cs?S.cs.who+'的':'你的'}卡點在<b>${z.n}</b>，已經化開了`:`${S.cs.who}的<b>${z.n}</b>補好了，還想多補哪裡都可以`);}
+  else if(isK&&z.f<1){hint(L.hide?`這裡<b>特別卡</b>…繼續慢慢補`:`對，就是這裡，慢慢補…`);}
+  else if(was<1&&z.f>=1){tone(523,.8,.06);hint(S.knotZ&&!S.knotDone?`<b>${z.n}</b>補滿了，但${S.cs?S.cs.who+'最不舒服的':'卡點'}不是這裡`:`<b>${z.n}</b>補滿了，還有哪裡需要嗎？`);}
+  else if(z.f<1)hint(`在<b>${z.n}</b>補氣中…`);
+  S.free=ZONES.filter(q=>q.f>=.5).map(q=>q.n);
+}
+function breakLight(){S.breaks++;S.dragging=false;S.hold=0;S.bt=0;S.arrived=false;S.orbY=CH[S.lit-1].y;S.flash=1;tone(180,.4,.05);hint('太急了，光斷了。回到上一個脈輪，<b>放慢</b>再來');S.phase='pause';setTimeout(()=>{if(S.phase==='pause')S.phase='chakra';},900);}
+function showFree(){const k=L.knot;if(S.cs&&!k){$('freeMini').textContent='第三步';$('freeH').textContent='幫'+S.cs.who+'補氣';$('freeText').innerHTML=`七大脈輪都亮了。<br>${S.cs.who}剛剛說哪裡不舒服？<br><b>在那裡慢慢滑</b>，幫他把能量補進去。`;$('freeNote').textContent='補好之後，其他地方也可以多補。';$('btnFree').textContent='開始補氣';$('btnSkip').parentNode.hidden=true;$('ovFree').hidden=false;return;}$('freeMini').textContent=k?'第三步・老手必做':'第三步・可以跳過';$('freeH').textContent=k?'找出身體的卡點':'哪裡還需要補氣？';
+  $('freeText').innerHTML=k?`七大脈輪都亮了。<br>${S.cs?S.cs.who+'身上':'你的身體'}有<b>一個地方卡住了</b>，看不到，只能用手去感應。<br>在身體上<b>慢慢滑</b>，感覺到<b>波動</b>就是它，停在那裡把它補開。`:'七大脈輪都亮了。<br>身體還有哪裡覺得<b>累、緊、卡卡的</b>嗎？<br>肩膀、手臂、腰背、雙腿…<b>用手指在那裡慢慢滑</b>，把能量補進去。';
+  $('freeNote').textContent=k?'找到卡點後，其他地方也可以繼續補。':'跟著現在身體的感覺走，沒有標準答案。';$('btnFree').textContent=k?'開始感應':'自由補氣';$('btnSkip').parentNode.hidden=k;$('ovFree').hidden=false;}
+function light(i){S.lit=i+1;S.hold=0;S.arrived=false;S.orbY=CH[i].y;if(P)S.grab=P.y-S.orbY;// keep the finger down: just continue sliding to the next one
+  S.bloom=1;S.bloomI=i;tone(NOTES[i],1.2,.09);
+  if(S.lit>=CH.length){S.dragging=false;S.phase='done';hint('七個脈輪都亮了');setTimeout(!S.cs&&!L.hide?showScan:showFree,1600);}}
+
+// ---------- drawing
+function figure(c){
+  // seated figure silhouette
+  c.save();c.fillStyle='#232d42';c.strokeStyle='#33405c';c.lineWidth=2;
+  c.beginPath();c.ellipse(CX,140,46,54,0,0,7);c.fill();c.stroke();
+  c.beginPath();c.moveTo(282,188);c.lineTo(318,188);c.lineTo(322,214);c.lineTo(278,214);c.closePath();c.fill();
+  c.beginPath();c.moveTo(212,240);c.quadraticCurveTo(CX,200,388,240);c.lineTo(372,400);c.quadraticCurveTo(CX,470,228,400);c.closePath();c.fill();c.stroke();
+  // arms resting on knees
+  c.lineCap='round';c.lineWidth=34;c.strokeStyle='#232d42';c.beginPath();c.moveTo(218,252);c.quadraticCurveTo(178,380,170,500);c.stroke();c.beginPath();c.moveTo(382,252);c.quadraticCurveTo(422,380,430,500);c.stroke();
+  // crossed legs
+  c.fillStyle='#232d42';c.beginPath();c.ellipse(CX,540,190,58,0,0,7);c.fill();c.strokeStyle='#33405c';c.lineWidth=2;c.stroke();
+  c.beginPath();c.moveTo(CX-150,540);c.quadraticCurveTo(CX,500,CX+150,540);c.stroke();
+  c.restore();}
+function glow(c,x,y,r,col,a){const g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,col);g.addColorStop(1,'rgba(0,0,0,0)');c.globalAlpha=a;c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill();c.globalAlpha=1;}
+function draw(){
+  const c=ctx;c.setTransform(view.dpr,0,0,view.dpr,0,0);c.clearRect(0,0,cv.width,cv.height);c.translate(view.ox,view.oy);c.scale(view.s,view.s);
+  // stars
+  c.fillStyle='rgba(255,255,255,.35)';for(let i=0;i<40;i++){const x=(i*137)%600,y=(i*89)%300+10,tw=.5+.5*Math.sin(S.t*1.5+i);c.globalAlpha=.2+.4*tw;c.fillRect(x,y,2,2);}c.globalAlpha=1;
+  figure(c);
+  if(S.phase==='breath'||S.phase==='mid'||S.phase==='idle'){
+    // breath fill inside torso from chest down to navel (level 0..1 maps 230..470)
+    const top=232,bot=470,lvl=top+(bot-top)*S.breath;
+    c.save();c.beginPath();c.moveTo(212,240);c.quadraticCurveTo(CX,200,388,240);c.lineTo(372,400);c.quadraticCurveTo(CX,470,228,400);c.closePath();c.clip();
+    const g=c.createLinearGradient(0,top,0,bot);g.addColorStop(0,'rgba(232,196,106,.15)');g.addColorStop(1,'rgba(232,196,106,.55)');c.fillStyle=g;c.fillRect(150,top,300,lvl-top);c.restore();
+    // navel line
+    const ny=top+(bot-top)*.78;c.setLineDash([6,6]);c.strokeStyle='rgba(232,196,106,.8)';c.lineWidth=2;c.beginPath();c.moveTo(196,ny);c.lineTo(404,ny);c.stroke();c.setLineDash([]);
+    c.fillStyle='#e8c46a';c.font='bold 15px sans-serif';c.textAlign='left';c.fillText('肚臍',412,ny+5);
+    // breathing ring
+    const rr=60+S.breath*90;c.strokeStyle=`rgba(232,196,106,${.25+S.breath*.4})`;c.lineWidth=3;c.beginPath();c.arc(CX,380,rr,0,7);c.stroke();
+    c.fillStyle='#eef0f4';c.font='bold 22px "Noto Serif TC",serif';c.textAlign='center';c.fillText(S.inhale?'吸':(S.exhaling?'吐':''),CX,388);
+    // breath dots
+    for(let i=0;i<BREATH_NEED;i++){c.beginPath();c.arc(CX-24+i*24,640,7,0,7);c.fillStyle=i<S.good?'#e8c46a':'#33405c';c.fill();}
+  }
+  if(S.phase==='chakra'||S.phase==='pause'||S.phase==='done'){
+    // channel
+    c.strokeStyle='rgba(255,255,255,.08)';c.lineWidth=10;c.lineCap='round';c.beginPath();c.moveTo(CX,CH[0].y);c.lineTo(CX,CH[6].y);c.stroke();
+    if(S.lit>0){c.strokeStyle='rgba(232,196,106,.55)';c.lineWidth=4;c.beginPath();c.moveTo(CX,CH[0].y);c.lineTo(CX,S.orbY);c.stroke();}
+    CH.forEach((ch,i)=>{const on=i<S.lit,nx=i===S.lit;if(L.hide&&!on)return;
+      if(on)glow(c,CX,ch.y,46+4*Math.sin(S.t*2+i),ch.c,.75);
+      c.beginPath();c.arc(CX,ch.y,on?14:9,0,7);c.fillStyle=on?ch.c:(nx?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)');c.fill();
+      if(nx&&S.phase!=='done'){c.strokeStyle=ch.c;c.lineWidth=2;c.globalAlpha=.5+.5*Math.sin(S.t*4);c.beginPath();c.arc(CX,ch.y,22,0,7);c.stroke();c.globalAlpha=1;}
+      c.textAlign=i%2?'right':'left';c.font=(on?'bold ':'')+'15px sans-serif';c.fillStyle=on?ch.c:'rgba(238,240,244,.45)';
+      const lx=i%2?CX-40:CX+40;c.fillText((S.focus.includes(i)&&i%2?'★ ':'')+ch.n+(S.focus.includes(i)&&!(i%2)?' ★':''),lx,ch.y+5);if(on){c.font='12px sans-serif';c.fillStyle='rgba(238,240,244,.7)';c.fillText(ch.k,lx,ch.y+22);}});
+    // orb
+    if(S.phase!=='done'){const nx=CH[S.lit];
+      if(L.hide&&nx&&S.lit>0){const d=Math.abs(S.orbY-nx.y);if(d<70)glow(c,CX,S.orbY,70,nx.c,(1-d/70)*.9);}
+      if(L.sync){const k=(S.bt%CYC)/(CYC/2),inh=k<1,r=inh?26+30*k:56-30*(k-1);c.strokeStyle=inh?'rgba(232,196,106,.7)':'rgba(140,180,255,.6)';c.lineWidth=3;c.beginPath();c.arc(CX,S.orbY,r,0,7);c.stroke();
+        c.fillStyle=inh?'#e8c46a':'#8cb4ff';c.font='bold 26px "Noto Serif TC",serif';c.textAlign='center';c.fillText(inh?'吸・停住點亮':'吐・往下帶',CX,660);}
+      glow(c,CX,S.orbY,40,'#fff6d8',.6+.2*Math.sin(S.t*5));c.beginPath();c.arc(CX,S.orbY,10,0,7);c.fillStyle='#fff6d8';c.fill();
+      if(S.hold>0){const need=needOf(S.lit);c.strokeStyle=S.lit<7?CH[Math.min(S.lit,6)].c:'#fff';c.lineWidth=5;c.beginPath();c.arc(CX,S.lit===0?CH[0].y:CH[S.lit].y,30,-Math.PI/2,-Math.PI/2+2*Math.PI*S.hold/need);c.stroke();}}
+    if(S.bloom>0){S.bloom-=.02;glow(c,CX,CH[S.bloomI].y,140*(1-S.bloom)+40,CH[S.bloomI].c,S.bloom*.6);}
+  }
+  if(S.phase==='free'){
+    CH.forEach(ch=>glow(c,CX,ch.y,30,ch.c,.35));
+    ZONES.forEach(z=>{const f=z.f||0,hot=S.cur===z;z.p.forEach(q=>{
+      if(f>0)glow(c,q[0],q[1],q[2]*1.6,z===S.knotZ&&f<1?'#c1553d':'#e8c46a',.25+.55*f);
+      const tg=S.targets.includes(z.n)&&f<1;c.setLineDash([5,7]);c.strokeStyle=hot?'rgba(232,196,106,.9)':tg?`rgba(240,140,122,${.5+.4*Math.sin(S.t*4)})`:'rgba(255,255,255,.18)';c.lineWidth=2;c.beginPath();c.arc(q[0],q[1],q[2],0,7);c.stroke();c.setLineDash([]);});
+      c.textAlign='center';c.font=(f>=1||hot?'bold ':'')+'16px sans-serif';c.fillStyle=f>=1||hot?'#e8c46a':'rgba(238,240,244,.6)';
+      c.fillText(z.n+(f>=1?' ✓':''),z.l[0],z.l[1]);});
+  }
+  if(S.phase==='free'&&L.hide&&S.knotZ&&!S.knotDone&&P&&P.down&&zoneAt(P.x,P.y)===S.knotZ){for(let i=0;i<3;i++){const a=((S.t*1.2+i/3)%1);c.strokeStyle=`rgba(193,85,61,${.6*(1-a)})`;c.lineWidth=3;c.beginPath();c.arc(P.x,P.y,20+a*60,0,7);c.stroke();}}
+  if(S.cs&&S.phase!=='breath'){c.fillStyle='rgba(238,240,244,.55)';c.font='15px sans-serif';c.textAlign='left';c.fillText('幫 '+S.cs.who+' 療癒',14,24);}
+  if(S.flash>0){c.fillStyle=`rgba(193,85,61,${S.flash*.25})`;c.fillRect(0,0,W,H);}
+  if(P&&P.down){c.beginPath();c.arc(P.x,P.y,22,0,7);c.fillStyle='rgba(255,255,255,.12)';c.fill();}
+}
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;if(S.phase!=='idle')step(dt);draw();requestAnimationFrame(loop);}
+
+// ---------- flow
+function showCase(){const cs=S.cs;$('caseMini').textContent=L.n+'・今天有人來找你';$('caseWho').textContent=cs.who;$('caseText').textContent='「'+cs.t+'」';$('ovCase').hidden=false;}
+let sel=[];
+function showSelfPick(){showPick(true);}
+function showPick(self){const cs=S.cs;sel=[];$('pickH').textContent=self?'今天的你，最需要什麼？':`他最需要哪 ${L.pick} 個脈輪？`;$('pickCase').innerHTML=self?'沒有標準答案，選 1 個跟著現在的感覺走。<br>導光時這個脈輪會標 ★，要多停一下。':cs.who+'：「'+cs.t+'」';const need=self?1:L.pick;
+  $('picks').innerHTML=CH.map((c,i)=>`<button class="pk" data-i="${i}" style="border-left:6px solid ${c.c}">${c.n}<small>${c.k}</small></button>`).join('');
+  $('picks').querySelectorAll('.pk').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(sel.includes(i))sel=sel.filter(x=>x!==i);else if(sel.length<need)sel.push(i);else{sel.shift();sel.push(i);}
+    $('picks').querySelectorAll('.pk').forEach(x=>x.classList.toggle('on',sel.includes(+x.dataset.i)));const ok=sel.length===need;$('btnPick').disabled=!ok;$('btnPick').style.opacity=ok?1:.4;});
+  $('btnPick').disabled=true;$('btnPick').style.opacity=.4;$('ovPick').hidden=false;}
+$('btnPick').onclick=()=>{if(!S.cs){S.focus=sel.slice();$('ovPick').hidden=true;$('ovMid').hidden=false;return;}const cs=S.cs,hit=sel.filter(i=>cs.ch.includes(i));S.wrong=L.pick-hit.length;S.focus=cs.ch.slice();
+  $('fbH').textContent=S.wrong?`答對 ${hit.length} / ${L.pick}`:'全部答對！';
+  $('fbList').innerHTML=cs.ch.map(i=>`<div class="${sel.includes(i)?'ok':'no'}">${sel.includes(i)?'✓':'✗'} <b>${CH[i].n}</b>：${cs.why[i]}</div>`).join('')+sel.filter(i=>!cs.ch.includes(i)).map(i=>`<div class="no">✗ 你選了${CH[i].n}（${CH[i].k}），這次比較不是重點</div>`).join('')+`<div style="margin-top:6px">導光時，這幾個脈輪會標 ★，<b>要多停一下</b>。</div>`;
+  $('ovPick').hidden=true;$('ovFb').hidden=false;tone(S.wrong?220:660,.6,.06);};
+$('btnFb').onclick=()=>{$('ovFb').hidden=true;$('ovMid').hidden=false;};
+$('btnCase').onclick=()=>{$('ovCase').hidden=true;S.phase='breath';};
+$('scanPicks').innerHTML=[['頭部','脹、想太多'],['肩頸','緊、僵硬'],['手臂','痠、沉'],['胸背','悶、緊'],['腰腹','痠、脹'],['雙腿','累、沉']].map(([n,k])=>`<button class="pk" data-n="${n}">${n}<small>${k}</small></button>`).join('');
+$('scanPicks').querySelectorAll('.pk').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+function showScan(){$('scanPicks').querySelectorAll('.pk').forEach(b=>b.classList.remove('on'));$('ovScan').hidden=false;}
+$('btnScan').onclick=()=>{S.targets=[...$('scanPicks').querySelectorAll('.pk.on')].map(b=>b.dataset.n);$('ovScan').hidden=true;$('btnFree').onclick();};
+$('btnScanSkip').onclick=()=>{$('ovScan').hidden=true;end();};
+function start(){reset();$('midText').innerHTML=[
+  '呼吸穩了。現在<b>按住頭頂的光</b>，<b>慢慢往下拖</b>到下一個脈輪。<br>到了以後<b>停住不動</b>，讓它亮起來，<b>手指不用放開</b>，繼續往下滑。<br>太急的話光會斷掉，要回到上一個脈輪重來。',
+  '現在把呼吸用進來：<br><b>吐氣時</b>把光往下帶，<b>吸氣時</b>停住，讓脈輪亮起來。<br>光的外圈會跟著呼吸變大變小，跟著它走。<br>吸氣時亂動，就是呼吸跟光沒對上。',
+  '老手模式，<b>脈輪不顯示位置</b>。<br>一樣吐氣往下、吸氣停住，<br>光靠近脈輪時會<b>慢慢染上它的顏色</b>，用感覺找到它。<br>手要更慢，太急光就斷了。'][LV.indexOf(L)];$('freeBar').hidden=true;$('ovFree').hidden=true;ZONES.forEach(z=>z.f=0);$('ovStart').hidden=true;$('ovEnd').hidden=true;['ovCase','ovPick','ovFb','ovScan','ovMid'].forEach(i=>$(i).hidden=true);
+  if(MODE==='other'){const pool=CASES[LV.indexOf(L)];S.cs=pool[Math.floor(Math.random()*pool.length)];S.phase='case';showCase();setStep('第一步・先穩住自己的呼吸');}
+  else{S.phase='breath';setStep('第一步・跟著呼吸，吸到肚臍以下');}hint(`<b>按住畫面</b>吸氣，吸到肚臍以下再放開（0/${BREATH_NEED}）`);}
+function setMode(m){MODE=m;document.querySelectorAll('.md').forEach(b=>b.classList.toggle('on',b.dataset.m===m));DESC[m].forEach((d,i)=>$('d'+i).textContent=d);}
+document.querySelectorAll('.md').forEach(b=>b.onclick=()=>setMode(b.dataset.m));setMode('self');
+document.querySelectorAll('.lv').forEach(b=>b.onclick=()=>{L=LV[+b.dataset.lv];tone(523,.3,.05);
+  $('readyH').textContent=(MODE==='self'?'療癒自己':'幫別人療癒')+'・'+L.n;$('readyText').textContent=DESC[MODE][LV.indexOf(L)];$('ovStart').hidden=true;$('ovReady').hidden=false;});
+$('btnReady').onclick=()=>{$('ovReady').hidden=true;start();};
+$('btnBack').onclick=()=>{$('ovReady').hidden=true;$('ovStart').hidden=false;};
+$('btnAgain').onclick=()=>{$('ovEnd').hidden=true;$('ovStart').hidden=false;};
+$('btnFree').onclick=()=>{$('ovFree').hidden=true;ZONES.forEach(z=>z.f=0);S.phase='free';S.knotZ=S.cs?ZONES.find(z=>z.n===S.cs.z):L.hide?ZONES[Math.floor(Math.random()*ZONES.length)]:null;S.knotDone=!S.knotZ;$('freeBar').hidden=!!S.knotZ;setStep(L.hide?'第三步・找出卡點':S.cs?'第三步・幫他補氣':'第三步・幫自己補氣');};
+$('btnSkip').onclick=()=>{$('ovFree').hidden=true;end();};
+$('btnDone').onclick=()=>{$('freeBar').hidden=true;S.phase='done';end();};
+$('btnGo').onclick=()=>{$('ovMid').hidden=true;S.phase='chakra';S.orbY=CH[0].y;setStep('第二步・點亮七大脈輪');};
+const RATE=[[0,'能量滿格','呼吸穩、光也沒斷，今天的你很平衡。'],[2,'穩定療癒中','偶爾急了一點，但很快就找回節奏。'],[99,'能量偏低','光斷了好幾次，身體在提醒你：該好好慢下來療癒自己了。']];
+const RATE2=[[0,'療癒到位','判斷準、光沒斷，對方一定感受得到。'],[2,'穩定療癒中','有一點小失誤，但整體很穩。'],[99,'再練練','判斷或導光還不夠穩，多練幾次就會越來越準。']];
+function end(){const sc=S.breaks+Math.floor(S.breathMiss/2)+Math.floor(S.sync/2)+S.wrong*(L.pick>1?1:2);const r=(S.cs?RATE2:RATE).find(x=>sc<=x[0]);$('endTitle').textContent=(S.cs?'幫'+S.cs.who+'・':L.n+'・')+r[1];$('shareImg').src=card(r);$('ovEnd').hidden=false;}
+function card(r){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
+  const g=c.createLinearGradient(0,0,0,1350);g.addColorStop(0,'#1a2233');g.addColorStop(1,'#0f141e');c.fillStyle=g;c.fillRect(0,0,1080,1350);
+  c.textAlign='center';c.fillStyle='#9aa3b5';c.font='500 32px sans-serif';c.fillText(S.cs?L.n+'・幫'+S.cs.who+'療癒':L.n+'・今天的能量狀態',540,110);
+  c.fillStyle='#e8c46a';c.font='900 96px "Noto Serif TC",serif';c.fillText(r[1],540,220);
+  c.fillStyle='#eef0f4';c.font='34px "Noto Serif TC",serif';c.fillText(r[2],540,290);
+  CH.forEach((ch,i)=>{const y=400+i*96;const gg=c.createRadialGradient(540,y,0,540,y,60);gg.addColorStop(0,ch.c);gg.addColorStop(1,'rgba(0,0,0,0)');c.fillStyle=gg;c.beginPath();c.arc(540,y,60,0,7);c.fill();
+    c.fillStyle=ch.c;c.beginPath();c.arc(540,y,20,0,7);c.fill();
+    c.textAlign='right';c.font='bold 36px sans-serif';c.fillText((S.focus.includes(i)?'★ ':'')+ch.n,480,y+12);c.textAlign='left';c.fillStyle='rgba(238,240,244,.75)';c.font='32px sans-serif';c.fillText(ch.k,600,y+12);});
+  c.textAlign='center';if(S.free.length){c.fillStyle='rgba(238,240,244,.8)';c.font='32px sans-serif';c.fillText((S.knotZ?(L.hide?'找到卡點：':'補好：')+S.knotZ.n+'　':'')+(S.free.length?'補了氣：'+S.free.join('、'):''),540,1090);}
+  c.fillStyle='#e8c46a';c.font='bold 40px "Noto Serif TC",serif';c.fillText('今天療癒了嗎？',540,1150);
+  c.fillStyle='#232d42';c.fillRect(0,1210,1080,140);c.fillStyle='#fff';c.font='bold 44px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1270);
+  c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1320);return k.toDataURL('image/jpeg',.9);}
+document.addEventListener('dblclick',e=>e.preventDefault());cv.addEventListener('contextmenu',e=>e.preventDefault());
+fit();requestAnimationFrame(loop);
+})();
+</script>
+
+<script>
+/* 分享圖：儲存按鈕 + LINE 內建瀏覽器提示 */
+(()=>{const im=document.getElementById('shareImg');if(!im)return;const inLine=/Line\//i.test(navigator.userAgent);
+const box=document.createElement('div');box.style.cssText='text-align:center;margin-top:10px';im.after(box);
+const draw=()=>{if(!im.src||!im.src.startsWith('data:')){box.innerHTML='';return;}
+ if(inLine){const u=location.href.split('#')[0];box.innerHTML='<p style="font-size:13px;color:#5f6b6a;margin:6px 0">LINE 裡面沒辦法存圖，請用手機瀏覽器打開</p><a href="'+u+(u.includes('?')?'&':'?')+'openExternalBrowser=1" style="display:inline-block;background:#06c755;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">用瀏覽器打開</a>';return;}
+ box.innerHTML='<a download="鈞衡舍-'+document.title+'.jpg" href="'+im.src+'" style="display:inline-block;background:#1f2a2e;color:#fff;font-weight:700;border-radius:24px;padding:10px 22px;text-decoration:none">儲存圖片</a>';};
+new MutationObserver(draw).observe(im,{attributes:true,attributeFilter:['src']});draw();})();
+</script>
+</body>
+</html>
