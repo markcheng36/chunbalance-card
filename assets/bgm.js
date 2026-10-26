@@ -33,6 +33,7 @@
 
   btn.addEventListener('click', function (e) {
     e.stopPropagation();
+    if (!off && (!unlocked || Date.now() - unlockedAt < 800)) { unlock(); return; } // 這一下是用來開聲音的，不要當成關掉
     off = !off;
     try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (err) {}
     paint();
@@ -71,6 +72,23 @@
       tone(t, f * p[0] * 1.004, 7, vol * p[1] * 0.5, 'sine', 0.02);
     });
   }
+  function gong(t, f, vol) { // 銅鑼：低沉的敲擊聲＋慢慢湧上來的泛音，尾音很長
+    var nz = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate), d = nz.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 4);
+    var src = ctx.createBufferSource(), lp = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = nz; lp.type = 'lowpass'; lp.frequency.value = 260; g.gain.value = vol * 3;
+    src.connect(lp); lp.connect(g); out(g, 0.8); src.start(t);
+    [[1, 1, 0.01, 9], [1.47, 0.5, 0.25, 7], [2.09, 0.4, 0.6, 6], [2.56, 0.3, 0.9, 5.5], [3.14, 0.2, 1.2, 4.5], [4.3, 0.12, 1.5, 3.5]].forEach(function (p) {
+      var fr = f * p[0] * (1 + (Math.random() - 0.5) * 0.01);
+      tone(t, fr, p[3], vol * p[1], 'sine', p[2]);
+      tone(t, fr * 1.003, p[3], vol * p[1] * 0.6, 'sine', p[2]);
+    });
+  }
+  function handpan(t, f, vol) { // 手碟：圓潤的基音＋八度＋高五度泛音，柔和地敲出、慢慢消失
+    [[1, 1, 3.2], [2, 0.35, 2.2], [3, 0.12, 1.4]].forEach(function (p) {
+      tone(t, f * p[0], p[2], vol * p[1], 'sine', 0.012);
+    });
+  }
   function pluck(t, f, vol) { // 古箏般的撥弦
     tone(t, f, 2.2, vol, 'triangle', 0.005);
     tone(t, f * 2, 0.9, vol * 0.3, 'sine', 0.005);
@@ -104,12 +122,15 @@
   // ---- 曲子：每一段的長度（秒）和內容 ----
   var rnd = function (a) { return a[Math.floor(Math.random() * a.length)]; };
   var SONGS = {
-    // 靈氣：A 小調長音，跟呼吸 8 秒一循環起伏，每 16 秒一聲頌缽
+    // 靈氣：A 小調長音，跟呼吸 8 秒一循環起伏，每 32 秒一聲銅鑼，中間有手碟
     reiki: { len: 16, play: function (t, n) {
-      var chords = [[45, 52, 57], [41, 48, 57], [43, 50, 55], [45, 52, 60]];
-      pad(t, chords[n % 4], 16, 0.035, true);
-      bowl(t + 0.2, hz(rnd([69, 72, 76])), 0.05);
-      if (n % 2) bowl(t + 8.2, hz(rnd([64, 67])), 0.03);
+      var chords = [[38, 45, 50], [34, 41, 50], [36, 43, 48], [38, 45, 53]];
+      pad(t, chords[n % 4], 16, 0.028, true);
+      if (n % 2 === 0) gong(t + 0.2, hz(n % 4 ? 36 : 38), 0.09);
+      var kurd = [50, 57, 58, 60, 62, 64, 65, 67, 69, 72]; // 手碟 D Kurd 音階
+      [1.5, 3, 4, 6.5, 9, 10.5, 12, 14].forEach(function (b) {
+        if (Math.random() < 0.65) handpan(t + b + Math.random() * 0.15, hz(rnd(kurd)), 0.06);
+      });
     } },
     // 身體結構：溫暖、慢慢的五聲音階
     calm: { len: 8, play: function (t, n) {
@@ -160,15 +181,21 @@
   }
 
   // 手機規定要先有人碰畫面才能出聲；有些手機要等手指放開才算，所以每種觸碰都試，直到真的出聲為止
-  var EV = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'keydown'];
+  var EV = ['pointerup', 'touchend', 'click', 'keydown'], unlockedAt = 0, unlocked = false;
   function unlock() {
-    if (off) return;
+    if (off || unlocked) return;
     start();
     try { // iOS：在觸碰當下播一段無聲音訊來解鎖
       var b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource();
       s.buffer = b; s.connect(ctx.destination); s.start(0);
     } catch (e) {}
-    if (ctx.state === 'running') EV.forEach(function (n) { window.removeEventListener(n, unlock, true); });
+    var done = function () {
+      if (unlocked || ctx.state !== 'running') return;
+      unlocked = true; unlockedAt = Date.now();
+      EV.forEach(function (n) { window.removeEventListener(n, unlock, true); });
+    };
+    done();
+    if (ctx.resume) ctx.resume().then(done, function () {});
   }
   EV.forEach(function (n) { window.addEventListener(n, unlock, true); });
 
