@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>結構X獵人 市集立牌 A4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="brush.css">
+<style>
+  /* A4 直式 210 x 297 mm = 794 x 1123 px */
+  :root{
+    --olive:#6B7355; --olive-dark:#4F5740;
+    --brown-light:#A89078;
+    --coral:#C1553D; --coral-dark:#9E4330;
+    --cream:#F3F2EE; --ink:#3A362F; --ink-soft:#6B6558;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{width:794px;height:1123px;overflow:hidden;}
+  body{font-family:"Noto Serif TC",serif;color:var(--ink);background:var(--cream);}
+  .page{width:794px;height:1123px;position:relative;overflow:hidden;
+    background:linear-gradient(170deg,#EDE7D9 0%,var(--cream) 40%,#E7DFCE 100%);}
+  .rays{position:absolute;z-index:0;left:520px;top:260px;width:1500px;height:1500px;transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg,rgba(232,140,98,.17) 0deg 9deg,rgba(255,255,255,0) 9deg 18deg);
+    -webkit-mask-image:radial-gradient(circle,black 0%,black 20%,transparent 45%);mask-image:radial-gradient(circle,black 0%,black 20%,transparent 45%);}
+  .blob{position:absolute;border-radius:50%;z-index:0;}
+  .spark{position:absolute;z-index:3;color:#E9A84C;line-height:1;}
+
+  .logo{position:absolute;z-index:5;right:36px;top:30px;width:330px;}
+  .logo img{width:100%;display:block;}
+
+  .photo{position:absolute;z-index:2;left:-4px;top:40px;width:290px;height:540px;
+    -webkit-mask-image:linear-gradient(0deg,transparent 0%,black 18%);mask-image:linear-gradient(0deg,transparent 0%,black 18%);}
+  .photo img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;
+    filter:contrast(1.04) saturate(.85) sepia(.12) drop-shadow(5px 8px 12px rgba(58,54,47,.28));}
+
+  .hero{position:absolute;z-index:4;left:318px;top:112px;width:450px;}
+  .eyebrow{display:inline-block;font-size:17px;font-weight:700;letter-spacing:2px;color:#fff;
+    background:linear-gradient(100deg,#D9475E,var(--coral-dark));padding:5px 15px;border-radius:999px;}
+  .title{margin-top:10px;font-weight:900;font-size:70px;line-height:1.05;letter-spacing:3px;}
+  .title small{font-size:40px;letter-spacing:4px;color:var(--coral-dark);margin-left:6px;}
+  .name{margin-top:8px;font-size:34px;font-weight:700;color:var(--coral-dark);letter-spacing:3px;line-height:1.1;}
+  .name span{font-size:18px;font-weight:600;color:var(--olive-dark);letter-spacing:1px;margin-left:10px;}
+  .sub{margin-top:4px;font-size:18px;font-weight:600;color:var(--olive-dark);letter-spacing:.5px;}
+
+  .exps{position:absolute;z-index:4;left:318px;top:326px;width:450px;}
+  .group{font-size:19px;font-weight:700;letter-spacing:3px;color:var(--coral-dark);
+    border-left:3px solid var(--coral);padding-left:9px;margin-bottom:8px;}
+  .exp{display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.72);
+    border-radius:5px 18px 5px 18px;padding:8px 14px;box-shadow:0 4px 10px rgba(58,54,47,.10);}
+  .exp + .exp{margin-top:9px;}
+  .exp .ic{flex-shrink:0;width:48px;height:48px;border-radius:50%;
+    background:linear-gradient(135deg,var(--olive),var(--olive-dark));display:flex;align-items:center;justify-content:center;}
+  .exp .ic svg{width:25px;height:25px;stroke:#fff;}
+  .exp b{display:block;font-size:23px;font-weight:900;letter-spacing:2px;line-height:1.2;}
+  .exp span{display:block;font-size:14.5px;color:var(--ink-soft);line-height:1.4;margin-top:2px;}
+
+  .slogan{position:absolute;z-index:5;left:50%;top:514px;transform:translateX(-50%);
+    font-family:'BrushTitle',serif;font-size:34px;white-space:nowrap;line-height:1.4;color:var(--cream);padding:9px 28px 11px;}
+  .slogan .bar{position:absolute;inset:0;background:linear-gradient(100deg,var(--olive),var(--olive-dark));
+    border-radius:4px 20px 4px 20px;z-index:-1;transform:rotate(-.8deg);box-shadow:0 10px 22px rgba(0,0,0,.28);}
+
+  .order{position:absolute;z-index:4;left:30px;right:30px;top:592px;
+    background:linear-gradient(130deg,var(--coral) 0%,var(--coral-dark) 100%);color:#fff;
+    border-radius:8px 34px 8px 34px;box-shadow:0 12px 26px rgba(58,54,47,.30);padding:16px 26px 16px;}
+  .order::after{content:"";position:absolute;inset:8px;border:1.5px dashed rgba(255,255,255,.55);border-radius:6px 28px 6px 28px;pointer-events:none;}
+  .order .head{text-align:center;}
+  .order .k{font-size:16px;font-weight:700;letter-spacing:5px;opacity:.95;}
+  .order .big{font-size:48px;font-weight:900;letter-spacing:5px;line-height:1.2;}
+  .order .big small{font-size:28px;letter-spacing:3px;}
+  .order .cols{display:flex;gap:22px;margin-top:6px;align-items:flex-start;}
+  .items{flex:1;min-width:0;}
+  .item{background:rgba(255,255,255,.14);border-radius:4px 14px 4px 14px;padding:6px 14px;}
+  .item + .item{margin-top:7px;}
+  .item b{display:block;font-size:20px;font-weight:900;letter-spacing:1px;line-height:1.3;white-space:nowrap;}
+  .item span{display:block;font-size:14px;opacity:.95;line-height:1.4;}
+  .gift{margin-top:8px;background:#E9A84C;color:#3A2A1A;border-radius:4px 14px 4px 14px;padding:8px 14px;
+    font-size:16.5px;font-weight:700;line-height:1.45;}
+  .qrbox{flex-shrink:0;width:206px;text-align:center;}
+  .qrbox .qr{background:#fff;border-radius:14px;padding:8px;box-shadow:0 6px 16px rgba(0,0,0,.25);}
+  .qrbox .qr img{width:100%;display:block;}
+  .qrbox .cta{margin-top:6px;font-family:"Noto Sans TC",sans-serif;font-size:26px;font-weight:900;letter-spacing:3px;}
+  .steps{margin-top:8px;font-family:"Noto Sans TC",sans-serif;font-size:15px;font-weight:700;opacity:.97;text-align:center;background:rgba(0,0,0,.12);border-radius:999px;padding:5px 10px;}
+
+  .fit{position:absolute;z-index:4;left:36px;right:36px;bottom:40px;}
+  .chips{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:8px;}
+  .chip{white-space:nowrap;font-size:15px;font-weight:600;padding:5px 11px;border-radius:999px;
+    background:rgba(255,255,255,.7);border:1px solid rgba(107,115,85,.35);}
+  .fit .group{display:inline-block;margin-bottom:8px;}
+  .item{padding:4px 14px !important;}
+  .item + .item{margin-top:5px !important;}
+  .fit{bottom:26px !important;}
+  .gift{padding:6px 12px !important;font-size:14.5px !important;white-space:nowrap;line-height:1.4 !important;}
+  .hero{top:100px !important;}
+  .logo{top:18px !important;width:316px !important;}
+  .exps{top:302px !important;}
+  .slogan{top:520px !important;}
+  .price{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px;
+    background:linear-gradient(100deg,#D9475E,var(--coral-dark));color:#fff;border-radius:5px 18px 5px 18px;
+    padding:5px 16px;box-shadow:0 6px 14px rgba(158,67,48,.30);}
+  .price .pl b{display:block;font-size:22px;font-weight:900;letter-spacing:1.5px;line-height:1.25;}
+  .price .pl span{display:inline-block;margin-top:3px;font-size:15px;font-weight:700;letter-spacing:1px;
+    background:#E9A84C;color:#3A2A1A;border-radius:999px;padding:1px 10px;}
+  .price .pr{font-family:"Noto Sans TC",sans-serif;font-size:44px;font-weight:900;line-height:1;white-space:nowrap;text-align:right;}
+  .price .pr small{font-size:20px;margin-left:2px;}
+  .price .pr em{display:block;font-style:normal;font-size:16px;font-weight:700;letter-spacing:1px;margin-top:3px;}
+  .exp{padding:4px 14px !important;}
+  .exp + .exp{margin-top:6px !important;}
+  .exp .ic{width:42px !important;height:42px !important;}
+  .exp b{font-size:21px !important;}
+  .exp span{font-size:14px !important;}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="rays"></div>
+  <div class="blob" style="width:420px;height:420px;background:var(--brown-light);opacity:.18;top:-200px;right:-170px"></div>
+  <div class="blob" style="width:360px;height:360px;background:var(--olive);opacity:.12;bottom:-160px;left:-170px"></div>
+  <div class="spark" style="left:740px;top:150px;font-size:26px">✦</div>
+  <div class="spark" style="left:760px;top:190px;font-size:15px">✦</div>
+  <div class="spark" style="left:300px;top:120px;font-size:18px">✦</div>
+
+  <div class="logo"><img src="logo-h.png" alt="結構X獵人 STR × HUNTER"></div>
+
+  <div class="photo"><img src="mark.png" alt="馬克"></div>
+
+  <div class="hero">
+    <div class="eyebrow">BNI 好市集・10/28 限定</div>
+    <div class="title">身體平衡<small>體驗站</small></div>
+    <div class="name">鄭鴻鈞<span>馬克・身體結構平衡教練</span></div>
+    <div class="sub">結構X獵人 團隊・現場一對一為你檢測</div>
+  </div>
+
+  <div class="exps">
+    <div class="price">
+      <div class="pl"><b>身體張力檢測＋調整</b><span>體驗後下單可抵消費</span></div>
+      <div class="pr">300<small>元</small><em>／15分鐘</em></div>
+    </div>
+    <div class="exp">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v7M7 10l5-1.5 5 1.5M9.5 21l2.5-7 2.5 7"/></svg></div>
+      <div><b>身體調整體驗</b><span>現場動手調整，當下感受肩頸、腰背變輕變鬆</span></div>
+    </div>
+    <div class="exp">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 20V11M12 20V5M18 20v-6"/></svg></div>
+      <div><b>身體力學分析</b><span>從足底受力與站姿，找出身體哪裡在代償</span></div>
+    </div>
+  </div>
+
+  <div class="slogan"><span class="bar"></span>身體平衡找馬克，站得穩才走的久</div>
+
+  <div class="order">
+    <div class="head">
+      <div class="big">當天限定<small> 優惠價・只在市集現場</small></div>
+    </div>
+    <div class="cols">
+      <div class="items">
+        <div class="item"><b>身體結構調整課程｜單堂</b><span>當天限定 7 折</span></div>
+        <div class="item"><b>身體結構調整課程｜6 堂</b><span>當天多堂優惠價</span></div>
+        <div class="item"><b>八合一能量機能襪</b><span>當天限定 買 4 送 1</span></div>
+        <div class="item"><b>遠紅外線奈米足弓墊</b><span>依現場量測之足底壓力圖進行尺寸配置</span></div>
+        <div class="gift">🎁 現場下單『足弓墊』加贈價值超過 NT$4,900 專用鞋<br>再送一堂身體結構調整課程</div>
+      </div>
+      <div class="qrbox">
+        <div class="qr"><img src="order-qr.png" alt="下單 QR code"></div>
+        <div class="cta">掃碼直接下單</div>
+      </div>
+    </div>
+    <div class="steps">① 掃碼選品項、填資料送出　② 加官方 LINE 傳截圖　③ 到攤位完成付款</div>
+  </div>
+
+  <div class="fit">
+    <div class="group">適合這樣的你</div>
+    <div class="chips">
+      <div class="chip">站久腳痠、走路易累</div>
+      <div class="chip">肩頸緊、腰背痠</div>
+      <div class="chip">運動卡關、容易受傷</div>
+      <div class="chip">坐著翹腳、站著三七步、習慣側睡</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
