@@ -12,7 +12,7 @@
 <link rel="icon" href="images/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="site.css?v=2">
+<link rel="stylesheet" href="site.css?v=3">
 </head>
 <body>
 <nav class="nav" id="nav">
@@ -135,18 +135,12 @@
   <div class="c">© 2026 鈞衡舍 ChunBalance · chunbalance.com</div>
 </footer>
 
-<div class="float" id="float">
-  <a class="a1" href="book.html">線上預約</a>
-  <a class="a2" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE</a>
-</div>
 <script>
   (function(){
-    var nav=document.getElementById('nav'), fl=document.getElementById('float'), end=document.getElementById('end');
+    var nav=document.getElementById('nav');
     function onScroll(){
       var y=window.scrollY;
       nav.classList.toggle('stuck', y>10);
-      var nearEnd = end && end.getBoundingClientRect().top < window.innerHeight;
-      fl.classList.toggle('show', y>300 && !nearEnd);
     }
     window.addEventListener('scroll', onScroll, {passive:true});
     onScroll();
