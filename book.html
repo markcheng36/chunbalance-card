@@ -140,6 +140,8 @@
   .mitem:first-child{border-top:0;}
   .mitem span:last-child{color:var(--ink-soft);text-align:right;}
   #m-list .res{margin-top:16px;background:var(--bg);border-radius:14px;padding:12px 14px;}
+  .tosite{display:inline-block;font-size:14px;font-weight:700;color:var(--ink-soft);text-decoration:none;padding:4px 0;}
+  .tosite-foot{display:inline-block;margin-bottom:6px;font-size:14px;font-weight:700;color:var(--coral,#D4554B);text-decoration:none;}
   footer{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:36px;}
   /* RWD：平板加寬、電腦分左右兩欄 */
   @media (max-width:359px){
@@ -170,7 +172,8 @@
 </head>
 <body class="first">
 <div class="wrap">
-  <div class="brand"><img src="images/logo.png" alt="鈞衡舍 ChunBalance"><div class="en">CALIBRATE. BALANCE.</div><div class="dots"></div></div>
+  <a class="tosite" href="index.html">‹ 鈞衡舍官網</a>
+  <div class="brand"><a href="index.html"><img src="images/logo.png" alt="鈞衡舍 ChunBalance"></a><div class="en">CALIBRATE. BALANCE.</div><div class="dots"></div></div>
   <div class="slogan"><div class="q">“</div><h1>讓平衡，<br>成為身體最自在的<b>歸屬</b></h1><p class="sig">鈞衡舍 ChunBalance</p></div>
 
   <div class="tabs">
@@ -277,7 +280,7 @@
     <div id="m-list"></div>
   </section>
 
-  <footer>鈞衡舍 ChunBalance｜讓平衡，成為身體最自在的歸屬</footer>
+  <footer><a class="tosite-foot" href="index.html">鈞衡舍官網 chunbalance.com ›</a><br>鈞衡舍 ChunBalance｜讓平衡，成為身體最自在的歸屬</footer>
 </div>
 
 <script>
