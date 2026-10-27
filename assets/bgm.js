@@ -1,5 +1,5 @@
 /* 遊戲背景音樂：全部用 Web Audio 即時產生（免費、無版權問題）
-   用法：<script src="assets/bgm.js" data-mood="reiki|calm|zen|play"></script>
+   用法：<script src="assets/bgm.js" data-mood="reiki"（靈氣）或其他（一般輕音樂）></script>
    - 預設關閉，按右上角 ♪ 才開，會記住選擇
    - 切到背景或關掉畫面時自動暫停 */
 (function () {
@@ -66,37 +66,11 @@
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g); out(g, 0.8); o.start(t); o.stop(t + dur + 0.05);
   }
-  function bowl(t, f, vol) { // 頌缽：不和諧泛音、長尾音、輕微拍頻
-    [[1, 1], [2.76, 0.45], [5.4, 0.2]].forEach(function (p) {
-      tone(t, f * p[0], 7, vol * p[1], 'sine', 0.02);
-      tone(t, f * p[0] * 1.004, 7, vol * p[1] * 0.5, 'sine', 0.02);
-    });
-  }
-  function gong(t, f, vol) { // 銅鑼：低沉的敲擊聲＋慢慢湧上來的泛音，尾音很長
-    var nz = ctx.createBuffer(1, ctx.sampleRate * 0.25, ctx.sampleRate), d = nz.getChannelData(0);
-    for (var i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 4);
-    var src = ctx.createBufferSource(), lp = ctx.createBiquadFilter(), g = ctx.createGain();
-    src.buffer = nz; lp.type = 'lowpass'; lp.frequency.value = 260; g.gain.value = vol * 3;
-    src.connect(lp); lp.connect(g); out(g, 0.8); src.start(t);
-    [[1, 1, 0.01, 9], [1.47, 0.5, 0.25, 7], [2.09, 0.4, 0.6, 6], [2.56, 0.3, 0.9, 5.5], [3.14, 0.2, 1.2, 4.5], [4.3, 0.12, 1.5, 3.5]].forEach(function (p) {
-      var fr = f * p[0] * (1 + (Math.random() - 0.5) * 0.01);
-      tone(t, fr, p[3], vol * p[1], 'sine', p[2]);
-      tone(t, fr * 1.003, p[3], vol * p[1] * 0.6, 'sine', p[2]);
-    });
-  }
-  function handpan(t, f, vol) { // 手碟：圓潤的基音＋八度＋高五度泛音，柔和地敲出、慢慢消失
-    [[1, 1, 3.2], [2, 0.35, 2.2], [3, 0.12, 1.4]].forEach(function (p) {
-      tone(t, f * p[0], p[2], vol * p[1], 'sine', 0.012);
-    });
-  }
-  function pluck(t, f, vol) { // 古箏般的撥弦
-    tone(t, f, 2.2, vol, 'triangle', 0.005);
-    tone(t, f * 2, 0.9, vol * 0.3, 'sine', 0.005);
-  }
-  function mallet(t, f, vol) { // 木琴
-    tone(t, f, 0.5, vol, 'sine', 0.003);
-    tone(t, f * 4, 0.12, vol * 0.25, 'sine', 0.002);
-  }
+
+
+
+
+
   function pad(t, notes, dur, vol, swell) { // 長音鋪底
     notes.forEach(function (m) {
       [-4, 4].forEach(function (det) {
@@ -119,43 +93,49 @@
     });
   }
 
+  function epiano(t, f, vol) { // 柔和的電鋼琴
+    tone(t, f, 2.6, vol, 'sine', 0.01);
+    tone(t, f * 2, 1.2, vol * 0.18, 'sine', 0.01);
+  }
+  var noiseBuf = null;
+  function waves(t, dur, vol) { // 輕輕的海浪聲（低沉的雜訊慢慢起伏）
+    if (!noiseBuf) {
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 4, ctx.sampleRate);
+      var d = noiseBuf.getChannelData(0), last = 0;
+      for (var i = 0; i < d.length; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    }
+    var src = ctx.createBufferSource(), lp = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = noiseBuf; src.loop = true;
+    lp.type = 'lowpass'; lp.frequency.value = 600;
+    g.gain.setValueAtTime(0.0001, t);
+    for (var k = 0; k < dur; k += 8) { // 一波約 8 秒
+      g.gain.linearRampToValueAtTime(vol, t + k + 3.5);
+      g.gain.linearRampToValueAtTime(vol * 0.25, t + k + 8);
+    }
+    g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.4);
+    src.connect(lp); lp.connect(g); g.connect(master);
+    src.start(t, Math.random() * 3); src.stop(t + dur + 0.5);
+  }
+
   // ---- 曲子：每一段的長度（秒）和內容 ----
   var rnd = function (a) { return a[Math.floor(Math.random() * a.length)]; };
+  // 一般輕音樂：C、G、Am、F 四個和弦慢慢輪，電鋼琴分解和弦＋偶爾一個旋律音
+  var light = { len: 8, play: function (t, n) {
+    var ch = [[48, 55, 60, 64], [43, 50, 59, 62], [45, 52, 60, 64], [41, 48, 57, 60]][n % 4];
+    pad(t, [ch[0], ch[2]], 8, 0.014, false);
+    [0, 1, 2, 3, 4, 5, 6, 7].forEach(function (b, i) { epiano(t + b, hz(ch[[0, 1, 2, 3, 2, 1, 2, 3][i]] + 12), 0.03); });
+    var mel = [72, 74, 76, 79, 81];
+    [0.5, 2.5, 4.5, 6.5].forEach(function (b) { if (Math.random() < 0.45) epiano(t + b, hz(rnd(mel) + 12), 0.025); });
+  } };
   var SONGS = {
-    // 靈氣：A 小調長音，跟呼吸 8 秒一循環起伏，每 32 秒一聲銅鑼，中間有手碟
+    // 靈氣：放鬆舒壓，柔和長音跟著 4 秒吸 4 秒吐起伏，加上輕輕的海浪聲
     reiki: { len: 16, play: function (t, n) {
-      var chords = [[38, 45, 50], [34, 41, 50], [36, 43, 48], [38, 45, 53]];
-      pad(t, chords[n % 4], 16, 0.028, true);
-      if (n % 2 === 0) gong(t + 0.2, hz(n % 4 ? 36 : 38), 0.09);
-      var kurd = [50, 57, 58, 60, 62, 64, 65, 67, 69, 72]; // 手碟 D Kurd 音階
-      [1.5, 3, 4, 6.5, 9, 10.5, 12, 14].forEach(function (b) {
-        if (Math.random() < 0.65) handpan(t + b + Math.random() * 0.15, hz(rnd(kurd)), 0.06);
-      });
-    } },
-    // 身體結構：溫暖、慢慢的五聲音階
-    calm: { len: 8, play: function (t, n) {
       var chords = [[48, 55, 64], [45, 52, 60], [41, 48, 57], [43, 50, 59]];
-      pad(t, chords[n % 4], 8, 0.022, false);
-      var sc = [72, 74, 76, 79, 81, 84];
-      for (var i = 0; i < 4; i++) if (Math.random() < 0.7) mallet(t + i * 2 + Math.random() * 0.3, hz(rnd(sc)), 0.04);
+      pad(t, chords[n % 4], 16, 0.026, true);
+      waves(t, 16, 0.05);
+      if (Math.random() < 0.6) epiano(t + 2 + Math.random() * 4, hz(rnd([72, 76, 79])), 0.02);
     } },
-    // 董氏奇穴：宮商角徵羽，古箏撥弦
-    zen: { len: 8, play: function (t, n) {
-      pad(t, [n % 2 ? 38 : 43, 50], 8, 0.02, false);
-      var sc = [62, 64, 67, 69, 71, 74, 76];
-      var beats = [0, 1, 1.5, 3, 4, 5, 5.5, 7];
-      beats.forEach(function (b) { if (Math.random() < 0.6) pluck(t + b, hz(rnd(sc)), 0.05); });
-      if (n % 4 === 0) bowl(t, hz(50), 0.03);
-    } },
-    // 輕鬆玩：輕快的木琴小循環
-    play: { len: 4, play: function (t, n) {
-      var bass = [48, 45, 41, 43][n % 4];
-      var mel = [[72, 76, 79, 76], [72, 77, 81, 77], [69, 72, 77, 72], [71, 74, 79, 74]][n % 4];
-      for (var i = 0; i < 8; i++) {
-        mallet(t + i * 0.5, hz(mel[i % 4] + (i > 3 && n % 2 ? 12 : 0)), 0.035);
-        if (i % 2 === 0) tone(t + i * 0.5, hz(bass), 0.4, 0.05, 'sine', 0.01);
-      }
-    } }
+    calm: light, zen: light, play: light
   };
   var song = SONGS[mood] || SONGS.calm;
 
@@ -169,7 +149,7 @@
     if (!started) { started = true; nextT = ctx.currentTime + 0.1; step = 0; }
     if (nextT < ctx.currentTime) nextT = ctx.currentTime + 0.1;
     master.gain.cancelScheduledValues(ctx.currentTime);
-    master.gain.setTargetAtTime({ reiki: 2.2, calm: 2.2, zen: 2.4, play: 3 }[mood] || 2.2, ctx.currentTime, 0.8);
+    master.gain.setTargetAtTime(mood === 'reiki' ? 2.2 : 2.6, ctx.currentTime, 0.8);
     if (!timer) { tick(); timer = setInterval(tick, 400); }
   }
   function stop() {
