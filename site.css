@@ -279,3 +279,18 @@ b{font-weight:700;}
   .nav-btn{padding:7px 14px;font-size:14px;}
 }
 @media (max-width:370px){ .nav-in .brand small{display:none;} }
+/* 上方 CTA：預約＋官方 LINE */
+.nav-btn.nav-line{margin-left:8px;background:#06C755;}
+@media (max-width:860px){ .nav-btn.nav-line{margin-left:6px;} }
+@media (max-width:760px){
+  .pc-only{display:none;}
+  .nav-btn{padding:7px 12px;}
+  .menu-btn{margin-left:6px;width:38px;height:38px;}
+}
+@media (max-width:370px){ .nav-in .brand{font-size:12.5px;letter-spacing:0;} }
+@media (max-width:400px){
+  .nav-in{gap:6px;padding:8px 12px;}
+  .nav-in .brand{font-size:13px;letter-spacing:0;}
+  .nav-in .brand small{font-size:8.5px;letter-spacing:1px;}
+  .nav-btn{padding:7px 10px;font-size:13.5px;}
+}
