@@ -1,14 +1,14 @@
 /* 遊戲背景音樂：全部用 Web Audio 即時產生（免費、無版權問題）
    用法：<script src="assets/bgm.js" data-mood="reiki|calm|zen|play"></script>
-   - 第一次點畫面後才開始（手機瀏覽器規定）
-   - 右下角 ♪ 按鈕可開關，會記住選擇
+   - 預設關閉，按右上角 ♪ 才開，會記住選擇
    - 切到背景或關掉畫面時自動暫停 */
 (function () {
   var me = document.currentScript;
   var mood = (me && me.getAttribute('data-mood')) || 'calm';
-  var KEY = 'cb-bgm-off';
-  var off = false;
-  try { off = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  var KEY = 'cb-bgm-on'; // 預設關閉，按 ♪ 才開
+  var off;
+  off = true;
+  try { off = localStorage.getItem(KEY) !== '1'; } catch (e) {}
 
   var AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return;
@@ -21,7 +21,7 @@
   btn.setAttribute('aria-label', '背景音樂開關');
   var css = document.createElement('style');
   css.textContent =
-    '#bgmBtn{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));' +
+    '#bgmBtn{position:fixed;right:max(12px,env(safe-area-inset-right,0px));top:calc(6px + env(safe-area-inset-top,0px));' +
     'z-index:9999;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.35);' +
     'background:rgba(30,30,30,.45);color:#fff;font:16px/32px sans-serif;text-align:center;padding:0;cursor:pointer;' +
     '-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);touch-action:manipulation}' +
@@ -35,7 +35,7 @@
     e.stopPropagation();
     if (!off && (!unlocked || Date.now() - unlockedAt < 800)) { unlock(); return; } // 這一下是用來開聲音的，不要當成關掉
     off = !off;
-    try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (err) {}
+    try { localStorage.setItem(KEY, off ? '0' : '1'); } catch (err) {}
     paint();
     if (off) stop(); else start();
   });
