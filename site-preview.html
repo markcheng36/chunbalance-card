@@ -149,6 +149,22 @@
   .place .row img{width:84px;height:auto;flex:0 0 84px;}
   .place a.go{margin-top:12px;font-size:14.5px;font-weight:900;color:var(--coral);}
 
+  /* 合作夥伴 */
+  .partners{margin-top:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .pt{background:#fff;border-radius:20px;padding:22px 20px;border:1px solid var(--line);display:flex;flex-direction:column;}
+  .pt .lg{height:64px;display:flex;align-items:center;}
+  .pt .lg img{max-height:64px;max-width:150px;width:auto;}
+  .pt .lg .word{font-family:var(--serif);font-size:26px;font-weight:900;color:var(--charcoal);letter-spacing:2px;}
+  .pt .lg .word small{display:block;font-family:inherit;font-size:11px;letter-spacing:3px;color:var(--olive-dark);font-weight:700;line-height:1.2;}
+  .pt .role{align-self:flex-start;margin-top:12px;font-size:12px;font-weight:700;color:#fff;background:var(--olive-dark);border-radius:999px;padding:1px 10px;}
+  .pt:nth-child(2) .role{background:var(--brown,#8B7355);}
+  .pt:nth-child(3) .role{background:var(--coral);}
+  .pt h3{font-size:18px;font-weight:900;margin-top:8px;line-height:1.45;}
+  .pt .q{font-family:var(--serif);color:var(--coral);font-size:15px;margin-top:6px;text-wrap:balance;}
+  .pt p{font-size:14.5px;color:var(--ink-soft);margin-top:6px;flex:1;text-wrap:balance;}
+  .pt a.go{margin-top:12px;font-size:14.5px;font-weight:900;color:var(--coral);}
+  .foot .c a{text-decoration:underline;}
+
   /* 06 遊戲間 */
   .play{margin-top:26px;display:flex;align-items:center;gap:18px;background:var(--charcoal);color:#EDE6DA;border-radius:22px;padding:22px 24px;}
   .play .ico{font-size:36px;line-height:1;}
@@ -206,6 +222,7 @@
     .coach img{max-width:150px;margin:0 auto;}
     .creds{justify-content:center;}
     .places{grid-template-columns:1fr;}
+    .partners{grid-template-columns:1fr;}
     .play{flex-wrap:wrap;padding:20px;}
     .play .btn{margin-left:0;width:100%;}
     .cta-box{padding:26px 16px;}
@@ -225,7 +242,7 @@
     <img src="images/logo.png" alt="鈞衡舍 logo">
     <div class="brand">鈞衡舍 ChunBalance<small>CALIBRATE. BALANCE.</small></div>
     <div class="links">
-      <a href="#services">服務</a><a href="#process">流程</a><a href="#coach">教練</a><a href="#place">地點</a><a href="games.html">遊戲間</a>
+      <a href="#services">服務</a><a href="#process">流程</a><a href="#coach">教練</a><a href="#place">地點</a><a href="#partners">師承與夥伴</a><a href="games.html">遊戲間</a>
     </div>
     <a class="nav-btn" href="book.html">線上預約</a>
   </div>
@@ -314,7 +331,7 @@
         <div class="svc c">
           <span class="label">先檢測再配置</span>
           <h3>足弓支撐</h3>
-          <p>遠紅外線奈米足弓墊。每個人足型不同，先做足部張力檢測，再依足型配置。</p>
+          <p>帥垚 Great Arch 足弓墊。每個人足型不同，先做足部張力檢測，再依足型配置。</p>
           <div class="price">
             <div><span>了解足弓墊</span><span class="ask">LINE 詢問</span></div>
           </div>
@@ -370,7 +387,7 @@
       </div>
     </div>
     <div class="sub-title">合作過的單位</div>
-    <div class="pills"><span class="pill">IFBB PRO 健美職業選手 蔡勇峰</span><span class="pill">泰山三鐵工作室</span><span class="pill">內湖炎洲集團 員工福利</span><span class="pill">台灣健康久久協會</span><span class="pill">武醫北部分會 公益義整</span></div>
+    <div class="pills"><span class="pill">IFBB PRO 健美職業選手 蔡勇峰</span><span class="pill">泰山三鐵工作室</span><span class="pill">內湖炎洲集團 員工福利</span><span class="pill">台灣健康久久協會</span></div>
   </section>
 
   <section class="seg" id="place">
@@ -395,9 +412,42 @@
     </div>
   </section>
 
+  <section class="seg" id="partners">
+    <div class="vb"><i></i><span>師承與夥伴</span></div>
+    <div class="tag">06 · ROOTS</div>
+    <h2>師承．公益．合作夥伴</h2>
+    <p class="lead">技術有來處，也一起把身體平衡帶給更多人</p>
+    <div class="partners">
+      <div class="pt">
+        <div class="lg"><img src="images/venue-logo.png" alt="結構X獵人 STR×HUNTER"></div>
+        <span class="role">師承．駐點</span>
+        <h3>結構X獵人 STR × HUNTER</h3>
+        <div class="q">身體的答案，寫在它的結構裡。</div>
+        <p>鈞衡舍的身體結構技術師承結構X獵人，板橋據點也駐點在這裡。</p>
+        <a class="go" href="https://strxhunter.com/" target="_blank" rel="noopener">strxhunter.com ›</a>
+      </div>
+      <div class="pt">
+        <div class="lg"><img src="images/wuyi-logo.png" alt="武醫北區支分會"></div>
+        <span class="role">公益</span>
+        <h3>中華武醫國際交流發展總會・北區支分會</h3>
+        <div class="q">先把自己照顧好，才有力氣照顧別人。</div>
+        <p>不定期走進公益團體、社福機構舉辦志工守護日，無償照顧志工們的身體。</p>
+        <a class="go" href="https://wuyi-taiwan.github.io/north/" target="_blank" rel="noopener">武醫北區網站 ›</a>
+      </div>
+      <div class="pt">
+        <div class="lg"><div class="word">帥垚<small>GREAT ARCH</small></div></div>
+        <span class="role">合作夥伴</span>
+        <h3>帥垚 Great Arch</h3>
+        <div class="q">從足底支撐，幫身體站穩。</div>
+        <p>鈞衡舍是帥垚足弓墊經銷夥伴。先做足部張力檢測，再依你的足型配置。</p>
+        <a class="go" href="https://great-arch.com/" target="_blank" rel="noopener">great-arch.com ›</a>
+      </div>
+    </div>
+  </section>
+
   <section class="seg">
     <div class="vb"><i></i><span>遊戲間</span></div>
-    <div class="tag">06 · PLAY</div>
+    <div class="tag">07 · PLAY</div>
     <h2>先玩玩看</h2>
     <p class="lead">用小遊戲認識鈞衡舍在做什麼</p>
     <a class="play" href="games.html">
@@ -409,7 +459,7 @@
 
   <section class="seg" id="book">
     <div class="vb"><i></i><span>預約</span></div>
-    <div class="tag">07 · BOOKING</div>
+    <div class="tag">08 · BOOKING</div>
     <h2>準備好了嗎？</h2>
     <div class="cta-box">
       <div class="big">讓平衡，成為身體最自在的歸屬。</div>
@@ -433,6 +483,7 @@
 
 <footer class="foot">
   <div class="q">鈞衡舍 ChunBalance</div>
+  <div class="c">師承 <a href="https://strxhunter.com/" target="_blank" rel="noopener">結構X獵人</a>．公益 <a href="https://wuyi-taiwan.github.io/north/" target="_blank" rel="noopener">武醫北區支分會</a>．合作夥伴 <a href="https://great-arch.com/" target="_blank" rel="noopener">帥垚</a></div>
   <div class="c">© 2026 鈞衡舍 ChunBalance · chunbalance.com</div>
 </footer>
 
