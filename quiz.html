@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="10 題三選一，看你有多認識馬克。答完都有一份身體平衡體驗送你。｜鈞衡舍 ChunBalance">
+<meta property="og:title" content="你有多認識馬克？">
+<meta property="og:description" content="10 題三選一，看你有多認識馬克。答完都有一份身體平衡體驗送你。｜鈞衡舍 ChunBalance">
+<meta property="og:image" content="https://chunbalance.com/images/og-gains-logo.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://chunbalance.com/quiz.html">
+<title>你有多認識馬克？｜鈞衡舍</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@700;900&display=swap">
+<style>
+  /* 一題一畫面；進度用脊椎紅點表示，配色沿用鈞衡舍 GAINS 頁（固定淺色） */
+  :root{
+    --charcoal:#4A4441; --olive:#7E9150; --olive-dark:#5E6E3A; --coral:#D4554B;
+    --bg:#F7F3EC; --card:#FFFFFF; --line:#DCD2C1; --ink:#2E2A27; --ink-soft:#6E665D;
+    --ok:#5E6E3A; --ok-bg:#EEF2E3; --no-bg:#FBEAE8;
+    --serif:"Noto Serif TC","Songti TC",serif;
+    --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    color-scheme:light;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.7;}
+  .wrap{max-width:520px;margin:0 auto;padding-block:20px 40px;
+    padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+  .top{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--charcoal);}
+  .top i{width:10px;height:10px;border-radius:50%;background:var(--coral);}
+  h1{font-family:var(--serif);font-weight:900;font-size:clamp(30px,8vw,42px);line-height:1.3;margin:28px 0 10px;color:var(--charcoal);text-wrap:balance;}
+  h1 b{color:var(--coral);}
+  .lead{color:var(--ink-soft);font-size:16px;margin:0;}
+  .btn{display:block;width:100%;border:none;border-radius:999px;padding:15px 20px;font:900 17px var(--sans);cursor:pointer;
+    background:var(--charcoal);color:#fff;text-align:center;text-decoration:none;}
+  .btn:focus-visible,.opt:focus-visible{outline:3px solid var(--coral);outline-offset:2px;}
+  .btn.line{background:#06C755;}
+  .btn.ghost{background:transparent;color:var(--charcoal);border:1.5px solid var(--charcoal);}
+  .stack{display:grid;gap:10px;margin-top:22px;}
+  .rule{margin-top:18px;font-size:14px;color:var(--ink-soft);background:var(--card);border-radius:16px;padding:14px 16px;}
+  /* 進度：10 節脊椎 */
+  .spine{display:flex;gap:6px;margin:22px 0 6px;}
+  .spine span{flex:1;height:8px;border-radius:99px;background:var(--line);}
+  .spine span.done{background:var(--olive);}
+  .spine span.miss{background:var(--coral);}
+  .spine span.now{background:var(--charcoal);}
+  .qn{font-size:13px;letter-spacing:2px;color:var(--ink-soft);font-weight:700;font-variant-numeric:tabular-nums;}
+  .q{font-family:var(--serif);font-weight:900;font-size:clamp(22px,6vw,27px);line-height:1.45;margin:6px 0 18px;color:var(--charcoal);text-wrap:balance;}
+  .opts{display:grid;gap:10px;}
+  .opt{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);
+    border-radius:16px;padding:14px 16px;font:700 17px var(--sans);color:var(--ink);cursor:pointer;}
+  .opt em{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;
+    font-style:normal;font-size:14px;color:var(--ink-soft);}
+  .opt.right{border-color:var(--ok);background:var(--ok-bg);}
+  .opt.right em{background:var(--ok);border-color:var(--ok);color:#fff;}
+  .opt.wrong{border-color:var(--coral);background:var(--no-bg);}
+  .opt.wrong em{background:var(--coral);border-color:var(--coral);color:#fff;}
+  .opt[disabled]{cursor:default;}
+  .tip{margin-top:16px;background:var(--card);border-radius:16px;padding:14px 16px;font-size:15.5px;}
+  .tip b{display:block;font-size:13px;letter-spacing:1px;color:var(--coral);}
+  .tip.good b{color:var(--ok);}
+  /* 結果 */
+  .score{font-family:var(--serif);font-weight:900;font-size:64px;line-height:1;color:var(--coral);margin-top:26px;font-variant-numeric:tabular-nums;}
+  .score small{font-size:22px;color:var(--ink-soft);}
+  .vimg{display:block;width:100%;margin-top:22px;border-radius:18px;box-shadow:0 12px 30px rgba(60,50,30,.15);}
+  .msg{margin-top:20px;font-size:17px;}
+  .msg b{color:var(--coral);}
+  .small{font-size:13px;color:var(--ink-soft);text-align:center;margin-top:14px;}
+  .foot{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-top:34px;}
+  .foot a{color:var(--coral);font-weight:700;text-decoration:none;}
+</style>
+<script>document.addEventListener('dblclick',function(e){e.preventDefault()});</script>
+<script src="assets/inapp-guard.js"></script>
+<script src="assets/home-btn.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><i></i>鈞衡舍 ChunBalance</div>
+
+  <section id="start">
+    <h1>你有多認識<b>馬克</b>？</h1>
+    <p class="lead">10 題三選一，不難。<br>答完都有一份身體平衡體驗送你。</p>
+    <div class="rule">答對 8–10 題：「身體平衡招待券」<br>答對 5–7 題：「身體平衡邀請卡」<br>答對 0–4 題：「身體平衡見面禮」</div>
+    <div class="stack"><button class="btn" id="go" type="button">開始</button></div>
+  </section>
+
+  <section id="play" hidden>
+    <div class="spine" id="bar"></div>
+    <div class="qn" id="qn"></div>
+    <div class="q" id="q"></div>
+    <div class="opts" id="opts"></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="stack" id="nextBox" hidden><button class="btn" id="next" type="button">下一題</button></div>
+  </section>
+
+  <section id="end" hidden>
+    <div class="score" id="score"></div>
+    <h1 id="endTitle" style="margin-top:14px"></h1>
+    <img class="vimg" id="vImg" src="assets/quiz-voucher-low.png" alt="">
+    <p class="msg" id="endMsg"></p>
+    <div class="stack">
+      <button class="btn" id="save" type="button">① 存下來</button>
+      <a class="btn line" id="lineBtn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">② 傳到官方 LINE 領取</a>
+      <button class="btn ghost" id="share" type="button">考考朋友</button>
+      <button class="btn ghost" id="again" type="button">再玩一次</button>
+    </div>
+    <p class="small" id="saveTip">存下圖片，傳到官方 LINE「鈞衡舍」，馬克會幫你安排</p>
+  </section>
+
+  <div class="foot"><a href="https://chunbalance.com/">鈞衡舍官網 chunbalance.com ›</a></div>
+</div>
+
+<script>
+  // 每題第一個選項是答案，出題時會打亂順序
+  var QS = [
+    ['馬克的品牌叫什麼？', ['鈞衡舍', '均衡館', '平衡屋'], '鈞衡舍 ChunBalance，「鈞」是我名字裡的字。'],
+    ['馬克轉行前，在哪一行做了 10 年？', ['資訊業', '銀行業', '餐飲業'], '從系統分析師做到產品經理。從解決系統的問題，變成解決人的問題。'],
+    ['「身體平衡找馬克」下一句是？', ['站得穩才走的久', '睡得飽才笑的久', '吃得對才活的久'], '站得穩，才走的久。'],
+    ['馬克的獨門絕活：調幾根腳趾頭，肩膀就鬆一半？', ['4 根', '1 根', '10 根'], '兩隻腳的大拇趾和小拇趾，一共 4 根。'],
+    ['馬克是哪一門的第五代傳人？', ['董氏針灸', '太極拳', '少林武術'], '董氏針灸第五代傳人，用穴位保養自己，也分享觀念。'],
+    ['馬克考過哪一個國家級資格？', ['健美裁判', '游泳教練', '咖啡師'], '國家級健美裁判，也是健身教練。'],
+    ['馬克在做公益的身分是？', ['武醫北部分會執行長', '社區里長', '基金會董事'], '透過公益義整幫助需要的人，分享大健康理念。'],
+    ['小時候，每學期開學第一天，馬克會？', ['緊張到拉肚子回家', '第一個衝進教室', '被選為班長'], '天生 i 人，每次都緊張到拉肚子、頭痛，然後就回家了。'],
+    ['大學時，馬克在哪裡打工？', ['爭鮮當壽司師傅', '手搖飲店', '便利商店大夜班'], '在爭鮮當壽司師傅，也當數學家教。'],
+    ['調整完，馬克常說：「調整我來，___」', ['維持交給你', '剩下交給命', '痛就忍著'], '身體回到平衡要我們一起努力，調整我來，維持交給你。']
+  ];
+  var i = 0, right = 0, marks = [], order = [];
+  var $ = function(id){ return document.getElementById(id); };
+  function shuffle(a){ a = a.slice(); for (var k = a.length - 1; k > 0; k--){ var j = Math.floor(Math.random() * (k + 1)); var t = a[k]; a[k] = a[j]; a[j] = t; } return a; }
+  function show(id){ ['start', 'play', 'end'].forEach(function(s){ $(s).hidden = s !== id; }); window.scrollTo(0, 0); }
+
+  function bar(){
+    var h = '';
+    for (var k = 0; k < QS.length; k++) h += '<span class="' + (k < i ? marks[k] : (k === i ? 'now' : '')) + '"></span>';
+    $('bar').innerHTML = h;
+  }
+  function ask(){
+    var item = QS[i];
+    order = shuffle([0, 1, 2]);
+    bar();
+    $('qn').textContent = '第 ' + (i + 1) + ' 題 / ' + QS.length;
+    $('q').textContent = item[0];
+    $('opts').innerHTML = order.map(function(o, k){
+      return '<button class="opt" type="button" data-o="' + o + '"><em>' + 'ABC'[k] + '</em><span>' + item[1][o] + '</span></button>';
+    }).join('');
+    $('tip').hidden = true; $('nextBox').hidden = true;
+  }
+  $('opts').addEventListener('click', function(e){
+    var b = e.target.closest('.opt'); if (!b || b.disabled) return;
+    var ok = b.getAttribute('data-o') === '0';
+    Array.prototype.forEach.call($('opts').children, function(x){
+      x.disabled = true;
+      if (x.getAttribute('data-o') === '0') x.classList.add('right');
+    });
+    if (!ok) b.classList.add('wrong');
+    if (ok) right++;
+    marks[i] = ok ? 'done' : 'miss';
+    $('tip').className = 'tip' + (ok ? ' good' : '');
+    $('tip').innerHTML = '<b>' + (ok ? '答對了！' : '答案是「' + QS[i][1][0] + '」') + '</b>' + QS[i][2];
+    $('tip').hidden = false;
+    $('next').textContent = i === QS.length - 1 ? '看結果' : '下一題';
+    $('nextBox').hidden = false;
+  });
+  $('next').addEventListener('click', function(){ i++; if (i < QS.length) { ask(); window.scrollTo(0, 0); } else finish(); });
+
+  function finish(){
+    // 三個等級：8–10 獎勵、5–7 再熟一點、0–4 認識馬克
+    var tier = right >= 8 ? {v: 'high', c: ' reward', t: '你真的懂我！', n: '身體平衡招待券', g: '免費體驗券', p: '謝謝你這麼認識我，這張是給你的獎勵。', m: '認識我這麼多，<b>換我來認識你的身體</b>。'}
+      : right >= 5 ? {v: 'mid', c: ' mid', t: '我們有點熟了', n: '身體平衡邀請卡', g: '免費體驗券', p: '你認識我一半了，剩下的一半，來體驗一次就知道。', m: '差一點點，<b>來體驗一次，我們會更熟</b>。'}
+      : {v: 'low', c: '', t: '我們還不太熟', n: '身體平衡見面禮', g: '免費體驗券＋足部張力檢測', p: '你太不認識我了，所以我要給你一個機會，好好認識我。', m: '沒關係，<b>來體驗一次，你就認識我了</b>。'};
+    $('score').innerHTML = right + '<small> / ' + QS.length + '</small>';
+    $('vImg').src = 'assets/quiz-voucher-' + tier.v + '.png';
+    $('vImg').alt = tier.n + '：' + tier.g;
+    VNAME = tier.n;
+    $('endTitle').textContent = tier.t;
+    $('endMsg').innerHTML = tier.m;
+    // 要和官方 LINE 的關鍵字自動回覆一字不差
+    var text = '領' + tier.n;
+    $('lineBtn').href = 'https://line.me/R/oaMessage/@chunbalance/?' + encodeURIComponent(text);
+    show('end');
+  }
+  // 存券：手機能分享檔案就直接存或傳；不能的話提示長按圖片
+  var VNAME = '';
+  $('save').addEventListener('click', function(){
+    var img = $('vImg'), tip = $('saveTip');
+    var hint = function(){ tip.innerHTML = '<b>長按上面的圖片</b>，選「儲存圖片」就存下來了'; img.scrollIntoView({behavior: 'smooth', block: 'center'}); };
+    fetch(img.src).then(function(r){ return r.blob(); }).then(function(b){
+      var f = new File([b], VNAME + '.png', {type: 'image/png'});
+      if (navigator.canShare && navigator.canShare({files: [f]})) return navigator.share({files: [f], title: VNAME}).catch(function(){});
+      hint();
+    }).catch(hint);
+  });
+  function start(){ i = 0; right = 0; marks = []; show('play'); ask(); }
+  $('go').addEventListener('click', start);
+  $('again').addEventListener('click', start);
+  $('share').addEventListener('click', function(){
+    var url = 'https://chunbalance.com/quiz.html', b = this;
+    var done = function(){ b.textContent = '連結已複製'; };
+    if (navigator.share) navigator.share({title: '你有多認識馬克？', url: url}).catch(function(){});
+    else if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function(){ b.textContent = url; });
+    else b.textContent = url;
+  });
+</script>
+</body>
+</html>
