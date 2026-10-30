@@ -105,8 +105,12 @@ p.mark-say{max-width:420px;width:100%;text-align:left;margin:2px auto 14px;paddi
   <section id="s1">
     <div class="mono">STEP 1・選擇角度</div>
     <div class="choice">
-      <button class="opt on" id="optFront"><b>正面</b><small>看高低肩、骨盆歪、重心偏哪邊</small></button>
+      <button class="opt on" id="optFront"><b>正面／背面</b><small>看高低肩、骨盆歪、重心偏哪邊</small></button>
       <button class="opt" id="optSide"><b>側面</b><small>看頭往前、圓肩、骨盆前推</small></button>
+    </div>
+    <div id="faceFB">
+      <div class="mono" style="margin-top:12px">拍的是正面還是背面？</div>
+      <div class="choice"><button class="opt on" id="fbF"><b>正面</b></button><button class="opt" id="fbB"><b>背面</b></button></div>
     </div>
     <div id="faceDir" hidden>
       <div class="mono" style="margin-top:12px">照片裡的人，臉朝哪一邊？</div>
@@ -151,7 +155,11 @@ const STEPS={
  front:[['eyeL','左邊的眼睛','照片中靠左的那隻眼睛'],['eyeR','右邊的眼睛','照片中靠右的那隻眼睛'],['shL','左邊的肩膀','肩頭最外側的點'],['shR','右邊的肩膀','肩頭最外側的點'],
         ['hipL','左邊的骨盆','腰側摸得到的骨頭最高點'],['hipR','右邊的骨盆','腰側摸得到的骨頭最高點'],['knL','左邊的膝蓋','膝蓋正中間'],['knR','右邊的膝蓋','膝蓋正中間'],
         ['anL','左邊的腳踝','腳踝骨正中間'],['anR','右邊的腳踝','腳踝骨正中間']],
+ back:[['eyeL','左邊的耳朵','照片中靠左的那隻耳朵（背面看不到眼睛）'],['eyeR','右邊的耳朵','照片中靠右的那隻耳朵'],['shL','左邊的肩膀','肩頭最外側的點'],['shR','右邊的肩膀','肩頭最外側的點'],
+        ['hipL','左邊的骨盆','腰側摸得到的骨頭最高點'],['hipR','右邊的骨盆','腰側摸得到的骨頭最高點'],['knL','左邊的膝蓋','膝蓋後面凹窩的正中間'],['knR','右邊的膝蓋','膝蓋後面凹窩的正中間'],
+        ['anL','左邊的腳跟','腳跟正中間'],['anR','右邊的腳跟','腳跟正中間']],
  side:[['ear','耳朵','耳垂的位置'],['sh','肩膀','肩頭正中間'],['hip','髖關節','褲子側縫、屁股最寬的地方'],['kn','膝蓋','膝蓋側面正中間'],['an','腳踝','外腳踝骨']]};
+const SHORT_BACK={eyeL:'左耳',eyeR:'右耳',anL:'左腳跟',anR:'右腳跟'};
 const SHORT={eyeL:'左眼',eyeR:'右眼',shL:'左肩',shR:'右肩',hipL:'左骨盆',hipR:'右骨盆',knL:'左膝',knR:'右膝',anL:'左踝',anR:'右踝',ear:'耳',sh:'肩',hip:'髖',kn:'膝',an:'踝'};
 const GP={front:{eyeL:[60,24],eyeR:[84,24],shL:[38,58],shR:[106,58],hipL:[50,120],hipR:[94,120],knL:[54,172],knR:[90,172],anL:[54,222],anR:[90,222]},
  side:{ear:[78,26],sh:[76,60],hip:[74,122],kn:[74,174],an:[74,222]}};
@@ -166,10 +174,12 @@ function guide(){gx.clearRect(0,0,144,240);gx.strokeStyle='#9aa5a2';gx.fillStyle
     gx.beginPath();gx.arc(x,y,cur?7+Math.sin(pulse)*2:5,0,7);gx.fillStyle=i<k?'#3f8f6b':cur?'#c1553d':'#c7cdca';gx.fill();
     if(cur){gx.beginPath();gx.arc(x,y,13+Math.sin(pulse)*3,0,7);gx.strokeStyle='#c1553d';gx.lineWidth=2.5;gx.stroke();}});}
 (function tick(){pulse+=.15;if(!$('s2').hidden)guide();requestAnimationFrame(tick);})();
-let mode='front',dir=-1,img=null,pts={},order=[],k=0,scale=1,drag=null;
+let mode='front',fb='front',dir=-1,img=null,pts={},order=[],k=0,scale=1,drag=null;
 
-function setMode(m){mode=m;$('optFront').classList.toggle('on',m==='front');$('optSide').classList.toggle('on',m==='side');$('faceDir').hidden=m!=='side';}
+function setMode(m){mode=m;$('optFront').classList.toggle('on',m==='front');$('optSide').classList.toggle('on',m==='side');$('faceDir').hidden=m!=='side';$('faceFB').hidden=m!=='front';}
 $('optFront').onclick=()=>setMode('front');$('optSide').onclick=()=>setMode('side');
+$('fbF').onclick=()=>{fb='front';$('fbF').classList.add('on');$('fbB').classList.remove('on');};
+$('fbB').onclick=()=>{fb='back';$('fbB').classList.add('on');$('fbF').classList.remove('on');};
 $('dirL').onclick=()=>{dir=-1;$('dirL').classList.add('on');$('dirR').classList.remove('on');};
 $('dirR').onclick=()=>{dir=1;$('dirR').classList.add('on');$('dirL').classList.remove('on');};
 
@@ -181,7 +191,8 @@ function demoFigure(){const W=600,H=1000,c=document.createElement('canvas');c.wi
   g.fillStyle='#e8cdb6';g.strokeStyle='#c9a98f';g.lineWidth=3;
   if(mode==='front'){
     g.save();g.translate(300,140);g.rotate(.05);g.beginPath();g.ellipse(0,0,52,64,0,0,7);g.fill();g.stroke();
-    g.fillStyle='#333';g.beginPath();g.arc(-20,-6,5,0,7);g.arc(20,-6,5,0,7);g.fill();g.restore();
+    if(fb==='back'){g.fillStyle='#5a4636';g.beginPath();g.ellipse(0,-14,50,48,0,0,7);g.fill();g.fillStyle='#e8cdb6';g.strokeStyle='#c9a98f';[-52,52].forEach(x=>{g.beginPath();g.ellipse(x,-4,9,15,0,0,7);g.fill();g.stroke();});}
+    else{g.fillStyle='#333';g.beginPath();g.arc(-20,-6,5,0,7);g.arc(20,-6,5,0,7);g.fill();}g.restore();
     g.fillStyle='#e8cdb6';g.fillRect(282,195,36,40);
     g.fillStyle='#7f9aa8';g.beginPath();g.moveTo(195,245);g.lineTo(410,232);g.lineTo(392,520);g.lineTo(210,520);g.closePath();g.fill();
     g.fillStyle='#e8cdb6';[[195,245,160,500],[410,232,448,490]].forEach(([x,y,x2,y2])=>{g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.lineWidth=40;g.strokeStyle='#e8cdb6';g.lineCap='round';g.stroke();});
@@ -195,11 +206,13 @@ function demoFigure(){const W=600,H=1000,c=document.createElement('canvas');c.wi
     g.strokeStyle='#e8cdb6';g.lineWidth=36;g.lineCap='round';g.beginPath();g.moveTo(290,280);g.lineTo(285,480);g.stroke();
     g.fillStyle='#41505a';g.beginPath();g.moveTo(255,500);g.lineTo(345,500);g.lineTo(350,600);g.lineTo(255,610);g.closePath();g.fill();
     g.strokeStyle='#41505a';g.lineWidth=70;g.beginPath();g.moveTo(300,590);g.lineTo(312,740);g.lineTo(325,880);g.stroke();
-    g.fillStyle='#222';g.fillRect(260,880,110,24);dir=-1;$('dirL').onclick();
+    g.fillStyle='#222';g.fillRect(260,880,110,24);
   }
+  // the side figure is drawn facing left; mirror it when the player picked 朝右
+  if(mode==='side'&&dir>0){const m=document.createElement('canvas');m.width=W;m.height=H;const mg=m.getContext('2d');mg.translate(W,0);mg.scale(-1,1);mg.drawImage(c,0,0);return m.toDataURL('image/png');}
   return c.toDataURL('image/png');}
 
-function start(im,isDemo){img=im;pts={};order=STEPS[mode];k=0;
+function start(im,isDemo){img=im;pts={};order=STEPS[mode==='front'&&fb==='back'?'back':mode];k=0;
   const maxW=Math.min(1080,im.naturalWidth);scale=maxW/im.naturalWidth;cv.width=maxW;cv.height=Math.round(im.naturalHeight*scale);
   document.querySelectorAll('.intro').forEach(e=>e.hidden=true);document.body.classList.add('placing');$('s1').hidden=true;$('s2').hidden=false;$('s3').hidden=true;$('dots').innerHTML=order.map(()=>'<i></i>').join('');step();draw();window.scrollTo(0,0);}
 function step(){[...$('dots').children].forEach((d,i)=>d.classList.toggle('on',i<k));const done=k>=order.length;
@@ -240,7 +253,7 @@ function overlay(g,s=1){const L=(a,b,col,w=4)=>{if(!pts[a]||!pts[b])return;g.beg
     if(pts.an){const x=pts.an[0]*s;g.setLineDash([10*u,8*u]);g.beginPath();g.moveTo(x,0);g.lineTo(x,cv.height*s);g.strokeStyle='#2f7fb0';g.lineWidth=2.5*u;g.stroke();g.setLineDash([]);}
     ['ear','sh','hip','kn'].forEach((a,i,arr)=>{if(i<arr.length)L(a,arr[i+1]||'an','#c1553d',3);});
   }
-  if(s===1)for(const [key,name] of order)if(pts[key]){g.font=`bold ${Math.round(R()*1.3)}px sans-serif`;g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=R()/3;const tx=pts[key][0]+R()*.9,ty=pts[key][1]-R()*.6;const lb=SHORT[key]||name;g.strokeText(lb,tx,ty);g.fillText(lb,tx,ty);}
+  if(s===1)for(const [key,name] of order)if(pts[key]){g.font=`bold ${Math.round(R()*1.3)}px sans-serif`;g.fillStyle='#fff';g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=R()/3;const tx=pts[key][0]+R()*.9,ty=pts[key][1]-R()*.6;const lb=(fb==='back'&&mode==='front'?SHORT_BACK[key]:0)||SHORT[key]||name;g.strokeText(lb,tx,ty);g.fillText(lb,tx,ty);}
   for(const key in pts){g.beginPath();g.arc(pts[key][0]*s,pts[key][1]*s,R()*.6*s,0,7);g.fillStyle='#c1553d';g.fill();g.lineWidth=3*u;g.strokeStyle='#fff';g.stroke();}}
 function draw(){ctx.clearRect(0,0,cv.width,cv.height);ctx.drawImage(img,0,0,cv.width,cv.height);overlay(ctx);loupe();}
 
@@ -273,7 +286,7 @@ function report(){document.body.classList.remove('placing');let rows=[],pen=0,wo
   }
   const score=Math.max(35,Math.round(100-pen));
   const title=score>=90?'站得穩・平衡模範生':score>=78?'小歪一下':score>=62?'身體在代償了':'結構警報響了';
-  $('report').innerHTML=`<div class="head"><div><div class="mono">${mode==='front'?'FRONT VIEW':'SIDE VIEW'}・平衡分數</div><div class="score">${score}<small> / 100</small></div><div class="title">${title}</div></div>
+  $('report').innerHTML=`<div class="head"><div><div class="mono">${mode==='side'?'SIDE VIEW':fb==='back'?'BACK VIEW':'FRONT VIEW'}・平衡分數</div><div class="score">${score}<small> / 100</small></div><div class="title">${title}</div></div>
     <div class="mono" style="text-align:right">${new Date().toLocaleDateString('zh-TW')}</div></div>
     <table>${rows.map(r=>`<tr><td>${r[0]}<span class="pill ${r[2]}">${PILL[r[2]]}</span><br><small style="color:var(--muted)">${r[3]}</small></td><td class="v">${r[1]}</td></tr>`).join('')}</table>
     <p style="margin-top:10px;font-size:14px">${worst&&worst.p>4?`最需要注意的是<b>${worst.n}</b>。歪的地方常常不是原因，身體會從腳一路往上代償。`:'整體很平衡，繼續保持！'}</p>`;
