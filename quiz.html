@@ -26,7 +26,11 @@
   .wrap{max-width:520px;margin:0 auto;padding-block:20px 40px;
     padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
   .top{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:2px;color:var(--charcoal);}
-  .top i{width:10px;height:10px;border-radius:50%;background:var(--coral);}
+  .top img{height:36px;width:auto;}
+  .kicker{margin-top:22px;font-size:13px;letter-spacing:3px;font-weight:700;color:var(--olive-dark);}
+  .kicker b{color:var(--coral);}
+  .intro{margin:0;font-size:16.5px;color:var(--ink-soft);border-left:3px solid var(--coral);padding-left:12px;}
+  .gains-link{display:block;text-align:center;margin-top:14px;font-size:15px;font-weight:700;color:var(--coral);text-decoration:none;}
   h1{font-family:var(--serif);font-weight:900;font-size:clamp(30px,8vw,42px);line-height:1.3;margin:28px 0 10px;color:var(--charcoal);text-wrap:balance;}
   h1 b{color:var(--coral);}
   .lead{color:var(--ink-soft);font-size:16px;margin:0;}
@@ -70,16 +74,17 @@
 </style>
 <script>document.addEventListener('dblclick',function(e){e.preventDefault()});</script>
 <script src="assets/inapp-guard.js"></script>
-<script src="assets/home-btn.js"></script>
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><i></i>鈞衡舍 ChunBalance</div>
+  <a class="top" href="gains.html" style="text-decoration:none"><img src="images/logo.png" alt="">鈞衡舍 ChunBalance</a>
+  <div class="kicker"><b>BNI</b> 大恆白金分會．品味生活組</div>
 
   <section id="start">
-    <h1>你有多認識<b>馬克</b>？</h1>
-    <p class="lead">6 題三選一，不難。<br>看看你認識我多少，答完有個小驚喜。</p>
+    <h1 style="margin-top:12px">你有多認識<b>馬克</b>？</h1>
+    <p class="intro">我是馬克，身體結構平衡教練。<br>現在做的事，跟我過去的工作看起來<span style="white-space:nowrap">很跳 tone，</span>但其實心法一直沒有變：<span style="white-space:nowrap">先聽懂問題，</span><span style="white-space:nowrap">再找出原因。</span><br>你覺得你認識我嗎？6 題，試試看。</p>
     <div class="stack"><button class="btn" id="go" type="button">開始</button></div>
+    <a class="gains-link" href="gains.html">想先多認識我一點？看我的 GAINS 頁 ›</a>
   </section>
 
   <section id="play" hidden>
@@ -102,6 +107,7 @@
       <button class="btn ghost" id="share" type="button">考考朋友</button>
       <button class="btn ghost" id="again" type="button">再玩一次</button>
     </div>
+    <a class="gains-link" href="gains.html">更認識我一點：看我的 GAINS 頁 ›</a>
     <p class="small" id="saveTip">先存下圖片，再到官方 LINE「鈞衡舍」把圖傳過來，馬克會幫你安排時間</p>
   </section>
 
