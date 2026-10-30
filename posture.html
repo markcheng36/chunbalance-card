@@ -258,11 +258,13 @@ function report(){document.body.classList.remove('placing');let rows=[],pen=0,wo
     pen+=Math.min(15,Math.abs(sh)*2.5);rows.push(['重心偏移',`${Math.abs(sh).toFixed(1)}%`,g,Math.abs(sh)<1?'置中':(sh>0?'上身偏畫面右邊':'上身偏畫面左邊')]);
     if(Math.abs(sh)*2.5>(worst?worst.p:0))worst={n:'重心偏移',p:Math.abs(sh)*2.5};
   }else{
-    const H=Math.hypot(pts.ear[0]-pts.an[0],pts.ear[1]-pts.an[1]);const f=x=>(x-pts.an[0])*dir/H*100; // + = forward of ankle line
-    const ear=f(pts.ear[0]),sh=f(pts.sh[0]),hip=f(pts.hip[0]),kn=f(pts.kn[0]);
-    const items=[['頭往前（烏龜頸）',ear-sh,3,6,'耳朵在肩膀前面','耳朵在肩膀後面'],['圓肩・駝背',sh-hip,3,6,'肩膀在髖前面','肩膀在髖後面'],['骨盆前推',hip,3,6,'髖在腳踝前面','髖在腳踝後面'],['膝蓋位置',kn,3,6,'膝蓋往前彎','膝蓋往後鎖（超伸）']];
-    items.forEach(([n,v,a,b,pos,neg])=>{const g=grade(v,a,b);const p=Math.min(25,Math.max(0,Math.abs(v)-1)*3.2);pen+=p;if(!worst||p>worst.p)worst={n,p};
-      rows.push([n,`${Math.abs(v).toFixed(1)}%`,g,Math.abs(v)<1?'在線上':(v>0?pos:neg)]);});
+    // each segment's lean from vertical, in degrees (+ = upper point forward). Measuring per segment
+    // (not as % of full body height) keeps a short segment like ear→shoulder from looking "normal".
+    const lean=(lo,hi)=>Math.atan2((pts[hi][0]-pts[lo][0])*dir,pts[lo][1]-pts[hi][1])*180/Math.PI;
+    const kn=Math.atan2(((pts.kn[0]-(pts.hip[0]+pts.an[0])/2))*dir,Math.hypot(pts.hip[0]-pts.an[0],pts.hip[1]-pts.an[1])/2)*180/Math.PI;
+    const items=[['頭往前（烏龜頸）',lean('sh','ear'),5,10,'耳朵在肩膀前面','耳朵在肩膀後面'],['圓肩・駝背',lean('hip','sh'),4,8,'肩膀在髖前面','肩膀在髖後面'],['骨盆前推',lean('an','hip'),3,6,'髖在腳踝前面','髖在腳踝後面'],['膝蓋位置',kn,4,8,'膝蓋往前彎','膝蓋往後鎖（超伸）']];
+    items.forEach(([n,v,a,b,pos,neg])=>{const g=grade(v,a,b);const p=Math.min(25,Math.max(0,Math.abs(v)-a*.4)*12/(b-a*.4));pen+=p;if(!worst||p>worst.p)worst={n,p};
+      rows.push([n,`${Math.abs(v).toFixed(1)}°`,g,Math.abs(v)<1?'在線上':(v>0?pos:neg)]);});
   }
   const score=Math.max(35,Math.round(100-pen));
   const title=score>=90?'站得穩・平衡模範生':score>=78?'小歪一下':score>=62?'身體在代償了':'結構警報響了';
