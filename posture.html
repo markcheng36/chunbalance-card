@@ -248,23 +248,28 @@ const deg=(a,b)=>{let d=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI;if(d>90)d-=1
 function grade(v,ok,warn){v=Math.abs(v);return v<ok?'ok':v<warn?'warn':'bad';}
 const PILL={ok:'正常',warn:'注意',bad:'明顯'};
 function report(){document.body.classList.remove('placing');let rows=[],pen=0,worst=null;
+  // Every item is an angle in degrees, graded ok / warn / bad. Penalty grows from half the ok line to 12 at the warn line (max 25).
+  const add=(n,v,ok,warn,txt)=>{const g=grade(v,ok,warn),p=Math.min(25,Math.max(0,(Math.abs(v)-ok/2)/(warn-ok/2)*12));pen+=p;if(!worst||p>worst.p)worst={n,p};
+    rows.push([n,`${Math.abs(v).toFixed(1)}°`,g,txt]);};
   if(mode==='front'){
-    const H=Math.hypot(((pts.anL[0]+pts.anR[0])/2)-((pts.eyeL[0]+pts.eyeR[0])/2),((pts.anL[1]+pts.anR[1])/2)-((pts.eyeL[1]+pts.eyeR[1])/2));
-    const items=[['頭部傾斜','eyeL','eyeR',1],['高低肩','shL','shR',1.3],['骨盆傾斜','hipL','hipR',1.3],['膝蓋高低','knL','knR',.8],['腳踝高低','anL','anR',.5]];
-    items.forEach(([n,a,b,w])=>{const d=deg(pts[a],pts[b]);const g=grade(d,1.5,3);const hi=d>0?'畫面左邊較高':'畫面右邊較高';
-      const p=Math.min(22,Math.max(0,Math.abs(d)-.5)*2.4*w);pen+=p;if(!worst||p>worst.p)worst={n,p};
-      rows.push([n,`${Math.abs(d).toFixed(1)}°`,g,Math.abs(d)<.5?'很平':hi]);});
-    const midTop=((pts.shL[0]+pts.shR[0])/2),midBot=((pts.anL[0]+pts.anR[0])/2),sh=(midTop-midBot)/H*100;const g=grade(sh,2,4);
-    pen+=Math.min(15,Math.abs(sh)*2.5);rows.push(['重心偏移',`${Math.abs(sh).toFixed(1)}%`,g,Math.abs(sh)<1?'置中':(sh>0?'上身偏畫面右邊':'上身偏畫面左邊')]);
-    if(Math.abs(sh)*2.5>(worst?worst.p:0))worst={n:'重心偏移',p:Math.abs(sh)*2.5};
+    // left/right pairs should be level; the shoulders' midpoint should sit right above the ankles' midpoint
+    const mid=(a,b)=>[(pts[a][0]+pts[b][0])/2,(pts[a][1]+pts[b][1])/2];
+    [['頭部傾斜','eyeL','eyeR',2,4],['高低肩','shL','shR',1.5,3],['骨盆傾斜','hipL','hipR',1.5,3],['膝蓋高低','knL','knR',1.5,3],['腳踝高低','anL','anR',1.5,3]].forEach(([n,a,b,ok,warn])=>{
+      const d=deg(pts[a],pts[b]);add(n,d,ok,warn,Math.abs(d)<.5?'很平':d>0?'畫面左邊較高':'畫面右邊較高');});
+    const top=mid('shL','shR'),bot=mid('anL','anR'),sw=Math.atan2(top[0]-bot[0],bot[1]-top[1])*180/Math.PI;
+    add('重心偏移',sw,1,2,Math.abs(sw)<.5?'置中':sw>0?'上身偏畫面右邊':'上身偏畫面左邊');
   }else{
-    // each segment's lean from vertical, in degrees (+ = upper point forward). Measuring per segment
-    // (not as % of full body height) keeps a short segment like ear→shoulder from looking "normal".
-    const lean=(lo,hi)=>Math.atan2((pts[hi][0]-pts[lo][0])*dir,pts[lo][1]-pts[hi][1])*180/Math.PI;
-    const kn=Math.atan2(((pts.kn[0]-(pts.hip[0]+pts.an[0])/2))*dir,Math.hypot(pts.hip[0]-pts.an[0],pts.hip[1]-pts.an[1])/2)*180/Math.PI;
-    const items=[['頭往前（烏龜頸）',lean('sh','ear'),5,10,'耳朵在肩膀前面','耳朵在肩膀後面'],['圓肩・駝背',lean('hip','sh'),4,8,'肩膀在髖前面','肩膀在髖後面'],['骨盆前推',lean('an','hip'),3,6,'髖在腳踝前面','髖在腳踝後面'],['膝蓋位置',kn,4,8,'膝蓋往前彎','膝蓋往後鎖（超伸）']];
-    items.forEach(([n,v,a,b,pos,neg])=>{const g=grade(v,a,b);const p=Math.min(25,Math.max(0,Math.abs(v)-a*.4)*12/(b-a*.4));pen+=p;if(!worst||p>worst.p)worst={n,p};
-      rows.push([n,`${Math.abs(v).toFixed(1)}°`,g,Math.abs(v)<1?'在線上':(v>0?pos:neg)]);});
+    // Plumb line: a vertical line through the ankle. In a balanced stance knee, hip, shoulder and ear all sit on it.
+    // ang(lo,hi) = how far the line lo→hi leans off vertical (+ = hi is in front), so a short segment is judged fairly.
+    const ang=(lo,hi)=>Math.atan2((pts[hi][0]-pts[lo][0])*dir,pts[lo][1]-pts[hi][1])*180/Math.PI;
+    const head=ang('sh','ear'),shp=ang('an','sh'),hip=ang('an','hip'),body=ang('an','ear');
+    const kn=Math.atan2((pts.kn[0]-(pts.hip[0]+pts.an[0])/2)*dir,Math.hypot(pts.hip[0]-pts.an[0],pts.hip[1]-pts.an[1])/2)*180/Math.PI;
+    const t=(v,pos,neg)=>Math.abs(v)<1?'在線上':v>0?pos:neg;
+    add('頭往前（烏龜頸）',head,4,8,t(head,'耳朵跑到肩膀前面','耳朵在肩膀後面'));
+    add('圓肩・駝背',shp,2,4,t(shp,'肩膀跑到鉛垂線前面','肩膀在鉛垂線後面（上身後仰）'));
+    add('骨盆前推',hip,2,4,t(hip,'骨盆跑到鉛垂線前面','骨盆在鉛垂線後面'));
+    add('膝蓋位置',kn,3,6,t(kn,'膝蓋往前彎','膝蓋往後鎖（超伸）'));
+    add('整體前傾',body,2,4,t(body,'整個人往前倒，重心壓在前腳掌','整個人往後靠，重心壓在腳跟'));
   }
   const score=Math.max(35,Math.round(100-pen));
   const title=score>=90?'站得穩・平衡模範生':score>=78?'小歪一下':score>=62?'身體在代償了':'結構警報響了';
