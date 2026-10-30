@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="10 題三選一，看你有多認識馬克。答完都有一份身體平衡體驗送你。｜鈞衡舍 ChunBalance">
+<meta name="description" content="6 題三選一，看你有多認識馬克。答完都有一份身體平衡體驗送你。｜鈞衡舍 ChunBalance">
 <meta property="og:title" content="你有多認識馬克？">
-<meta property="og:description" content="10 題三選一，看你有多認識馬克。答完都有一份身體平衡體驗送你。｜鈞衡舍 ChunBalance">
+<meta property="og:description" content="6 題三選一，看你有多認識馬克。答完都有一份身體平衡體驗送你。｜鈞衡舍 ChunBalance">
 <meta property="og:image" content="https://chunbalance.com/images/og-gains-logo.jpg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://chunbalance.com/quiz.html">
@@ -78,8 +78,8 @@
 
   <section id="start">
     <h1>你有多認識<b>馬克</b>？</h1>
-    <p class="lead">10 題三選一，不難。<br>答完都有一份身體平衡體驗送你。</p>
-    <div class="rule">答對 8–10 題：「身體平衡招待券」<br>答對 5–7 題：「身體平衡邀請卡」<br>答對 0–4 題：「身體平衡見面禮」</div>
+    <p class="lead">6 題三選一，不難。<br>答完都有一份身體平衡體驗送你。</p>
+    <div class="rule">答對 5–6 題：「身體平衡招待券」<br>答對 3–4 題：「身體平衡邀請卡」<br>答對 0–2 題：「身體平衡見面禮」</div>
     <div class="stack"><button class="btn" id="go" type="button">開始</button></div>
   </section>
 
@@ -111,7 +111,7 @@
 
 <script>
   // 每題第一個選項是答案，出題時會打亂順序
-  var QS = [
+  var POOL = [
     ['馬克的品牌叫什麼？', ['鈞衡舍', '均衡館', '平衡屋'], '鈞衡舍 ChunBalance，「鈞」是我名字裡的字。'],
     ['馬克轉行前，在哪一行做了 10 年？', ['資訊業', '銀行業', '餐飲業'], '從系統分析師做到產品經理。從解決系統的問題，變成解決人的問題。'],
     ['「身體平衡找馬克」下一句是？', ['站得穩才走的久', '睡得飽才笑的久', '吃得對才活的久'], '站得穩，才走的久。'],
@@ -121,8 +121,22 @@
     ['馬克在做公益的身分是？', ['武醫北部分會執行長', '社區里長', '基金會董事'], '透過公益義整幫助需要的人，分享大健康理念。'],
     ['小時候，每學期開學第一天，馬克會？', ['緊張到拉肚子回家', '第一個衝進教室', '被選為班長'], '天生 i 人，每次都緊張到拉肚子、頭痛，然後就回家了。'],
     ['大學時，馬克在哪裡打工？', ['爭鮮當壽司師傅', '手搖飲店', '便利商店大夜班'], '在爭鮮當壽司師傅，也當數學家教。'],
-    ['調整完，馬克常說：「調整我來，___」', ['維持交給你', '剩下交給命', '痛就忍著'], '身體回到平衡要我們一起努力，調整我來，維持交給你。']
+    ['調整完，馬克常說：「調整我來，___」', ['維持交給你', '剩下交給命', '痛就忍著'], '身體回到平衡要我們一起努力，調整我來，維持交給你。'],
+    ['馬克現在駐點在哪裡？', ['結構X獵人', '連鎖健身房', '醫院復健科'], '在結構X獵人板橋據點駐點，那裡也是我的師承。'],
+    ['馬克調整的第一步是？', ['先聽懂你哪裡不舒服', '直接喬骨頭', '先用力按痛點'], '先聽懂你哪裡不舒服、生活怎麼過，再找原因。'],
+    ['馬克常說：「痛的地方，___」', ['不一定是痛的原因', '按下去就好了', '熱敷就會好'], '痛的地方，不一定是痛的原因。'],
+    ['馬克的手法是哪一種？', ['輕柔卻深層', '用力揉到痛', '喀喀喬骨頭'], '不是用力揉、也不是喬骨頭，而是輕柔卻深層。'],
+    ['馬克用什麼找出身體卡住的地方？', ['足部拓印圖', '抽血報告', '手相'], '透過足部拓印圖，看見身體卡住的關鍵點。'],
+    ['馬克在資訊業考了人資證照，之後變得很會？', ['面試', '算薪水', '做簡報'], '之後變得非常會面試，有面試機會幾乎等於錄取。'],
+    ['大學金融實習，馬克的成績是？', ['第 2 名', '最後一名', '沒做完就跑了'], '以第 2 名完成，但也更確認……我真的無法。'],
+    ['馬克是 i 人還是 e 人？', ['i 人', 'e 人', '看心情'], '天生 i 人，卻用 e 人的方式享受世界。'],
+    ['馬克做事的出發點是？', ['好玩', '面子', '壓力'], '凡事以好玩為出發，才能做得好、走的久。'],
+    ['馬克在能量這一塊學了什麼？', ['靈氣、生物能頭薦骨', '塔羅牌', '風水'], '身體跟心靈一樣重要，所以進修了靈氣和生物能頭薦骨。'],
+    ['馬克的工作室在新北市哪一區？', ['板橋', '淡水', '新店'], '在新北市板橋區。'],
+    ['除了重訓，馬克還喜歡？', ['藝文展覽', '打電動', '釣魚'], '運動訓練跟藝文展覽都是我的興趣。'],
+    ['馬克為什麼去學運動按摩？', ['學生常請假去按摩', '想開按摩店', '家裡要他學'], '當教練時學生常請假去按摩，所以我自己去學。']
   ];
+  var ASK = 6, QS = [];
   var i = 0, right = 0, marks = [], order = [];
   var $ = function(id){ return document.getElementById(id); };
   function shuffle(a){ a = a.slice(); for (var k = a.length - 1; k > 0; k--){ var j = Math.floor(Math.random() * (k + 1)); var t = a[k]; a[k] = a[j]; a[j] = t; } return a; }
@@ -163,9 +177,9 @@
   $('next').addEventListener('click', function(){ i++; if (i < QS.length) { ask(); window.scrollTo(0, 0); } else finish(); });
 
   function finish(){
-    // 三個等級：8–10 獎勵、5–7 再熟一點、0–4 認識馬克
-    var tier = right >= 8 ? {v: 'high', c: ' reward', t: '你真的懂我！', n: '身體平衡招待券', g: '免費體驗券', p: '謝謝你這麼認識我，這張是給你的獎勵。', m: '認識我這麼多，<b>換我來認識你的身體</b>。'}
-      : right >= 5 ? {v: 'mid', c: ' mid', t: '我們有點熟了', n: '身體平衡邀請卡', g: '免費體驗券', p: '你認識我一半了，剩下的一半，來體驗一次就知道。', m: '差一點點，<b>來體驗一次，我們會更熟</b>。'}
+    // 三個等級（6 題）：5–6 招待券、3–4 邀請卡、0–2 見面禮
+    var tier = right >= 5 ? {v: 'high', c: ' reward', t: '你真的懂我！', n: '身體平衡招待券', g: '免費體驗券', p: '謝謝你這麼認識我，這張是給你的獎勵。', m: '認識我這麼多，<b>換我來認識你的身體</b>。'}
+      : right >= 3 ? {v: 'mid', c: ' mid', t: '我們有點熟了', n: '身體平衡邀請卡', g: '免費體驗券', p: '你認識我一半了，剩下的一半，來體驗一次就知道。', m: '差一點點，<b>來體驗一次，我們會更熟</b>。'}
       : {v: 'low', c: '', t: '我們還不太熟', n: '身體平衡見面禮', g: '免費體驗券＋足部張力檢測', p: '你太不認識我了，所以我要給你一個機會，好好認識我。', m: '沒關係，<b>來體驗一次，你就認識我了</b>。'};
     $('score').innerHTML = right + '<small> / ' + QS.length + '</small>';
     $('vImg').src = 'assets/quiz-voucher-' + tier.v + '.png';
@@ -189,7 +203,7 @@
       hint();
     }).catch(hint);
   });
-  function start(){ i = 0; right = 0; marks = []; show('play'); ask(); }
+  function start(){ QS = shuffle(POOL).slice(0, ASK); i = 0; right = 0; marks = []; show('play'); ask(); }
   $('go').addEventListener('click', start);
   $('again').addEventListener('click', start);
   $('share').addEventListener('click', function(){
