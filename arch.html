@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="先量腳圖，跟著小人過一天：沒墊走路、足弓急救站、墊上足弓墊再走，比比看體力差多少。｜鈞衡舍 ChunBalance">
+<meta name="description" content="先量腳圖，跟著小人過一天：站不穩走路有多累，中午做一次身體結構調整，下午再走，比比看體力差多少。｜鈞衡舍 ChunBalance">
 <meta property="og:title" content="足弓的一天">
-<meta property="og:description" content="先量腳圖，跟著小人過一天：沒墊走路、足弓急救站、墊上足弓墊再走，比比看體力差多少。｜鈞衡舍 ChunBalance">
+<meta property="og:description" content="先量腳圖，跟著小人過一天：站不穩走路有多累，中午做一次身體結構調整，下午再走，比比看體力差多少。｜鈞衡舍 ChunBalance">
 <meta property="og:image" content="https://chunbalance.com/images/og-gains-logo.jpg">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://chunbalance.com/arch.html">
@@ -13,7 +13,7 @@
 <style>*,*::before,*::after{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}</style>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&display=swap">
 <style>
-/* Layout: one-screen game. Top: chapter + hint. Middle: canvas (side-view walker / conveyor belt). Overlays between chapters and the end card. Warm paper palette; red = 太緊, blue = 塌, green = supported. */
+/* Layout: one-screen game. Top: chapter + hint. Middle: canvas (foot print map / side-view walker). Overlays between chapters and the end card. Warm paper palette; red = 太緊, blue = 塌, green = adjusted. */
 :root{--bg:#efece4;--paper:#faf8f3;--ink:#232a2c;--muted:#666c69;--line:#d6d1c6;--red:#c1553d;--blue:#3d6fa8;--ok:#3f8f6b;--gold:#c99a2e;color-scheme:light}
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -68,6 +68,8 @@ input,textarea{-webkit-user-select:text;user-select:text}
 <script src="assets/inapp-guard.js"></script>
 <script src="assets/bgm.js" data-mood="calm"></script>
 <script src="assets/home-btn.js"></script>
+<style>/* 馬克的前言 (start screen) */
+p.mark-say{max-width:420px;width:100%;text-align:left;margin:2px auto 14px;padding:2px 0 2px 12px;border-left:3px solid var(--red);color:var(--ink);font-size:15.5px;line-height:1.75}</style>
 </head>
 <body>
 <div id="app">
@@ -77,10 +79,10 @@ input,textarea{-webkit-user-select:text;user-select:text}
     <canvas id="c" width="600" height="760"></canvas>
 
     <div class="ov" id="ovStart">
-      <div class="mini">足弓支撐體驗</div>
+      <div class="mini">足部張力檢測・結構調整體驗</div>
       <h1>足弓的<em>一天</em></h1>
-      <p>大部分人的足弓不是<b>太緊下不來</b>，就是<b>塌掉上不去</b>。跟著小人過一天，感受腳底沒撐好，身體有多累。</p>
-      <div class="steps"><div><b>先量腳圖</b>拓印腳底<br>看身體狀況</div><div><b>早上・午休</b>沒墊走路<br>足弓急救站</div><div><b>下午</b>墊上再走<br>比比看差別</div></div>
+      <p class="mark-say">站不穩，還要走一整天，會怎麼樣？每一步的衝擊腳底接不住，就往膝蓋、腰、肩膀一路傳。跟著小人過一天，看看身體有多累。</p>
+      <div class="steps"><div><b>先量腳圖</b>拓印腳底<br>看身體狀況</div><div><b>早上</b>站不穩<br>走走看</div><div><b>中午調整</b>下午再走<br>比比看差別</div></div>
       <p>足部張力檢測要先<b>量腳圖</b>：把腳底拓印下來，從腳印看出足弓和身體的狀況。</p>
       <button class="main" id="btnMap">開始量腳圖</button>
     </div>
@@ -98,18 +100,17 @@ input,textarea{-webkit-user-select:text;user-select:text}
       <div class="mini">足弓的一天・結算</div>
       <h2 id="endTitle"></h2>
       <div class="bars">
-        <div class="bar"><span>早上（沒墊）剩下的體力</span><div><i id="barA" style="background:var(--red)"></i></div></div>
-        <div class="bar"><span>下午（墊了足弓墊）剩下的體力</span><div><i id="barB" style="background:var(--ok)"></i></div></div>
+        <div class="bar"><span>早上（調整前）剩下的體力</span><div><i id="barA" style="background:var(--red)"></i></div></div>
+        <div class="bar"><span>下午（調整後）剩下的體力</span><div><i id="barB" style="background:var(--ok)"></i></div></div>
       </div>
       <img id="shareImg" alt="足弓的一天成績卡">
       <p class="mini" style="margin-top:8px">長按圖片可以存起來或傳給朋友</p>
-      <div class="svc"><b>這就是馬克的「足部張力檢測＋足弓支撐」</b><span>先<b>量腳圖</b>，從足部拓印看身體的狀況。足弓沒撐好，每一步的衝擊都往膝蓋、腰、頭上傳。足弓墊一次撐住三個足弓，靠物理的支撐，讓<b>緊的放鬆、塌的回去</b>，衝擊在腳底就被吃掉。<br>每個人的腳都不一樣，所以<b>先做足部張力檢測，再依足型配置</b>。調整我來，維持交給你。</span></div>
-      <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約足部檢測</a></div>
+      <div class="svc"><b>這就是馬克的「身體結構調整」</b><span>先做<b>足部張力檢測</b>，量腳圖看身體傳給我們的訊息。站不穩，每一步的衝擊都往膝蓋、腰、頭上傳。調整<b>從腳開始</b>，一路找出卡住的源頭，讓腳跟、大拇趾球、小拇趾球重新一起出力。<br>站得穩，才走的久。調整我來，維持交給你。</span></div>
+      <div class="row"><a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約調整</a></div>
       <div class="row">
         <a class="btn alt" href="https://chunbalance.com/book.html" target="_blank" rel="noopener">線上預約</a>
         <button class="alt" id="btnAgain">再過一天</button>
       </div>
-      <p class="learn">足弓墊資訊：<a href="https://great-arch.com" target="_blank" rel="noopener">帥垚 great-arch.com</a></p>
     </div>
   </div>
 </div>
@@ -117,7 +118,7 @@ input,textarea{-webkit-user-select:text;user-select:text}
 <script>
 (()=>{
 const $=id=>document.getElementById(id),cv=$('c'),ctx=cv.getContext('2d'),W=600,H=760,PI=Math.PI;
-const C={skin:'#f1d9c4',skinD:'#c9a58a',ink:'#232a2c',red:'#c1553d',blue:'#3d6fa8',ok:'#3f8f6b',gold:'#c99a2e',muted:'#666c69',pad:'#7aa6c9'};
+const C={skin:'#f1d9c4',skinD:'#c9a58a',ink:'#232a2c',red:'#c1553d',blue:'#3d6fa8',ok:'#3f8f6b',gold:'#c99a2e',muted:'#666c69'};
 const WALK_STEPS=16;
 const SCENES={am:[[0,'🚇 趕捷運'],[6,'🪜 爬樓梯'],[11,'🏢 走去公司']],pm:[[0,'🧍 站著開會'],[6,'🪜 爬樓梯'],[11,'🚇 走去捷運下班']]};
 
@@ -132,44 +133,30 @@ function tone(f,d=.15,v=.06){try{const ac=tone.ac||(tone.ac=new (window.AudioCon
 
 // ---------- state
 let G=null;// whole day
-function newDay(foot){G={foot,phase:'idle',padded:false,energy:100,amLeft:0,pmLeft:0,steps:0,lastTap:0,scroll:0,stepT:1,pulses:[],pops:[],saved:0,feet:[],drops:[],spawned:0,spawnT:0,shake:0};}
-const sceneOf=()=>{const L=SCENES[G.padded?'pm':'am'];let s=L[0][1];L.forEach(([n,t])=>{if(G.steps>=n)s=t;});return s;};
+function newDay(foot){G={foot,phase:'idle',adjusted:false,energy:100,amLeft:0,pmLeft:0,steps:0,lastTap:0,scroll:0,stepT:1,pulses:[],pops:[],shake:0};}
+const sceneOf=()=>{const L=SCENES[G.adjusted?'pm':'am'];let s=L[0][1];L.forEach(([n,t])=>{if(G.steps>=n)s=t;});return s;};
 const onStairs=()=>G.steps>=6&&G.steps<11;
 
 // ---------- walking chapters (早上 / 下午)
-function startWalk(padded){G.padded=padded;G.energy=100;G.steps=0;G.phase='walk';G.pulses=[];G.pops=[];
-  $('chap').textContent=padded?'下午・墊了足弓墊':'早上・還沒墊';hint('<b>點一下畫面</b>走一步，一步一步走');}
+function startWalk(adjusted){G.adjusted=adjusted;G.energy=100;G.steps=0;G.phase='walk';G.pulses=[];G.pops=[];
+  $('chap').textContent=adjusted?'下午・調整過後':'早上・還沒調整';hint('<b>點一下畫面</b>走一步，一步一步走');}
 function tap(){if(!G)return;const now=performance.now();
-  if(G.phase==='walk'){if(now-G.lastTap<220){hint('別急，<b>一步一步</b>走','var(--red)');return;}G.lastTap=now;step();}
-  else if(G.phase==='rescue')drop();}
-function step(){G.steps++;G.stepT=0;const st=onStairs(),cost=G.padded?(st?2.6:1.6):(st?8:4.6);G.energy=Math.max(0,G.energy-cost);
-  G.pulses.push({t:0,stop:G.padded?.12:1});tone(G.padded?300:150,.12,G.padded?.04:.08);
-  if(!G.padded){G.shake=G.foot==='tight'?1:.5;
+  if(G.phase==='walk'){if(now-G.lastTap<220){hint('別急，<b>一步一步</b>走','var(--red)');return;}G.lastTap=now;step();}}
+function step(){G.steps++;G.stepT=0;const st=onStairs(),cost=G.adjusted?(st?2.6:1.6):(st?8:4.6);G.energy=Math.max(0,G.energy-cost);
+  G.pulses.push({t:0,stop:G.adjusted?.12:1});tone(G.adjusted?300:150,.12,G.adjusted?.04:.08);
+  if(!G.adjusted){G.shake=G.foot==='tight'?1:.5;
     const tx=G.foot==='tight'?['咚！震到頭','腰好緊','衝擊直直往上']:['膝蓋往內倒','腳底好痠','腰跟著塌'];
     if(G.steps%3===1)G.pops.push({t:0,txt:tx[(G.steps/3|0)%3],y:G.foot==='tight'?200:470,col:C.red});}
-  else if(G.steps%3===1)G.pops.push({t:0,txt:'衝擊在腳底被吃掉',y:560,col:C.ok});
+  else if(G.steps%3===1)G.pops.push({t:0,txt:'衝擊被腳底接住了',y:560,col:C.ok});
   hint(`${sceneOf()}　${G.steps}/${WALK_STEPS} 步`);
   $('hudR').innerHTML=`體力 <b>${Math.round(G.energy)}</b>`;
-  if(G.steps>=WALK_STEPS){G.phase='walkdone';setTimeout(G.padded?endPM:endAM,700);}}
+  if(G.steps>=WALK_STEPS){G.phase='walkdone';setTimeout(G.adjusted?endPM:endAM,700);}}
 function endAM(){G.amLeft=Math.round(G.energy);
-  showMid('中午了',`早上就剩 ${G.amLeft}% 體力`,`才上半天，腳${G.foot==='tight'?'硬梆梆沒有緩衝，每一步都震到頭':'一直塌下去，膝蓋和腰跟著代償'}。<br>午休去<b>足弓急救站</b>打工：看準時機，幫路過的腳<b>墊上足弓墊</b>。<br>紅色＝太緊、藍色＝塌，一片墊子兩種都能救。`,'開始急救',startRescue);}
-function endPM(){G.pmLeft=Math.round(G.energy);G.phase='map2';G.lv2=PRINT[G.foot].slice();G.m2=0;G.glow=0;$('chap').textContent='下班後・墊上再量一次腳圖';hint('墊著足弓墊再拓印一次…');}
+  showMid('中午了',`早上就剩 ${G.amLeft}% 體力`,`才上半天，腳${G.foot==='tight'?'硬梆梆沒有緩衝，每一步都震到頭':'一直塌下去，膝蓋和腰跟著代償'}。<br>午休來找馬克，做一次<b>身體結構調整</b>：從腳開始，把卡住的地方鬆開，讓身體重新站穩。<br>下午再走一次看看。`,'調整好了，繼續下午',()=>startWalk(true));}
+function endPM(){G.pmLeft=Math.round(G.energy);G.phase='map2';G.lv2=PRINT[G.foot].slice();G.m2=0;G.glow=0;$('chap').textContent='下班後・再量一次腳圖';hint('調整過後，再拓印一次…');}
 function map2Step(dt){if(G.phase!=='map2')return;G.m2=Math.min(1,G.m2+dt/2);const e=G.m2*G.m2*(3-2*G.m2),f=PRINT[G.foot];G.lv2=f.map(v=>v+(.5-v)*e);
   if(G.m2>=1&&!G.m2done){G.m2done=true;tone(784,.3);setTimeout(()=>tone(988,.4),150);hint('腳印變平均了：<b>腳跟、大拇趾球、小拇趾球</b>三點一起受力','var(--ok)');setTimeout(end,2600);}
   if(G.m2>=1)G.glow=Math.min(1,G.glow+dt*2);}
-
-// ---------- rescue chapter (足弓急救站)
-const RESCUE_N=12,DROP_X=300,BELT_Y=560;
-function startRescue(){G.phase='rescue';G.feet=[];G.drops=[];G.spawned=0;G.spawnT=0;G.saved=0;$('chap').textContent='午休・足弓急救站';$('hudR').innerHTML=`救了 <b>0</b>`;hint('腳走到<b>中間</b>的時候，<b>點畫面</b>丟足弓墊');}
-function drop(){if(G.drops.some(d=>d.t<1))return;G.drops.push({t:0});tone(500,.08);}
-function rescueStep(dt){const k=G.spawned/RESCUE_N,spd=150+170*k;
-  G.spawnT-=dt;if(G.spawned<RESCUE_N&&G.spawnT<=0){G.feet.push({x:680,type:Math.random()<.5?'tight':'flat',fix:0,ok:false,gone:false});G.spawned++;G.spawnT=1.5-.7*k;}
-  G.feet.forEach(f=>{f.x-=spd*dt;if(f.ok)f.fix=Math.min(1,f.fix+dt*2.5);});
-  G.drops.forEach(d=>{if(d.t>=1)return;d.t+=dt/.32;if(d.t>=1){const f=G.feet.find(f=>!f.ok&&Math.abs(f.x-DROP_X)<46);
-    if(f){f.ok=true;G.saved++;tone(784,.2);G.pops.push({t:0,txt:f.type==='tight'?'放鬆了！':'撐起來了！',y:440,x:DROP_X,col:C.ok});$('hudR').innerHTML=`救了 <b>${G.saved}</b>`;}
-    else{tone(160,.15);G.pops.push({t:0,txt:'沒墊到',y:440,x:DROP_X,col:C.red});}}});
-  G.feet=G.feet.filter(f=>f.x>-120);
-  if(G.spawned>=RESCUE_N&&!G.feet.length&&G.phase==='rescue'){G.phase='rescuedone';setTimeout(()=>showMid('午休結束',`救了 ${G.saved} / ${RESCUE_N} 雙腳`,'不管是太緊還是塌，<b>同一片足弓墊</b>都撐得住：緊的放鬆、塌的撐回去。<br>最後一片，<b>墊進你自己的鞋子</b>，下午再走一次看看。','墊上，繼續下午',()=>startWalk(true)),500);}}
 
 // ---------- overlays
 let midFn=null;
@@ -208,7 +195,7 @@ function startMap(){G.phase='map';G.ink=0;G.inking=false;$('chap').textContent='
 function mapStep(dt){if(G.phase!=='map')return;if(G.inking){G.ink=Math.min(1,G.ink+dt/1.2);if(G.ink>=1){G.phase='mapread';G.inking=false;tone(660,.2);
   hint('腳圖印好了。看腳印，你的足弓是？');setChoices([['太緊下不來',()=>readMap('tight')],['塌掉上不去',()=>readMap('flat')]]);}}else G.ink=Math.max(0,G.ink-dt*.5);}
 function readMap(v){const ok=v===G.foot,r=READ[G.foot];G.mapOk=ok;tone(ok?880:200,.2);setChoices([]);
-  showMid('腳圖判讀',(ok?'答對！':'其實是…')+r.arch,`${r.look}。<br>從腳圖看身體：${r.body}。<br>接下來先<b>不墊</b>任何東西出門，點一下走一步，看衝擊往哪裡跑。`,'出門',()=>startWalk(false));}
+  showMid('腳圖判讀',(ok?'答對！':'其實是…')+r.arch,`${r.look}。<br>從腳圖看身體：${r.body}。<br>接下來就這樣出門，點一下走一步，看衝擊往哪裡跑。`,'出門',()=>startWalk(false));}
 function drawMap(c){c.save();c.translate(0,-40);footPath(c);c.fillStyle='#fffdf8';c.fill();c.strokeStyle='rgba(35,42,44,.3)';c.lineWidth=2;c.setLineDash([5,6]);c.stroke();c.setLineDash([]);
   print(c,G.phase==='map2'?1:(G.phase==='map'?G.ink:1),G.phase==='map2'?G.lv2:PRINT[G.foot]);
   if(G.phase==='map2'&&G.glow>0){[[300,648],[242,300],[360,306]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,16+5*Math.sin(tt*5),0,7);c.fillStyle=`rgba(201,154,46,${.85*G.glow})`;c.fill();});}
@@ -216,20 +203,19 @@ function drawMap(c){c.save();c.translate(0,-40);footPath(c);c.fillStyle='#fffdf8
   if(G.phase==='map')c.fillText(G.inking?'拓印中…':'按住不放',300,730);}
 
 // ---------- drawing
-// side view foot facing right; h = arch height (tight high, flat ~0, supported ~16)
-function foot(c,x,y,h,col,pad,s=1){c.save();c.translate(x,y);c.scale(s,s);
-  if(pad){c.beginPath();c.moveTo(-34,0);c.quadraticCurveTo(0,-34,34,0);c.closePath();c.fillStyle=C.pad;c.fill();}
+// side view foot facing right; h = arch height (tight high, flat ~0, adjusted ~16)
+function foot(c,x,y,h,col,s=1){c.save();c.translate(x,y);c.scale(s,s);
   c.beginPath();c.moveTo(-40,0);c.lineTo(-40,-14);c.quadraticCurveTo(-36,-44,-20,-60);c.lineTo(-6,-60);c.quadraticCurveTo(10,-34,46,-16);c.quadraticCurveTo(62,-10,62,0);
   c.lineTo(34,0);c.quadraticCurveTo(0,-h*2,-30,0);c.closePath();c.fillStyle=C.skin;c.fill();c.strokeStyle=C.skinD;c.lineWidth=3;c.stroke();
   // arch line
   c.beginPath();c.moveTo(-30,0);c.quadraticCurveTo(0,-h*2,34,0);c.strokeStyle=col;c.lineWidth=5;c.stroke();c.restore();}
-const archH=()=>G.padded?16:(G.foot==='tight'?32:3);
+const archH=()=>G.adjusted?16:(G.foot==='tight'?32:3);
 function walker(c){const gy=600,x=240,ph=Math.min(1,G.stepT/.35),bob=Math.sin(ph*PI)*8,sh=G.shake*Math.sin(tt*70)*4;
-  const flat=!G.padded&&G.foot==='flat',kneeX=flat?268:250,hipY=380+(flat?14:0)+(onStairs()?-bob:0);
+  const flat=!G.adjusted&&G.foot==='flat',kneeX=flat?268:250,hipY=380+(flat?14:0)+(onStairs()?-bob:0);
   c.save();c.translate(sh,-bob);c.lineCap='round';
   // back leg swings
   c.strokeStyle='#d8bfa9';c.lineWidth=26;c.beginPath();c.moveTo(x,hipY);c.lineTo(x-30+60*ph,480);c.lineTo(x-40+70*ph,gy-40);c.stroke();
-  foot(c,x-40+70*ph,gy-10,archH(),'#d8bfa9',G.padded,.8);
+  foot(c,x-40+70*ph,gy-10,archH(),'#d8bfa9',.8);
   // standing leg + body
   c.strokeStyle=C.skin;c.lineWidth=30;c.beginPath();c.moveTo(x,gy-50);c.lineTo(kneeX,480);c.lineTo(x,hipY);c.stroke();
   c.lineWidth=46;c.beginPath();c.moveTo(x,hipY);c.lineTo(x+(flat?-10:0),260);c.stroke();
@@ -237,13 +223,13 @@ function walker(c){const gy=600,x=240,ph=Math.min(1,G.stepT/.35),bob=Math.sin(ph
   c.fillStyle=C.skin;c.beginPath();c.arc(x+(flat?-6:0),212,30,0,7);c.fill();
   c.fillStyle=C.ink;c.beginPath();c.arc(x+12+(flat?-6:0),206,3.5,0,7);c.fill();
   c.strokeStyle=C.ink;c.lineWidth=3;c.beginPath();const mood=G.energy>60?1:G.energy>30?0:-1;c.arc(x+12+(flat?-6:0),226-mood*4,7,mood>0?.2:PI+.2,mood>0?PI-.2:2*PI-.2);c.stroke();
-  foot(c,x,gy,archH(),G.padded?C.ok:(G.foot==='tight'?C.red:C.blue),G.padded,1);
+  foot(c,x,gy,archH(),G.adjusted?C.ok:(G.foot==='tight'?C.red:C.blue),1);
   c.restore();
   // shock pulses travel from the arch up the body
   const path=[[x,gy-8],[x,gy-50],[kneeX,480],[x,hipY],[x,260],[x,212]];
   G.pulses.forEach(p=>{p.t+=.016/.7;const t=Math.min(p.t,p.stop);const L=path.length-1,f=t*L,i=Math.min(L-1,Math.floor(f)),u=f-i,px=path[i][0]+(path[i+1][0]-path[i][0])*u,py=path[i][1]+(path[i+1][1]-path[i][1])*u;
     const a=Math.max(0,1-(p.t-p.stop)*3);if(p.t>=p.stop&&a<=0)return;
-    c.beginPath();c.arc(px,py-bob,14+10*Math.sin(p.t*20),0,7);c.strokeStyle=G.padded?`rgba(63,143,107,${a})`:`rgba(193,85,61,${p.t<p.stop?.9:a})`;c.lineWidth=5;c.stroke();});
+    c.beginPath();c.arc(px,py-bob,14+10*Math.sin(p.t*20),0,7);c.strokeStyle=G.adjusted?`rgba(63,143,107,${a})`:`rgba(193,85,61,${p.t<p.stop?.9:a})`;c.lineWidth=5;c.stroke();});
   G.pulses=G.pulses.filter(p=>p.t<p.stop+.4);}
 function scenery(c){const gy=600;G.scroll+=(G.stepT<.35?3:0);c.fillStyle=onStairs()?'#e2dccf':'#e9e4d8';c.fillRect(0,gy,W,160);
   c.strokeStyle='rgba(35,42,44,.25)';c.lineWidth=3;c.beginPath();c.moveTo(0,gy);c.lineTo(W,gy);c.stroke();
@@ -254,45 +240,33 @@ function scenery(c){const gy=600;G.scroll+=(G.stepT<.35?3:0);c.fillStyle=onStair
   c.fillStyle='#e2ddd2';c.fillRect(20,40,560,16);c.fillStyle=G.energy>50?C.ok:G.energy>25?C.gold:C.red;c.fillRect(20,40,5.6*G.energy,16);
   c.fillStyle=C.muted;c.font='bold 15px sans-serif';c.fillText('體力',20,76);
   // legend: what the arch is doing
-  c.textAlign='right';c.font='bold 18px sans-serif';c.fillStyle=G.padded?C.ok:(G.foot==='tight'?C.red:C.blue);
-  c.fillText(G.padded?'足弓墊撐住了，衝擊被吃掉':(G.foot==='tight'?'足弓太緊：沒有緩衝':'足弓塌掉：撐不住'),580,76);}
-function conveyor(c){c.fillStyle='#d9d4c8';c.fillRect(0,BELT_Y,W,26);c.strokeStyle='rgba(35,42,44,.3)';c.lineWidth=2;
-  for(let i=0;i<14;i++){const x=((i*50-tt*200)%700+700)%700-50;c.beginPath();c.moveTo(x,BELT_Y);c.lineTo(x+20,BELT_Y+26);c.stroke();}
-  // dropper
-  c.fillStyle=C.ink;c.fillRect(DROP_X-50,120,100,24);c.fillStyle=C.pad;c.beginPath();c.moveTo(DROP_X-34,170);c.quadraticCurveTo(DROP_X,136,DROP_X+34,170);c.closePath();c.fill();
-  c.setLineDash([6,8]);c.strokeStyle='rgba(201,154,46,.7)';c.lineWidth=3;c.beginPath();c.moveTo(DROP_X,180);c.lineTo(DROP_X,BELT_Y-70);c.stroke();c.setLineDash([]);
-  c.fillStyle='rgba(201,154,46,.15)';c.fillRect(DROP_X-46,BELT_Y-80,92,80);
-  G.feet.forEach(f=>{const h=f.ok?(f.type==='tight'?32-16*f.fix:3+13*f.fix):(f.type==='tight'?32:3);foot(c,f.x,BELT_Y,h,f.ok?C.ok:(f.type==='tight'?C.red:C.blue),f.ok,1.3);
-    if(!f.ok){c.fillStyle=f.type==='tight'?C.red:C.blue;c.font='bold 16px sans-serif';c.textAlign='center';c.fillText(f.type==='tight'?'太緊':'塌',f.x,BELT_Y+56);}});
-  G.drops.forEach(d=>{if(d.t>=1)return;const y=170+(BELT_Y-170)*d.t*d.t;c.fillStyle=C.pad;c.beginPath();c.moveTo(DROP_X-34,y);c.quadraticCurveTo(DROP_X,y-34,DROP_X+34,y);c.closePath();c.fill();});
-  c.fillStyle=C.muted;c.font='bold 18px sans-serif';c.textAlign='center';c.fillText(`還有 ${RESCUE_N-G.spawned+G.feet.filter(f=>!f.ok&&f.x>DROP_X).length} 雙腳要經過`,W/2,660);}
+  c.textAlign='right';c.font='bold 18px sans-serif';c.fillStyle=G.adjusted?C.ok:(G.foot==='tight'?C.red:C.blue);
+  c.fillText(G.adjusted?'調整過後，三個點一起出力':(G.foot==='tight'?'足弓太緊：沒有緩衝':'足弓塌掉：撐不住'),580,76);}
 function pops(c){G.pops.forEach(p=>{p.t+=.016;const a=Math.max(0,1-p.t/1.4);c.globalAlpha=a;c.fillStyle=p.col;c.font='bold 26px sans-serif';c.textAlign='center';c.fillText(p.txt,p.x||430,p.y-p.t*30);c.globalAlpha=1;});G.pops=G.pops.filter(p=>p.t<1.4);}
 let tt=0,last=performance.now();
 function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;tt+=dt;
   const c=ctx;c.setTransform(view.dpr,0,0,view.dpr,0,0);c.clearRect(0,0,cv.width,cv.height);c.translate(view.ox,view.oy);c.scale(view.s,view.s);
   if(G){G.stepT+=dt;G.shake=Math.max(0,G.shake-dt*4);
     if(G.phase==='walk'||G.phase==='walkdone'){scenery(c);c.save();c.translate(300,600);c.scale(1.2,1.2);c.translate(-240,-600);walker(c);c.restore();}
-    if(G.phase==='rescue'||G.phase==='rescuedone'){rescueStep(dt);conveyor(c);}
     if(G.phase==='map'||G.phase==='mapread'||G.phase==='map2'){mapStep(dt);map2Step(dt);drawMap(c);}
     pops(c);}
   requestAnimationFrame(loop);}
 
 // ---------- flow
 $('btnMap').onclick=()=>{newDay(Math.random()<.5?'tight':'flat');$('ovStart').hidden=true;tone(523,.15);startMap();};
-const TITLES=[[11,'足弓救星'],[8,'急救站一哥'],[5,'足弓實習生'],[0,'手有點慢']];
-function end(){$('chap').textContent='';$('hudR').textContent='';const t=TITLES.find(x=>G.saved>=x[0])[1];
-  $('endTitle').textContent=`${t}・下午多省了 ${G.pmLeft-G.amLeft}% 體力`;$('barA').style.width=G.amLeft+'%';$('barB').style.width=G.pmLeft+'%';
+function end(){$('chap').textContent='';$('hudR').textContent='';const t=`多省了 ${G.pmLeft-G.amLeft}% 體力`;
+  $('endTitle').textContent=`調整過後，下午${t}`;$('barA').style.width=G.amLeft+'%';$('barB').style.width=G.pmLeft+'%';
   $('shareImg').src=card(t);$('ovEnd').hidden=false;hint('');}
 $('btnAgain').onclick=()=>{$('ovEnd').hidden=true;G=null;setChoices([]);$('ovStart').hidden=false;};
 function card(t){const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
   c.fillStyle='#efece4';c.fillRect(0,0,1080,1350);c.textAlign='center';
   c.fillStyle='#666c69';c.font='500 34px sans-serif';c.fillText('足弓的一天',540,120);
   c.fillStyle='#c1553d';c.font='900 100px "Noto Serif TC",serif';c.fillText(t,540,250);
-  c.fillStyle='#232a2c';c.font='bold 40px sans-serif';c.fillText(`腳圖：${G.foot==='tight'?'太緊下不來':'塌掉上不去'}　急救 ${G.saved}/${RESCUE_N}`,540,340);
-  [['早上（沒墊）',G.amLeft,'#c1553d'],['下午（墊了）',G.pmLeft,'#3f8f6b']].forEach(([n,v,col],i)=>{const y=450+i*150;c.fillStyle='#232a2c';c.font='bold 38px sans-serif';c.textAlign='left';c.fillText(`${n}剩 ${v}% 體力`,140,y);
+  c.fillStyle='#232a2c';c.font='bold 40px sans-serif';c.fillText(`腳圖：${G.foot==='tight'?'太緊下不來':'塌掉上不去'}`,540,340);
+  [['早上（調整前）',G.amLeft,'#c1553d'],['下午（調整後）',G.pmLeft,'#3f8f6b']].forEach(([n,v,col],i)=>{const y=450+i*150;c.fillStyle='#232a2c';c.font='bold 38px sans-serif';c.textAlign='left';c.fillText(`${n}剩 ${v}% 體力`,140,y);
     c.fillStyle='#e2ddd2';c.fillRect(140,y+20,800,44);c.fillStyle=col;c.fillRect(140,y+20,8*v,44);});
-  c.textAlign='center';c.fillStyle='#232a2c';c.font='bold 46px "Noto Serif TC",serif';c.fillText('一片足弓墊，緊的放鬆、塌的回去',540,860);
-  c.fillStyle='#666c69';c.font='34px sans-serif';c.fillText('先做足部張力檢測，再依足型配置',540,930);
+  c.textAlign='center';c.fillStyle='#232a2c';c.font='bold 46px "Noto Serif TC",serif';c.fillText('從腳開始調整，身體重新站穩',540,860);
+  c.fillStyle='#666c69';c.font='34px sans-serif';c.fillText('先做足部張力檢測，再找出卡住的源頭',540,930);
   c.fillStyle='#232a2c';c.fillRect(0,1190,1080,160);c.fillStyle='#fff';c.font='bold 48px "Noto Serif TC",serif';c.fillText('站得穩，才走的久',540,1260);
   c.font='30px sans-serif';c.fillText('鈞衡舍 ChunBalance｜LINE @chunbalance',540,1315);return k.toDataURL('image/jpeg',.9);}
 document.addEventListener('dblclick',e=>e.preventDefault());cv.addEventListener('contextmenu',e=>e.preventDefault());
