@@ -207,7 +207,7 @@
   });
   function start(){ QS = shuffle(POOL).slice(0, ASK); i = 0; right = 0; marks = []; show('play'); ask(); }
   $('go').addEventListener('click', start);
-  $('again').addEventListener('click', start);
+  $('again').addEventListener('click', function(){ show('start'); });
   $('share').addEventListener('click', function(){
     var url = 'https://chunbalance.com/quiz.html', b = this;
     var done = function(){ b.textContent = '連結已複製'; };
