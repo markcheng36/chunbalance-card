@@ -99,11 +99,11 @@
     <p class="msg" id="endMsg"></p>
     <div class="stack">
       <button class="btn" id="save" type="button">① 存下來</button>
-      <a class="btn line" id="lineBtn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">② 傳到官方 LINE 領取</a>
+      <a class="btn line" id="lineBtn" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">② 打開官方 LINE，把圖傳給馬克</a>
       <button class="btn ghost" id="share" type="button">考考朋友</button>
       <button class="btn ghost" id="again" type="button">再玩一次</button>
     </div>
-    <p class="small" id="saveTip">存下圖片，傳到官方 LINE「鈞衡舍」，馬克會幫你安排</p>
+    <p class="small" id="saveTip">先存下圖片，再到官方 LINE「鈞衡舍」把圖傳過來，馬克會幫你安排時間</p>
   </section>
 
   <div class="foot"><a href="https://chunbalance.com/">鈞衡舍官網 chunbalance.com ›</a></div>
@@ -187,9 +187,6 @@
     VNAME = tier.n;
     $('endTitle').textContent = tier.t;
     $('endMsg').innerHTML = tier.m;
-    // 要和官方 LINE 的關鍵字自動回覆一字不差
-    var text = '領' + tier.n;
-    $('lineBtn').href = 'https://line.me/R/oaMessage/@chunbalance/?' + encodeURIComponent(text);
     show('end');
   }
   // 存券：手機能分享檔案就直接存或傳；不能的話提示長按圖片
