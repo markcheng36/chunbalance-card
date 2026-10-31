@@ -61,6 +61,8 @@
   .slot.closed{border-color:var(--line);color:#bbb;text-decoration:line-through;}
   .slot.study{border-style:dashed;border-color:var(--olive-dark);background:#EEF1E6;color:var(--olive-dark);}
   .slot.studyFull{border-style:dashed;border-color:var(--ink-soft);background:#EFEAE2;color:var(--ink-soft);}
+  .custom{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px;color:var(--ink-soft);background:var(--bg);border-radius:10px;padding:8px 10px;}
+  .custom .sm{margin:0;flex:none;}
   .act{margin-top:10px;background:var(--bg);border-radius:12px;padding:10px;}
   .act p{font-size:13px;font-weight:700;margin-bottom:8px;}
   .act .g{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
@@ -414,6 +416,14 @@
         el.appendChild(r);
       };
       sb.appendChild(a);el.appendChild(sb);if(box2)el.appendChild(box2);
+      // 這天有自己加開的時段：只用這裡的時段，不套每週固定
+      if(d.custom){
+        const c=document.createElement('div');c.className='custom';
+        c.innerHTML='<span>這天用自己加的時段，不套每週固定</span>';
+        const r=document.createElement('button');r.className='sm';r.textContent='改回每週固定';
+        twoTap(r,'改回每週固定',()=>{toast('已改回每週固定');mutate({a:'resetDay',date:d.date}).catch(()=>{});});
+        c.appendChild(r);el.appendChild(c);
+      }
     }
     box.appendChild(el);
   }
