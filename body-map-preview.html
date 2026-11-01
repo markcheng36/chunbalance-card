@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>身體整合地圖・肩頸｜鈞衡舍</title>
+<style>
+:root{--bg:#05090f;--card:#101826;--line:#22304a;--txt:#e8edf5;--mut:#8fa0b8;--red:#c0392b;--cy:#3fe0d0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:14px}
+h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font-weight:400;margin-left:6px}
+.sub{color:var(--mut);font-size:13px;margin:0 0 10px}
+.regions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.regions span{padding:5px 12px;border-radius:99px;border:1px solid var(--line);font-size:13px;color:var(--mut)}
+.regions span.on{background:var(--red);border-color:var(--red);color:#fff}
+.stage{position:relative;height:66vh;min-height:440px;max-height:700px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#132036,#05090f 75%);touch-action:none}
+#cv{width:100%;height:100%;display:block}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lbl{position:absolute;left:0;top:0;font-size:11px;color:#dff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 3px #000,0 0 2px #000;transform:translate(7px,-50%)}
+.lbl.big{font-size:12px;font-weight:600}.lbl.gold{color:#ffd98a}
+.lbl::before{content:"";position:absolute;left:-8px;top:50%;width:6px;height:1px;background:currentColor}
+.view{position:absolute;right:8px;top:8px;display:flex;gap:4px}
+.view button,.legend button{background:#000b;color:#dde6f2;border:1px solid #33445f;border-radius:8px;font-size:12px;padding:4px 8px}
+.legend{position:absolute;left:6px;bottom:6px;display:flex;flex-direction:column;gap:3px}
+.legend button{display:flex;align-items:center;gap:5px;font-size:11px;padding:3px 7px;text-align:left}
+.legend i{width:14px;height:4px;border-radius:2px}.legend em{font-style:normal;color:#8fa0b8;margin-left:2px}
+.legend.picked button{opacity:.45}.legend button.on{opacity:1;border-color:var(--cy)}
+.hint{position:absolute;right:8px;top:40px;text-align:right;font-size:11px;color:var(--mut);pointer-events:none}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px}
+.pick{display:none;border-color:var(--cy)}.pick h3{color:var(--cy)}.pick .acts{display:flex;gap:6px;margin-top:10px}.pick .acts button{flex:1;background:#0c1422;color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:8px 2px;font-size:13px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.tabs button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:9px 4px;font-size:14px}
+.tabs button.on{border-color:var(--cy);box-shadow:0 0 0 1px var(--cy) inset;color:var(--cy)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;font-size:14px;line-height:1.7}
+.card h3{margin:0 0 6px;font-size:16px}.card ul{margin:0;padding-left:18px}.card .src{color:var(--mut);font-size:12px;margin-top:6px}
+.all{border-color:var(--red)}.all h3{color:#ff8a7a}
+.cta{display:block;text-align:center;background:#06c755;color:#fff;text-decoration:none;padding:12px;border-radius:12px;margin:14px 0;font-weight:600}
+.note{color:var(--mut);font-size:11px;text-align:center;line-height:1.6}.note a{color:var(--mut)}
+</style></head><body><div class="wrap">
+<h1>身體整合地圖<small>鈞衡舍 ChunBalance</small></h1>
+<p class="sub">同一個部位，用六種角度一起看。</p>
+<div class="regions"><span class="on">肩頸</span><span>下背</span><span>膝蓋</span><span>足弓</span><span>…</span></div>
+<div class="stage" id="stage"><canvas id="cv"></canvas><div id="labels"></div><div id="load">3D 人體載入中…</div>
+ <div class="view"><button data-v="front">正面</button><button data-v="back">背面</button><button data-v="side">側面</button></div>
+ <div class="legend" id="legend"></div>
+ <div class="hint">一指轉動<br>兩指縮放<br>點骨頭/肌肉看單一部位</div></div>
+<div class="card pick" id="pick"><h3 id="pkName"></h3><div id="pkInfo"></div><div class="acts"><button id="bSolo">只看它</button><button id="bHide">隱藏它</button><button id="bAll">全部顯示</button></div></div>
+<div class="tabs" id="tabs">
+ <button data-k="ana">解剖</button><button data-k="mus">肌動</button><button data-k="mer">經絡</button>
+ <button data-k="tung">董氏</button><button data-k="five">五行</button><button data-k="chak">脈輪</button></div>
+<div id="info"></div>
+<div class="card all"><h3>馬克的整合看法</h3>
+肩頸緊，很少只是肩頸的問題。結構上先看肩胛有沒有歸位、頭有沒有往前；經絡上看小腸經、三焦經、膽經有沒有被卡住；董氏用遠端的穴位帶動，再從呼吸和能量把身體放鬆下來。<br><b>調整我來，維持交給你。</b></div>
+<a class="cta" href="https://line.me/R/ti/p/@chunbalance">加入官方 LINE「鈞衡舍」聊聊你的肩頸</a>
+<p class="note">本頁為衛教與身體覺察用途，不取代醫療診斷。經絡與穴位位置為示意。<br>
+3D 人體：BodyParts3D © The Database Center for Life Science (CC BY 4.0)，經 <a href="https://github.com/MervinR07/open-anatomy-3d">open-anatomy-3d</a> 改作（CC BY 4.0）；本頁再加上經絡等標示。</p>
+</div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const MODEL='https://cdn.jsdelivr.net/npm/open-anatomy-3d@0.1.0/models/anatomy-male.glb';
+
+const D={
+ana:['解剖｜骨頭在哪裡',['肩胛骨：貼在背上的三角形骨頭，肩膀能不能放鬆，常看它的位置','鎖骨：連接胸口和肩膀','頸椎：7 節，頭往前一點，頸椎的負擔就多好幾倍','肱骨：上臂骨，跟肩胛骨組成肩關節'],'結構對了，肌肉才不用一直撐。'],
+mus:['肌動｜誰在出力',['斜方肌：上束負責聳肩、頭往同側歪，低頭滑手機時一直在撐','三角肌：把手臂往前、往旁邊、往後抬','旋轉肌袖：把肱骨穩在肩關節裡','頸部肌群：撐住頭的重量、轉頭'],'按它會舒服，但要問：它為什麼一直在出力？'],
+mer:['經絡｜哪幾條經過',['肩頸有 5 條經經過：小腸經、三焦經、大腸經、膽經、膀胱經（左上角圖例）','點圖例裡的任一條經，就只看那一條，並顯示它在肩頸的穴位','肝經不經過肩頸，但肝膽相表裡，情緒緊時膽經的肩井常一起緊'],'肩胛那一圈卡住，小腸經、三焦經的路線就整條不順。'],
+tung:['董氏奇穴｜遠端帶動',['腕順一、二（手掌小指側）：主治含頸項骨刺、落枕','肩中、建中（上臂外側）：主治含肩痛、五十肩','足千金、足五金（小腿）：主治含肩背痛'],'董氏的特色：不一定扎在痛的地方，而是從遠端帶動。'],
+five:['五行能量｜屬於哪一行',['小腸經、三焦經屬「火」','大腸經屬「金」，膽經屬「木」，膀胱經屬「水」','壓力大、容易煩躁時（木、火），肩頸常一起緊起來'],'身體的緊，常常也是情緒的緊。'],
+chak:['脈輪｜能量中心',['喉輪（第五脈輪・藍）：表達與溝通，話常吞回去的人，脖子常緊','心輪（第四脈輪・綠）：位在胸口與兩肩胛之間，與接納、放下有關','其他脈輪先淡淡顯示，之後做到其他部位再點亮'],'呼吸放到胸口和喉嚨，肩膀才真的放得下來。']};
+const SRC={tung:'穴位主治引自宣宇門／董氏奇穴傳承資料。'};
+const MER=[
+ {id:'si',n:'手太陽小腸經',e:'火',c:0x3fe0d0,nm:2,t:'從小指沿手臂後側上來，在肩胛上繞一個彎，再上到耳前',
+  g:[[-.226,.74,.04,'m'],[-.215,.88,0,'b'],[-.205,1.0,0,'b'],[-.19,1.12,0,'b'],[-.19,1.25,0,'b'],[-.17,1.33,0,'b'],[-.175,1.39,0,'b'],[-.11,1.32,0,'b'],[-.12,1.4,0,'b'],[-.078,1.38,0,'b'],[-.065,1.43,0,'b'],[-.042,1.455,0,'b'],[0,1.52,-.02,'s'],[0,1.565,-.01,'s'],[-.045,1.62,0,'f'],[0,1.63,.01,'s']],
+  acu:[[1,'養老'],[3,'小海'],[5,'肩貞'],[7,'天宗'],[8,'秉風'],[11,'肩中俞'],[15,'聽宮']]},
+ {id:'sj',n:'手少陽三焦經',e:'火',c:0xff9f43,nm:4,t:'從無名指沿手臂後側中線上來，經過肩膀後外側，繞到耳後',
+  g:[[-.272,.76,0,'b'],[-.25,.92,0,'b'],[-.235,1.02,0,'b'],[-.212,1.11,0,'b'],[-.225,1.25,0,'b'],[-.205,1.385,0,'b'],[-.105,1.43,0,'b'],[0,1.55,-.035,'s'],[0,1.6,-.012,'s'],[0,1.665,-.01,'s']],
+  acu:[[1,'外關'],[3,'天井'],[5,'肩髎'],[6,'天髎'],[8,'翳風']]},
+ {id:'li',n:'手陽明大腸經',e:'金',c:0xf8e16c,nm:4,t:'從食指沿手臂前外側上來，經過肩峰前方，再到鼻旁',
+  g:[[-.3,.745,0,'f'],[-.27,.85,0,'f'],[-.258,1.0,0,'f'],[-.235,1.11,0,'f'],[-.232,1.27,0,'f'],[-.2,1.39,0,'f'],[-.135,1.435,0,'b'],[-.048,1.5,0,'f'],[-.02,1.625,0,'f']],
+  acu:[[1,'合谷'],[3,'曲池'],[5,'肩髃'],[6,'巨骨'],[8,'迎香']]},
+ {id:'gb',n:'足少陽膽經',e:'木',c:0x6be36b,nm:1,t:'經過肩膀最高點，往上到頭後與頭側',
+  g:[[-.17,1.4,0,'b'],[-.1,1.455,0,'b'],[-.06,1.52,0,'b'],[-.03,1.6,0,'b'],[-.055,1.66,0,'b'],[0,1.69,.0,'s']],
+  acu:[[1,'肩井'],[3,'風池']]},
+ {id:'bl',n:'足太陽膀胱經',e:'水',c:0x8c9bff,nm:3,t:'從後腦沿脖子兩側往下，貼著脊椎兩旁一路到下背',
+  g:[[-.02,1.67,0,'b'],[-.019,1.585,0,'b'],[-.024,1.5,0,'b'],[-.032,1.43,0,'b'],[-.04,1.3,0,'b'],[-.042,1.15,0,'b'],[-.042,1.02,0,'b']],
+  acu:[[1,'天柱'],[3,'大杼']]}];
+
+const stage=document.getElementById('stage'),cv=document.getElementById('cv'),LB=document.getElementById('labels');
+const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,devicePixelRatio));
+const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(30,1,.05,30);
+S.add(new THREE.HemisphereLight(0xdbe8ff,0x182030,1.4));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(1,2,-2);S.add(dl);const dl2=new THREE.DirectionalLight(0x9fc0ff,.8);dl2.position.set(-1,1,2);S.add(dl2);
+const ctl=new OrbitControls(C,cv);ctl.enableDamping=true;ctl.enablePan=false;ctl.minDistance=.5;ctl.maxDistance=4;ctl.rotateSpeed=.7;
+function size(){const w=stage.clientWidth,h=stage.clientHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()}addEventListener('resize',size);size();
+const V=(x,y,z)=>new THREE.Vector3(x,y,z);
+const layers={},labels=[];function L(k){if(!layers[k]){layers[k]=new THREE.Group();layers[k].visible=false;S.add(layers[k])}return layers[k]}
+function label(k,text,p,cls,x){const d=document.createElement('div');d.className='lbl '+(cls||'');d.textContent=text;if(x&&x.c!=null)d.style.color='#'+x.c.toString(16).padStart(6,'0');LB.appendChild(d);labels.push(Object.assign({k,d,p},x||{}))}
+const glowMat=(c,o)=>new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:o||.22,blending:THREE.AdditiveBlending,depthWrite:false});
+const lineMat=c=>new THREE.MeshBasicMaterial({color:c,depthTest:false,transparent:true});
+function tube(par,pts,c,r){const cu=new THREE.CatmullRomCurve3(pts);const a=new THREE.Mesh(new THREE.TubeGeometry(cu,Math.max(40,pts.length*6),r,8),lineMat(c));a.renderOrder=5;par.add(a);
+ const b=new THREE.Mesh(new THREE.TubeGeometry(cu,Math.max(40,pts.length*6),r*2.6,8),glowMat(c));b.renderOrder=4;par.add(b);return cu}
+function dot(par,p,c,r){const m=new THREE.Mesh(new THREE.SphereGeometry(r||.004,12,10),lineMat(c||0xffffff));m.renderOrder=6;m.position.copy(p);par.add(m);return m}
+
+const parts={};let skin;
+const mSkin=new THREE.MeshPhysicalMaterial({color:0x9cc2e8,transparent:true,opacity:.16,roughness:.35,metalness:0,depthWrite:false,side:THREE.FrontSide});
+const mBone=new THREE.MeshStandardMaterial({color:0xe9e4d8,roughness:.55,metalness:0});
+const mBoneHi=new THREE.MeshStandardMaterial({color:0xffc48a,roughness:.5,emissive:0x3a1a00});
+const mBoneDim=new THREE.MeshStandardMaterial({color:0xb8c4d6,roughness:.6,transparent:true,opacity:.55});
+const mMus=new THREE.MeshStandardMaterial({color:0xa8433a,roughness:.6,transparent:true,opacity:.35,depthWrite:false});
+const mMusHi=new THREE.MeshStandardMaterial({color:0xe0503e,roughness:.45,emissive:0x3a0804,transparent:true,opacity:.92});
+const BONE_HI=/^(scapula|clavicle|spine_cervical|humerus)/,MUS_HI=/^(trapezius|deltoid|neck_muscles|rotator_cuff|shoulder_muscles)/;
+const isBone=n=>/^(skull|mandible|teeth|spine_|clavicle|scapula|humerus|forearm_[lr]$|hand_[lr]$|ribs|sternum|pelvis|femur|patella|lower_leg|foot_[lr]$)/.test(n);
+const isMus=n=>/(muscles|trapezius|deltoid|rotator|calf|gluteal|hamstrings|iliopsoas|adductors|intercostals|quadriceps|diaphragm|pelvic_floor)/.test(n);
+
+const gltf=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(MODEL);
+document.getElementById('load').remove();
+gltf.scene.updateMatrixWorld(true);
+gltf.scene.traverse(o=>{if(!o.isMesh)return;const n=o.name;parts[n]=o;
+ if(n.startsWith('skin')){skin=o;o.material=mSkin;o.renderOrder=3}
+ else if(isBone(n)){o.userData.kind='bone'}else if(isMus(n)){o.userData.kind='mus'}else o.visible=false});
+S.add(gltf.scene);
+
+// project guide points onto skin
+const rc=new THREE.Raycaster();
+function surf(x,y,z,f,s){x*=-s;let o,d;
+ if(f==='b'){o=V(x,y,-1);d=V(0,0,1)}else if(f==='f'){o=V(x,y,1);d=V(0,0,-1)}
+ else if(f==='s'){o=V(s,y,z);d=V(-s,0,0)}   // from the same side, inward
+ else if(f==='m'){o=V(s*.19,y,z);d=V(s,0,0)} // from inside (medial) outward
+ rc.set(o,d);const h=rc.intersectObject(skin,false)[0];if(!h)return null;const n=h.face.normal.clone().transformDirection(skin.matrixWorld);
+ return {p:h.point.clone().addScaledVector(n,.0025),n}}
+function refine(A,B,t){const p=A.p.clone().lerp(B.p,t),n=A.n.clone().lerp(B.n,t).normalize();rc.set(p.clone().addScaledVector(n,.12),n.clone().negate());const h=rc.intersectObject(skin,false)[0];
+ if(!h||h.distance>.2)return p;const nn=h.face.normal.clone().transformDirection(skin.matrixWorld);return h.point.clone().addScaledVector(nn,.0025)}
+function path(g,s){const H=g.map(q=>surf(q[0],q[1],q[2],q[3],s));const out=[],key=[];
+ for(let i=0;i<H.length;i++){if(!H[i])continue;key[i]=out.length;out.push(H[i].p);const j=H.slice(i+1).findIndex(Boolean);if(j<0)break;const B=H[i+1+j];
+  const steps=Math.max(2,Math.round(H[i].p.distanceTo(B.p)/.012));for(let k=1;k<steps;k++)out.push(refine(H[i],B,k/steps))}
+ return {pts:out,key,H}}
+
+// 經絡
+const merG={},flows=[];
+MER.forEach(m=>{const g=new THREE.Group();L('mer').add(g);merG[m.id]=g;
+ for(const s of[-1,1]){const {pts,H}=path(m.g,s);if(pts.length<2)continue;const cu=tube(g,pts,m.c,.0016);flows.push({cu,c:m.c,g});
+  m.acu.forEach(([i,n])=>{if(!H[i])return;dot(g,H[i].p);if(s>0)label('mer',n,H[i].p,'',{m:m.id,t:'acu'})});
+  if(s>0&&H[m.nm])label('mer',m.n,H[m.nm].p,'big',{m:m.id,t:'name',c:m.c})}});
+const flowDots=flows.map(f=>{const d=dot(f.g,f.cu.getPoint(0),0xffffff,.004);const h=new THREE.Mesh(new THREE.SphereGeometry(.012,12,10),glowMat(f.c,.5));h.renderOrder=6;d.add(h);return d});
+let sel=null;const leg=document.getElementById('legend');
+leg.innerHTML=MER.map(m=>`<button data-m="${m.id}"><i style="background:#${m.c.toString(16).padStart(6,'0')}"></i>${m.n}<em>${m.e}</em></button>`).join('');
+leg.onclick=e=>{const b=e.target.closest('button');if(!b)return;sel=sel===b.dataset.m?null:b.dataset.m;
+ MER.forEach(m=>merG[m.id].visible=!sel||sel===m.id);leg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.m===sel));leg.classList.toggle('picked',!!sel);if(cur==='mer')card()};
+
+// 解剖 / 肌動 labels
+const ctr=n=>{const o=parts[n];if(!o)return V(0,0,0);return new THREE.Box3().setFromObject(o).getCenter(V())};
+label('ana','肩胛骨',ctr('scapula_l').add(V(0,0,-.06)),'big');label('ana','鎖骨',ctr('clavicle_l').add(V(0,.01,.03)),'big');label('ana','頸椎',ctr('spine_cervical').add(V(0,0,-.03)),'big');label('ana','肱骨',ctr('humerus_l'),'big');label('ana','胸椎',ctr('spine_thoracic').add(V(0,.05,-.06)),'big');
+label('mus','斜方肌',ctr('trapezius_l').add(V(0,.08,-.08)),'big');label('mus','三角肌',ctr('deltoid_l').add(V(.0,0,-.03)),'big');label('mus','頸部肌群',ctr('neck_muscles_l').add(V(.02,0,-.04)).add(V(0,.03,0)),'big');label('mus','旋轉肌袖',ctr('rotator_cuff_l').add(V(0,-.03,-.06)),'big');
+
+// 董氏
+const rings=[];const pain=surf(-.1,1.44,0,'b',1)?.p||V(-.1,1.44,-.08);
+function tung(spec,n){const h=surf(...spec);if(!h)return;const p=h.p;const r=new THREE.Mesh(new THREE.TorusGeometry(.016,.003,8,32),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);rings.push(r);
+ const g=new THREE.Mesh(new THREE.SphereGeometry(.026,12,10),glowMat(0xffd166,.35));g.position.copy(p);L('tung').add(g);label('tung',n,p,'gold big');
+ const mid=p.clone().lerp(pain,.5).add(V(0,0,-.15));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const t=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));t.renderOrder=5;L('tung').add(t)}
+tung([-.225,.8,.05,'m',-1],'腕順一、二');tung([-.24,1.3,-.02,'s',-1],'肩中、建中');tung([-.1,.3,-.01,'s',-1],'足千金、足五金');
+{const d=dot(L('tung'),pain,0xff6b5a,.008);label('tung','肩頸痛點',pain,'big')}
+// 五行
+[['火',0xff4a3a,[-.13,1.36],'小腸經・三焦經'],['木',0x4fd26b,[-.1,1.46],'膽經'],['金',0xf8e16c,[-.2,1.39],'大腸經'],['水',0x6c8cff,[-.035,1.25],'膀胱經']].forEach(([e,c,[x,y],n])=>{
+ for(const s of[-1,1]){const h=surf(x,y,0,'b',s);if(!h)continue;const g=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),glowMat(c,.5));g.position.copy(h.p);g.scale.set(1,1,.5);L('five').add(g);if(s>0)label('five',e+'・'+n,h.p,'big',{c})}});
+// 脈輪
+const chakC=[0xe74c3c,0xe67e22,0xf1c40f,0x2ecc71,0x3498db,0x6c5ce7,0xb57edc],chakY=[.92,1.0,1.12,1.3,1.5,1.66,1.75],chak=[];
+chakY.forEach((y,i)=>{const on=i==3||i==4;const m=new THREE.Mesh(new THREE.SphereGeometry(on?.022:.013,16,12),new THREE.MeshBasicMaterial({color:chakC[i],transparent:true,opacity:on?1:.45,depthTest:false}));m.renderOrder=6;m.position.set(0,y,-.01);L('chak').add(m);
+ if(on){const h=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),glowMat(chakC[i],.4));h.renderOrder=6;m.add(h);chak.push(h)}});
+label('chak','喉輪',V(.02,1.5,-.01),'big');label('chak','心輪',V(.02,1.3,-.01),'big');
+
+// 點選單一部位
+const ZH={spine_cervical:'頸椎',clavicle:'鎖骨',foot:'足骨',forearm:'前臂骨（橈骨・尺骨）',hand:'手骨',mandible:'下顎骨',patella:'髕骨',spine_lumbar:'腰椎',pelvis:'骨盆與薦骨',ribs:'肋骨',lower_leg:'小腿骨（脛骨・腓骨）',scapula:'肩胛骨',skull:'頭骨',sternum:'胸骨',teeth:'牙齒',femur:'股骨',spine_thoracic:'胸椎',humerus:'肱骨',
+ abdominal_muscles:'腹壁肌群',back_muscles:'背部深層肌群',calf:'小腿後側肌群',chest_muscles:'胸大肌',deltoid:'三角肌',diaphragm:'橫膈膜',foot_muscles:'足部肌群',forearm_muscles:'前臂肌群',gluteal:'臀肌群',hamstrings:'膕旁肌（大腿後側）',hand_muscles:'手部肌群',iliopsoas:'髂腰肌',adductors:'內收肌群',intercostals:'肋間肌',neck_muscles:'頸部肌群',pelvic_floor:'骨盆底肌',quadriceps:'股四頭肌',rotator_cuff:'旋轉肌袖',shin_muscles:'小腿前側肌群',shoulder_muscles:'肩帶肌群',trapezius:'斜方肌',upper_arm_muscles:'上臂肌群'};
+const INFO={
+ trapezius:['聳肩、肩胛往上往內收、頭往同側歪','膽經（肩井）、三焦經（天髎）、小腸經（肩外俞、肩中俞）、膀胱經','腕順一、二（落枕、頸項）；足千金、足五金（肩背痛）'],
+ neck_muscles:['撐住頭的重量、轉頭、點頭','膽經（風池）、三焦經（天牖、翳風）、小腸經（天窗、天容）、大腸經（扶突）','腕順一、二（落枕、頸項）'],
+ deltoid:['把手臂往前、往旁邊、往後抬','大腸經（肩髃）、三焦經（肩髎）、小腸經（肩貞）','肩中、建中（肩痛、五十肩）'],
+ rotator_cuff:['把肱骨穩在肩關節裡，轉手臂','小腸經（天宗、秉風）','肩中、建中（肩痛、五十肩）'],
+ shoulder_muscles:['把肩胛骨往上提、往內收，穩住肩胛','小腸經（曲垣、肩外俞）、三焦經（天髎）','足千金、足五金（肩背痛）'],
+ scapula:['手臂動作的底座，肩胛不歸位，肩頸就得一直出力','小腸經（天宗、秉風、曲垣）、三焦經（天髎）','足千金、足五金（肩背痛）'],
+ clavicle:['連接胸骨和肩胛，手抬高時會跟著轉','大腸經（巨骨附近）、胃經（缺盆，之後補上）',''],
+ spine_cervical:['7 節頸椎，頭往前一點，負擔就多好幾倍','膀胱經（天柱、大杼）','腕順一、二（頸項骨刺）'],
+ humerus:['上臂骨，和肩胛骨組成肩關節','大腸經（臂臑）、三焦經、小腸經','肩中、建中（肩痛、五十肩）']};
+const mPick=new THREE.MeshStandardMaterial({color:0x5ff2e2,emissive:0x0a5a52,roughness:.4});
+let picked=null,pickedMat=null,solo=null;const hidden=new Set();
+const base=n=>n.replace(/_[lr]$/,''),side=n=>/_l$/.test(n)?'（左）':/_r$/.test(n)?'（右）':'';
+function pickPart(o){if(picked){picked.material=pickedMat}picked=o;const box=document.getElementById('pick');
+ if(!o){box.style.display='none';return}pickedMat=o.material;o.material=mPick;const b=base(o.name),inf=INFO[b];
+ document.getElementById('pkName').textContent=(ZH[b]||o.name)+side(o.name);
+ document.getElementById('pkInfo').innerHTML=inf?`<ul><li>功能：${inf[0]}</li><li>經過的經絡：${inf[1]}</li>${inf[2]?'<li>董氏參考：'+inf[2]+'</li>':''}</ul>`:'<p style="margin:0;color:#8fa0b8">這個部位的經絡、董氏對照，做到其他部位時會補上。</p>';
+ box.style.display='block'}
+let down=null;cv.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;const r=cv.getBoundingClientRect();
+ rc.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-(e.clientY-r.top)/r.height*2+1},C);
+ const vis=Object.values(parts).filter(o=>o.visible&&o.userData.kind);const h=rc.intersectObjects(vis,false)[0];pickPart(h?h.object:null)});
+document.getElementById('bSolo').onclick=()=>{if(!picked)return;solo=picked;hidden.clear();style(cur);const b=new THREE.Box3().setFromObject(picked),c=b.getCenter(V()),r=b.getSize(V()).length();
+ const dir=C.position.clone().sub(ctl.target).normalize();goal={t:c,p:c.clone().addScaledVector(dir,Math.max(.35,r*2.2))};stage.scrollIntoView({behavior:'smooth',block:'start'})};
+document.getElementById('bHide').onclick=()=>{if(!picked)return;const o=picked;pickPart(null);if(solo===o)solo=null;hidden.add(o);style(cur)};
+document.getElementById('bAll').onclick=()=>{solo=null;hidden.clear();pickPart(null);style(cur);frame(cur,'back')};
+// layer styling
+let cur='mer';
+function style(k){gltf.scene.traverse(o=>{if(!o.isMesh||o===skin||!o.userData.kind)return;const n=o.name,b=o.userData.kind==='bone';
+ if(k==='ana'){o.visible=b;o.material=BONE_HI.test(n)?mBoneHi:mBone}
+ else if(k==='mus'){o.visible=true;o.material=b?mBoneDim:(MUS_HI.test(n)?mMusHi:mMus)}
+ else{o.visible=b;o.material=mBoneDim}});
+ for(const o of Object.values(parts)){if(!o.userData.kind)continue;if(solo)o.visible=o===solo;else if(hidden.has(o))o.visible=false}
+ if(picked&&picked.visible)picked.material=mPick;
+ mSkin.opacity=solo?.05:k==='ana'?.08:k==='mus'?.06:.16}
+const VIEWS={back:[0,1.36,-1.6],front:[0,1.36,1.6],side:[-1.6,1.36,0]};let goal=null;
+function frame(k,v){const far=k==='tung'||k==='chak';const t=far?V(0,1.0,0):V(0,1.3,0);const p=VIEWS[v||'back'];goal={t,p:far?V(p[0]*2.2,1.1,p[2]*2.2):V(...p)}}
+document.querySelectorAll('.view button').forEach(b=>b.onclick=()=>frame(cur,b.dataset.v));
+function card(){const box=document.getElementById('info');const m=cur==='mer'&&sel&&MER.find(x=>x.id===sel);
+ if(m){box.innerHTML=`<div class="card"><h3>${m.n}｜五行屬「${m.e}」</h3><ul><li>經過肩頸的穴位：${m.acu.map(a=>a[1]).join('、')}</li><li>${m.t}</li></ul><p style="margin:8px 0 0;color:#ffd9a0">再點一次圖例，回到全部經絡。</p></div>`;return}
+ const [t,l,s]=D[cur];box.innerHTML=`<div class="card"><h3>${t}</h3><ul>${l.map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${s}</p>${SRC[cur]?'<div class="src">'+SRC[cur]+'</div>':''}</div>`}
+function show(k){cur=k;pickPart(null);solo=null;hidden.clear();for(const n in layers)layers[n].visible=n===k;style(k);frame(k,'back');leg.style.display=k==='mer'?'flex':'none';
+ document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));card()}
+document.getElementById('tabs').onclick=e=>{if(e.target.dataset.k)show(e.target.dataset.k)};
+ctl.addEventListener('start',()=>goal=null);
+const t0=performance.now(),tmp=V();
+function loop(){const t=(performance.now()-t0)/1000;
+ if(goal){ctl.target.lerp(goal.t,.12);C.position.lerp(goal.p,.12);if(C.position.distanceTo(goal.p)<.003)goal=null}
+ ctl.update();
+ flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
+ rings.forEach((r,i)=>r.scale.setScalar(1+.3*Math.sin(t*4+i)));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
+ if(cur==='mus')mMusHi.emissive.setRGB(.15+.1*Math.sin(t*3),.02,.01);
+ R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
+ for(const o of labels){let vis=o.k===cur;if(vis&&o.m)vis=sel?o.m===sel:o.t==='name';if(solo&&(o.k==='ana'||o.k==='mus'))vis=false;if(!vis){o.d.style.display='none';continue}
+  tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
+ requestAnimationFrame(loop)}
+C.position.set(...VIEWS.back);ctl.target.set(0,1.3,0);show('mer');loop();window.ready=1;
+</script></body></html>
