@@ -47,6 +47,9 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .mbasic{width:100%;margin-top:6px;background:var(--card);color:#ffd9a0;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:14px}
 .mbasic.on{border-color:#ffd9a0}
 .regions .soon{opacity:.4}
+.scope{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}.scope button{padding:8px 4px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--mut);font-size:15px}.scope button.on{background:#0f2a2c;border-color:var(--cy);color:#fff;font-weight:600}
+.regions.dim button{opacity:.45}.regions.dim button.on{background:var(--card);border-color:var(--line);color:var(--mut)}
+.chips.one button.on::before{content:"● "}
 .sf{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}.sfh{color:#9fd3ff;font-weight:700;margin-bottom:2px}
 .qz{margin-top:8px}.qq{font-weight:700;margin-bottom:6px}.qz button{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0e1726;color:var(--txt);font-size:14px}.qz button.ok{border-color:#3ecf8e;background:#123526}.qz button.no{border-color:#ff6b5a;background:#3a1714}.qa{margin-top:6px;color:#ffd9a0}
 .moves button.on{border-color:#ff7a66;color:#ff9a88}
@@ -57,7 +60,8 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .tmode{display:none;margin-top:8px}.tsw{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .tsw button,.tparts button{background:var(--card);color:#d9c58f;border:1px solid #6b5a2a;border-radius:9px;padding:8px 4px;font-size:14px}
 .tsw button.on,.tparts button.on{background:#5a4510;color:#fff;border-color:#ffd166}
-.tparts{display:none;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.tparts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.tpts{display:flex;flex-direction:column;gap:6px;margin-top:8px}.tg{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.tg span{width:100%;font-size:12px;color:var(--mut)}.tg button{background:var(--card);color:#ffd98a;border:1px solid #4a3f22;border-radius:8px;padding:6px 9px;font-size:13px}.tg button.on{background:#ffd166;color:#1a1300;border-color:#ffd166;font-weight:600}
 .card .grp{margin:0;padding-left:18px}.card .grp li{margin:2px 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;font-size:14px;line-height:1.7}
 .card h3{margin:0 0 6px;font-size:16px}.card ul{margin:0;padding-left:18px}.card .src{color:var(--mut);font-size:12px;margin-top:6px}
@@ -70,6 +74,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 </style></head><body><div class="wrap">
 <h1>身體整合地圖<small>鈞衡舍 ChunBalance</small></h1>
 <p class="sub">同一個部位，用解剖、肌動、經絡、董氏、五行、脈輪一起看。</p>
+<div class="scope" id="scope"><button data-s="reg" class="on">看這一區</button><button data-s="all">看全身</button></div>
 <div class="regions" id="regions"><button data-r="neck">頭頸</button><button data-r="shoulder">肩頸</button><button data-r="arm">手臂</button><button data-r="trunk">胸腹</button><button data-r="lowback">下背</button><button data-r="hip">髖部骨盆</button><button data-r="knee">膝蓋</button><button data-r="foot">足踝足弓</button></div>
 <div class="stage" id="stage"><canvas id="cv"></canvas><div id="labels"></div><div id="load">3D 人體載入中…</div>
 </div>
@@ -81,18 +86,19 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
  <div class="legend ov" id="legend"></div>
 </div>
 <div class="card pick" id="pick"><h3 id="pkName"></h3><div id="pkInfo"></div><div class="acts"><button id="bSolo">只看它</button><button id="bHide">隱藏它</button><button id="bAll">全部顯示</button></div></div>
-<div class="sec">要疊哪幾層？（可以複選）</div>
-<div class="chips" id="chips">
- <button data-l="skin">皮膚</button><button data-l="bone">骨骼</button><button data-l="mus">肌肉</button><button data-l="mer">經絡</button><button data-l="tung">董氏</button><button data-l="five">五行</button><button data-l="chak">脈輪</button></div>
-<div class="tmode" id="tmode"><div class="tsw" id="tsw"><button data-tm="reg" class="on">這一區常用</button><button data-tm="all">宣宇門 44 組全部</button></div><div class="tparts" id="tparts"></div></div>
+<div class="sec">可以一起看（複選）</div>
+<div class="chips" id="chips"><button data-l="skin">皮膚</button><button data-l="bone">骨骼</button><button data-l="mus">肌肉</button><button data-l="mer">經絡</button><button data-l="tung">董氏</button></div>
+<div class="sec">單獨看（打開時經絡、董氏會先收起來）</div>
+<div class="chips one" id="chips2"><button data-l="five">五行</button><button data-l="chak">脈輪</button></div>
+<div class="tmode" id="tmode"><div class="tparts" id="tparts"></div><div class="tpts" id="tpts"></div></div>
 <div class="tnav" id="tnav"><button id="tPrev">◀ 上一個</button><span id="tName"></span><button id="tNext">下一個 ▶</button></div>
 <div id="info"></div>
-<div class="sec">肌動學：選一個動作，看肌肉怎麼收縮、伸長</div>
+<div class="sec" id="mvSec">肌動學：選一個動作，看肌肉怎麼收縮、伸長</div>
 <div class="moves" id="moves"></div>
 <button class="mbasic" id="mBasic">📘 肌動學原理</button>
 <div class="mctl" id="mctl"><button id="mPlay">⏸</button><input type="range" id="mSlide" min="0" max="1000" value="0"><button id="mStop">結束</button></div>
 <div id="minfo"></div>
-<div class="card all"><h3>馬克的整合看法｜<span id="markR"></span></h3><span id="markT"></span><br><b>調整我來，維持交給你。</b></div>
+<div class="card all" id="markCard"><h3>馬克的整合看法｜<span id="markR"></span></h3><span id="markT"></span><br><b>調整我來，維持交給你。</b></div>
 <a class="cta" id="cta" href="https://line.me/R/ti/p/@chunbalance">加入官方 LINE「鈞衡舍」聊聊</a>
 <p class="note">本頁為衛教與身體覺察用途，不取代醫療診斷。經絡與穴位位置為示意。<br>
 3D 人體：BodyParts3D © The Database Center for Life Science (CC BY 4.0)，經 <a href="https://github.com/MervinR07/open-anatomy-3d">open-anatomy-3d</a> 與 <a href="https://github.com/ivershuo/somakine">Somakine</a> 改作（CC BY 4.0）；本頁再加上經絡、肌動等標示與動作。</p>
@@ -649,7 +655,7 @@ let pain=null,tungPts=[],tIdx=-1,chak=[];
 function clearLabels(ks){for(let i=labels.length-1;i>=0;i--)if(ks.includes(labels[i].k)){labels[i].d.remove();labels.splice(i,1)}}
 function clearGroup(k){const g=L(k);while(g.children.length){const c=g.children.pop();if(!c.userData.keep)c.traverse(o=>{if(o.geometry)o.geometry.dispose()})}}
 let tMode='reg',tPart=0;
-function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1;if(tMode==='all')return buildTungAll();const R0=REG[cur];
+function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1;document.getElementById('tpts').innerHTML='';if(tMode==='all')return buildTungAll();const R0=REG[cur];
  const ph=surf(...R0.pain);pain=ph?ph.p:V(...R0.cam.t);const fz=R0.cam.v==='back'?-.15:.15;
  R0.tung.forEach(([id,use])=>{const t0=TUNG[id];if(!t0)return;const h=surf(...t0.spec);if(!h)return;const p=h.p;const t=Object.assign({},t0,{use,p,nrm:h.n});
   const r=new THREE.Mesh(new THREE.TorusGeometry(.016,.003,8,32),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
@@ -658,37 +664,36 @@ function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1
   const mid=p.clone().lerp(pain,.5).add(V(0,0,fz));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const tb=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));tb.renderOrder=5;L('tung').add(tb);tungPts.push(t)});
  dot(L('tung'),pain,0xff6b5a,.008);label('tung',R0.n+'痛點',pain,'big');document.getElementById('tName').textContent=''}
 function buildTungAll(){const box=new THREE.Box3(),nS=V(0,0,0);
- XYM.filter(g=>g.p===tPart).forEach(g=>{const mem=g.pts.map(x=>x.n).join('、');
+ let gi=-1;const btn=[];XYM.filter(g=>g.p===tPart).forEach(g=>{const mem=g.pts.map(x=>x.n).join('、');gi++;let first=true;const row=[];
   g.pts.forEach(q=>{const t0=q.id?TUNG[q.id]:{};const spec=q.spec||t0.spec;const h=spec&&surf(...spec);if(!h)return;const p=h.p;
-   const t={all:1,n:q.n,u:q.u,where:q.where||t0.where,zz:q.zz||g.zz||t0.zz,g:g.g,mem,p,nrm:h.n};
+   const t={all:1,n:q.n,u:q.u,where:q.where||t0.where,zz:q.zz||g.zz||t0.zz,g:g.g,mem,p,nrm:h.n,gi};
    const r=new THREE.Mesh(new THREE.TorusGeometry(.009,.002,8,28),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
    const gl=new THREE.Mesh(new THREE.SphereGeometry(.014,12,10),glowMat(0xffd166,.35));gl.position.copy(p);L('tung').add(gl);
-   label('tung',t.n,p,'gold tap');{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
-   box.expandByPoint(p);nS.add(h.n);tungPts.push(t)})});
+   label('tung',t.n,p,'gold tap',{grp:gi,head:first});first=false;row.push(`<button data-ti="${tungPts.length}">${t.n}</button>`);{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
+   box.expandByPoint(p);nS.add(h.n);tungPts.push(t)});btn.push(`<div class="tg"><span>${g.g}</span>${row.join('')}</div>`)});
+ document.getElementById('tpts').innerHTML=btn.join('');
  document.getElementById('tName').textContent=`宣宇門｜${XYM_PARTS[tPart]}`;
  if(!tungPts.length)return;const c=box.getCenter(V()),sz=box.getSize(V()).length();const n=nS.setY(0).normalize();
  goal={t:c,p:c.clone().addScaledVector(n.lengthSq()?n:V(0,0,1),Math.min(1.4,Math.max(.42,sz*2.4))).add(V(0,.04,0))}}
 function partCard(){const gs=XYM.filter(g=>g.p===tPart);
- setCard(`<h3>宣宇門｜${XYM_PARTS[tPart]}（${gs.length} 組）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.g}</b>${g.pts.length>1?'：'+g.pts.map(x=>x.n).join('、'):''}</li>`).join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">點畫面上的穴位名稱，或按「上一個／下一個」，看位置和主治。</p><div class="src">穴組依宣宇門董氏抽籤筒；位置、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`)}
-function setTMode(m){tMode=m;document.querySelectorAll('#tsw button').forEach(b=>b.classList.toggle('on',b.dataset.tm===m));document.getElementById('tparts').style.display=m==='all'?'grid':'none';
- if(m==='all'&&on.mer){on.mer=false;applyVis()}buildTung();if(m==='all')partCard();else{frameRegion();layerCard('tung')}}
+ setCard(`<h3>宣宇門｜${XYM_PARTS[tPart]}（${gs.length} 組）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.g}</b>${g.pts.length>1?'：'+g.pts.map(x=>x.n).join('、'):''}</li>`).join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，或按「上一個／下一個」，看位置、歸經和主治。畫面上只標出目前這一組的名字。</p><div class="src">穴組依宣宇門董氏抽籤筒；位置、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`)}
 document.getElementById('tparts').innerHTML=XYM_PARTS.map((p,i)=>`<button data-tp="${i}"${i?'':' class="on"'}>${p}</button>`).join('');
-document.getElementById('tsw').onclick=e=>{const b=e.target.closest('button');if(b)setTMode(b.dataset.tm)};
+document.getElementById('tpts').onclick=e=>{const b=e.target.closest('button');if(b)goTung(+b.dataset.ti)};
 document.getElementById('tparts').onclick=e=>{const b=e.target.closest('button');if(!b)return;tPart=+b.dataset.tp;document.querySelectorAll('#tparts button').forEach(x=>x.classList.toggle('on',x===b));buildTung();partCard()};
-function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];
+function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];document.querySelectorAll('#tpts button').forEach(b=>b.classList.toggle('on',+b.dataset.ti===tIdx));
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,t.all?.5:.95).add(V(0,t.all?.04:.1,0))};
  if(t.all){setCard(`<h3>宣宇門｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>同一組</td><td>${/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table><a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a><div class="src">穴組依宣宇門董氏抽籤筒；位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
  setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
 document.getElementById('tPrev').onclick=()=>goTung(tIdx-1);document.getElementById('tNext').onclick=()=>goTung(tIdx+1);
 // ===== 五行 / 脈輪 =====
-function buildFive(){clearGroup('five');clearLabels(['five']);const R0=REG[cur];
- (R0.five||[]).forEach(([e,[x,y,z,f],n])=>{const c=G5[e];for(const s of[-1,1]){const h=surf(x,y,z,f,s);if(!h)continue;const g=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),glowMat(c,.5));g.position.copy(h.p);L('five').add(g);if(s>0)label('five',e+'・'+n,h.p,'big',{c})}});
- (R0.organs||[]).forEach(([k,e,zh])=>{const ms=Object.keys(ORG).filter(n=>n===k||n.startsWith(k+'_'));if(!ms.length)return;
+function buildFive(){clearGroup('five');clearLabels(['five']);const R0=REG[cur];const RS=scope==='all'?REG_ORDER.map(r=>REG[r]):[R0];const seenF=new Set(),seenO=new Set();
+ RS.flatMap(R=>(R.five||[]).filter(x=>!seenF.has(x[2])&&seenF.add(x[2]))).forEach(([e,[x,y,z,f],n])=>{const c=G5[e];for(const s of[-1,1]){const h=surf(x,y,z,f,s);if(!h)continue;const g=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),glowMat(c,.5));g.position.copy(h.p);L('five').add(g);if(s>0)label('five',e+'・'+n,h.p,'big',{c})}});
+ RS.flatMap(R=>(R.organs||[]).filter(x=>!seenO.has(x[0])&&seenO.add(x[0]))).forEach(([k,e,zh])=>{const ms=Object.keys(ORG).filter(n=>n===k||n.startsWith(k+'_'));if(!ms.length)return;
   const mat=new THREE.MeshStandardMaterial({color:G5[e],emissive:G5[e],emissiveIntensity:.3,roughness:.5});const box=new THREE.Box3();
   ms.forEach(n=>{const m=new THREE.Mesh(ORG[n],mat);m.userData.keep=1;L('five').add(m);box.expandByObject(m)});label('five',zh+'・'+e,box.getCenter(V()),'big',{c:G5[e]})})}
 const chakC=[0xe74c3c,0xe67e22,0xf1c40f,0x2ecc71,0x3498db,0x6c5ce7,0xb57edc],chakY=[.92,1.0,1.12,1.3,1.5,1.66,1.75];
-function buildChak(){clearGroup('chak');clearLabels(['chak']);chak=[];const hi=REG[cur].chak;
+function buildChak(){clearGroup('chak');clearLabels(['chak']);chak=[];const hi=scope==='all'?[0,1,2,3,4,5,6]:REG[cur].chak;
  chakY.forEach((y,i)=>{const on=hi.includes(i);const m=new THREE.Mesh(new THREE.SphereGeometry(on?.022:.013,16,12),new THREE.MeshBasicMaterial({color:chakC[i],transparent:true,opacity:on?1:.45,depthTest:false}));m.renderOrder=6;m.position.set(0,y,-.01);L('chak').add(m);
   if(on){const h=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),glowMat(chakC[i],.4));h.renderOrder=6;m.add(h);chak.push(h);label('chak',CHAK_N[i],V(.02,y,-.01),'big')}})}
 // 骨骼、肌肉標籤
@@ -698,7 +703,7 @@ function buildLabels(){clearLabels(['bone','mus']);const L0=REG_LBL[cur];
  L0.mus.forEach(e=>{const isA=Array.isArray(e);const n=isA?e[0]:e+'_l';const t=isA?e[1]:((MUS[e]&&MUS[e].zh)||e).replace(/（.*$/,'');const p=ctr(n)||ctr(n.replace(/_l$/,'_r'));if(p)label('mus',t,p,'big')})}
 // ===== 疊層、點選 =====
 const on={skin:true,bone:true,mus:false,mer:true,tung:false,five:false,chak:false};
-let picked=null,solo=null,mv=null;const hidden=new Set();
+let picked=null,solo=null,mv=null,scope='reg',scopeBusy=false;const hidden=new Set();
 const roleOf=n=>{if(!mv)return null;for(const r of['c','s','a','st'])if(mv.roles[r].includes(n))return r;return null};
 function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
  for(const o of Object.values(parts)){const k=o.userData.kind,n=o.name;if(k==='skin'){o.visible=on.skin&&!mv&&!solo;continue}
@@ -706,14 +711,16 @@ function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
   else{o.visible=showM;const r=roleOf(n);o.material=mv?(r?ROLE_M[r]:mIdle):(k==='mus'?mMus:mMusFar);if(mv&&!r&&k==='musg'&&!/neck|back/.test(n))o.visible=false}
   if(solo)o.visible=o===solo;else if(hidden.has(o))o.visible=false;if(o===picked)o.material=mPick}
  for(const k of['mer','tung','five','chak'])L(k).visible=on[k]&&!mv;
- leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv?'block':'none';
- document.getElementById('chips').querySelectorAll('button').forEach(b=>b.classList.toggle('on',!!on[b.dataset.l]))}
+ leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv&&scope==='all'?'block':'none';for(const id of['mvSec','moves','mBasic','markCard'])document.getElementById(id).style.display=scope==='all'?'none':'';
+ document.querySelectorAll('#chips button,#chips2 button').forEach(b=>b.classList.toggle('on',!!on[b.dataset.l]))}
 let basicOpen=false;function setCard(html){basicOpen=false;const mb=document.getElementById('mBasic');if(mb)mb.classList.remove('on');document.getElementById('info').innerHTML=html?`<div class="card">${html}</div>`:''}
 function setMCard(html){basicOpen=false;const mb=document.getElementById('mBasic');if(mb)mb.classList.remove('on');document.getElementById('minfo').innerHTML=html?`<div class="card">${html}</div>`:''}
 function layerCard(k){const d=LAYER_TXT[k];if(!d)return;if(typeof d[1]==='string'){setCard(`<h3>${d[0]}</h3><p style="margin:0">${d[1]}</p>`);return}
  setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`)}
-document.getElementById('chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.l;on[k]=!on[k];if(mv&&(k==='skin'))stopMove();
- applyVis();if(on[k]){lastLayer=k;layerCard(k);if(k==='tung'&&tIdx<0){if(tMode==='all'){buildTung();partCard()}else goTung(0)}}};
+const SOLO=['five','chak'],JOIN=['mer','tung'];
+function chipClick(e){const b=e.target.closest('button');if(!b)return;const k=b.dataset.l;on[k]=!on[k];if(on[k]&&SOLO.includes(k))SOLO.concat(JOIN).forEach(x=>{if(x!==k)on[x]=false});if(on[k]&&JOIN.includes(k))SOLO.forEach(x=>on[x]=false);if(mv&&(k==='skin'))stopMove();
+ applyVis();if(on[k]){lastLayer=k;if(k==='tung'){if(tMode==='all'){buildTung();partCard()}else{layerCard(k);goTung(0)}}else{layerCard(k);if(scope==='all')frameRegion()}}}
+document.getElementById('chips').onclick=chipClick;document.getElementById('chips2').onclick=chipClick;
 const side=n=>/_l$/.test(n)?'（左）':/_r$/.test(n)?'（右）':'';
 function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis();if(!o){box.style.display='none';return}
  const n=o.name,b=n.replace(/_[lr]$/,''),m=MUS[o.userData.key||b]||BASEG_INFO[b];
@@ -804,13 +811,13 @@ document.getElementById('mStop').onclick=stopMove;
 // ===== 鏡頭 =====
 let goal=null;const VIEWS={back:[0,1.36,-1.6],front:[0,1.36,1.6],side:[-1.6,1.36,0]};
 function frame(v,dist){const p=V(...VIEWS[v||'back']);if(dist)p.setLength(dist).setY(1.36);goal={t:V(0,1.3,0),p}}
-function frameRegion(v,k){const c=REG[cur].cam,t=V(...c.t);const dir=V(...VIEWS[v||c.v]).setY(0).normalize();goal={t,p:t.clone().addScaledVector(dir,c.d*(k||1)).add(V(0,.05,0))}}
+function frameRegion(v,k){if(scope==='all'){const t=V(0,.88,0);goal={t,p:t.clone().addScaledVector(V(...VIEWS[v||'front']).setY(0).normalize(),3.6*(k||1)).add(V(0,.07,0))};return}const c=REG[cur].cam,t=V(...c.t);const dir=V(...VIEWS[v||c.v]).setY(0).normalize();goal={t,p:t.clone().addScaledVector(dir,c.d*(k||1)).add(V(0,.05,0))}}
 document.querySelectorAll('.view button').forEach(b=>b.onclick=()=>frameRegion(b.dataset.v));
 const MER_TXT0=LAYER_TXT.mer[1].slice(0,3),MER_SAY0=LAYER_TXT.mer[2];let lastLayer='mer';
 function applyRegionText(){const R0=REG[cur];
  LAYER_TXT.bone=['解剖｜骨骼',R0.bone[0],R0.bone[1]];LAYER_TXT.mus=['肌動｜肌肉',cur==='shoulder'?R0.mus[0]:R0.mus[0].concat(['點任何一條肌肉，看它的起點、止點、動作和神經；下方「肌動學」選一個動作，看哪些肌肉收縮、哪些被拉長']),R0.mus[1]];
  LAYER_TXT.mer=['經絡｜十四經',MER_TXT0.concat([R0.mer]),cur==='shoulder'?MER_SAY0:'一個地方卡住，整條經絡都會不順。'];
- LAYER_TXT.tung=['董氏奇穴｜遠端帶動',['用下方「上一個／下一個」切換穴位，或直接點 3D 畫面上的金色穴位名稱','「這一區常用」是這個部位常用的穴；「宣宇門 44 組全部」照手指、手掌、前臂、上臂、足掌、小腿、大腿、頭面分開看','每個穴位的卡片都可以連到「董氏心氣神針傳承網」看完整說明','董氏的特色：不一定扎在痛的地方，而是從遠端帶動'],'痛在'+R0.n+'，答案常常在遠端。'];
+ LAYER_TXT.tung=['董氏奇穴｜遠端帶動',['用下方「上一個／下一個」切換穴位，或直接點 3D 畫面上的金色穴位名稱','「看這一區」是這個部位常用的穴；切到上面的「看全身」，可以看宣宇門 44 組全部，照手指、手掌、前臂、上臂、足掌、小腿、大腿、頭面分開看','每個穴位的卡片都可以連到「董氏心氣神針傳承網」看完整說明','董氏的特色：不一定扎在痛的地方，而是從遠端帶動'],'痛在'+R0.n+'，答案常常在遠端。'];
  LAYER_TXT.five=['五行能量｜屬於哪一行',R0.fiveT[0],R0.fiveT[1]];LAYER_TXT.chak=['脈輪｜能量中心',R0.chakT[0],R0.chakT[1]];
  document.getElementById('markR').textContent=R0.n;document.getElementById('markT').textContent=R0.mark;document.getElementById('cta').textContent='加入官方 LINE「鈞衡舍」'+R0.cta;
  document.querySelectorAll('#regions button').forEach(b=>b.classList.toggle('on',b.dataset.r===cur))}
@@ -820,7 +827,18 @@ async function setRegion(r){if(mv)stopMove();pickPart(null);solo=null;hidden.cle
  const need=REG[r].files.filter(f=>!loaded.has(f)),st=document.getElementById('rstat');
  if(need.length){st.textContent='載入「'+REG[r].n+'」的細部肌肉…';st.style.display='block';for(const f of need)await loadFile(f);st.style.display='none'}
  if(cur!==r)return;buildRegion();frameRegion();if(on.tung)goTung(0);else layerCard(on[lastLayer]?lastLayer:'mer')}
-document.getElementById('regions').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.r===cur)return;setRegion(b.dataset.r)};
+
+async function setScope(sc){if(scopeBusy||sc===scope)return;if(mv)stopMove();pickPart(null);solo=null;hidden.clear();
+ if(sc==='all'){const need=[...new Set(REG_ORDER.flatMap(r=>REG[r].files))].filter(f=>!loaded.has(f));
+  if(need.length){scopeBusy=true;const st=document.getElementById('rstat');st.style.display='block';
+   for(let i=0;i<need.length;i++){st.textContent=`載入全身肌肉 ${i+1}/${need.length}…（第一次比較久）`;await loadFile(need[i])}st.style.display='none';scopeBusy=false}}
+ scope=sc;tMode=sc;document.querySelectorAll('#scope button').forEach(b=>b.classList.toggle('on',b.dataset.s===sc));document.getElementById('regions').classList.toggle('dim',sc==='all');
+ buildRegion();frameRegion();
+ if(sc==='all'){if(on.tung)partCard();else if(on[lastLayer]&&lastLayer!=='skin')layerCard(lastLayer);else allCard()}else if(on.tung)goTung(0);else layerCard(on[lastLayer]?lastLayer:'mer')}
+function allCard(){const n=Object.values(parts).filter(o=>o.userData.kind==='mus').length;
+ setCard(`<h3>全身（${n} 條肌肉）</h3><ul><li>身體那一排可以一起開：皮膚、骨骼、肌肉</li><li>看法那一排一次看一個：經絡、董氏（宣宇門 44 組，照部位分開）、五行、脈輪</li><li>點任何一條肌肉，看起點、止點、動作和經過的經絡</li><li>點上面的部位按鈕，就回到那一區細看</li></ul>`)}
+document.getElementById('scope').onclick=e=>{const b=e.target.closest('button');if(b)setScope(b.dataset.s)};
+document.getElementById('regions').onclick=async e=>{const b=e.target.closest('button');if(!b||scopeBusy)return;if(scope==='all'){scope='reg';tMode='reg';document.querySelectorAll('#scope button').forEach(x=>x.classList.toggle('on',x.dataset.s==='reg'));document.getElementById('regions').classList.remove('dim');if(b.dataset.r===cur){buildRegion();frameRegion();if(on.tung)goTung(0);else layerCard(on[lastLayer]?lastLayer:'mer');return}}else if(b.dataset.r===cur)return;setRegion(b.dataset.r)};
 ctl.addEventListener('start',()=>goal=null);
 const t0=performance.now(),tmp=V();let ph=0,lastT=0;
 function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
@@ -829,7 +847,7 @@ function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
  tungPts.forEach((p,i)=>p.ring.scale.setScalar((i===tIdx?1.5:1)*(1+.3*Math.sin(t*4+i))));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
  R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
- for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo))vis=false;
+ for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(vis&&o.k==='tung'&&o.grp!=null){const c=tungPts[tIdx];vis=c?o.grp===c.gi:o.head}if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
 buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
