@@ -668,19 +668,21 @@ function buildTungAll(){const box=new THREE.Box3(),nS=V(0,0,0);
   g.pts.forEach(q=>{const t0=q.id?TUNG[q.id]:{};const spec=q.spec||t0.spec;const h=spec&&surf(...spec);if(!h)return;const p=h.p;
    const t={all:1,n:q.n,u:q.u,where:q.where||t0.where,zz:q.zz||g.zz||t0.zz,g:g.g,mem,p,nrm:h.n,gi};
    const r=new THREE.Mesh(new THREE.TorusGeometry(.009,.002,8,28),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
-   const gl=new THREE.Mesh(new THREE.SphereGeometry(.014,12,10),glowMat(0xffd166,.35));gl.position.copy(p);L('tung').add(gl);
-   label('tung',t.n,p,'gold tap',{grp:gi,head:first});first=false;row.push(`<button data-ti="${tungPts.length}">${t.n}</button>`);{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
+   const gl=new THREE.Mesh(new THREE.SphereGeometry(.014,12,10),glowMat(0xffd166,.35));gl.position.copy(p);L('tung').add(gl);t.glow=gl;
+   label('tung',t.n,p,'gold tap',{grp:gi,head:first,ti:tungPts.length});first=false;row.push(`<button data-ti="${tungPts.length}">${t.n}</button>`);{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
    box.expandByPoint(p);nS.add(h.n);tungPts.push(t)});btn.push(`<div class="tg"><span>${g.g}</span>${row.join('')}</div>`)});
  document.getElementById('tpts').innerHTML=btn.join('');
- document.getElementById('tName').textContent=`宣宇門｜${XYM_PARTS[tPart]}`;
- if(!tungPts.length)return;const c=box.getCenter(V()),sz=box.getSize(V()).length();const n=nS.setY(0).normalize();
+ document.getElementById('tName').textContent=`宣宇門｜${XYM_PARTS[tPart]}`;buildTungAllFrame()}
+function buildTungAllFrame(){if(!tungPts.length)return;const box=new THREE.Box3(),nS=V(0,0,0);tungPts.forEach(t=>{box.expandByPoint(t.p);nS.add(t.nrm)});const c=box.getCenter(V()),sz=box.getSize(V()).length();const n=nS.setY(0).normalize();
  goal={t:c,p:c.clone().addScaledVector(n.lengthSq()?n:V(0,0,1),Math.min(1.4,Math.max(.42,sz*2.4))).add(V(0,.04,0))}}
 function partCard(){const gs=XYM.filter(g=>g.p===tPart);
- setCard(`<h3>宣宇門｜${XYM_PARTS[tPart]}（${gs.length} 組）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.g}</b>${g.pts.length>1?'：'+g.pts.map(x=>x.n).join('、'):''}</li>`).join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，或按「上一個／下一個」，看位置、歸經和主治。畫面上只標出目前這一組的名字。</p><div class="src">穴組依宣宇門董氏抽籤筒；位置、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`)}
+ setCard(`<h3>宣宇門｜${XYM_PARTS[tPart]}（${gs.length} 組）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.g}</b>${g.pts.length>1?'：'+g.pts.map(x=>x.n).join('、'):''}</li>`).join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，3D 上就只留那一個穴，看位置、歸經和主治；再點一次同一個按鈕，回到這個部位全部的點。</p><div class="src">穴組依宣宇門董氏抽籤筒；位置、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`)}
 document.getElementById('tparts').innerHTML=XYM_PARTS.map((p,i)=>`<button data-tp="${i}"${i?'':' class="on"'}>${p}</button>`).join('');
-document.getElementById('tpts').onclick=e=>{const b=e.target.closest('button');if(b)goTung(+b.dataset.ti)};
+function showOnlyTung(){tungPts.forEach((p,i)=>{const v=!p.all||tIdx<0||i===tIdx;p.ring.visible=v;if(p.glow)p.glow.visible=v})}
+function tungOverview(){tIdx=-1;showOnlyTung();document.querySelectorAll('#tpts button').forEach(b=>b.classList.remove('on'));document.getElementById('tName').textContent=`宣宇門｜${XYM_PARTS[tPart]}`;buildTungAllFrame();partCard()}
+document.getElementById('tpts').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(+b.dataset.ti===tIdx){tungOverview();return}goTung(+b.dataset.ti)};
 document.getElementById('tparts').onclick=e=>{const b=e.target.closest('button');if(!b)return;tPart=+b.dataset.tp;document.querySelectorAll('#tparts button').forEach(x=>x.classList.toggle('on',x===b));buildTung();partCard()};
-function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];document.querySelectorAll('#tpts button').forEach(b=>b.classList.toggle('on',+b.dataset.ti===tIdx));
+function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];document.querySelectorAll('#tpts button').forEach(b=>b.classList.toggle('on',+b.dataset.ti===tIdx));showOnlyTung();
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,t.all?.5:.95).add(V(0,t.all?.04:.1,0))};
  if(t.all){setCard(`<h3>宣宇門｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>同一組</td><td>${/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table><a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a><div class="src">穴組依宣宇門董氏抽籤筒；位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
@@ -847,7 +849,7 @@ function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
  tungPts.forEach((p,i)=>p.ring.scale.setScalar((i===tIdx?1.5:1)*(1+.3*Math.sin(t*4+i))));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
  R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
- for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(vis&&o.k==='tung'&&o.grp!=null){const c=tungPts[tIdx];vis=c?o.grp===c.gi:o.head}if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
+ for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0?o.ti===tIdx:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
 buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
