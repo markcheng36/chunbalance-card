@@ -9,7 +9,8 @@
 <meta property="og:type" content="website">
 <style>
 :root{--bg:#05090f;--card:#101826;--line:#22304a;--txt:#e8edf5;--mut:#8fa0b8;--red:#c0392b;--cy:#3fe0d0}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif}
+*{box-sizing:border-box}body{margin:0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;background:var(--bg);color:var(--txt);font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif}
+button,a{touch-action:manipulation}canvas{touch-action:none}
 .wrap{max-width:560px;margin:0 auto;padding:14px}
 h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font-weight:400;margin-left:6px}
 .sub{color:var(--mut);font-size:13px;margin:0 0 10px}
@@ -20,19 +21,20 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 #cv{width:100%;height:100%;display:block}
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .lbl{position:absolute;left:0;top:0;font-size:11px;color:#dff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 3px #000,0 0 2px #000;transform:translate(7px,-50%)}
-.lbl.big{font-size:12px;font-weight:600}.lbl.gold{color:#ffd98a}
+.lbl.big{font-size:12px;font-weight:600}.lbl.gold{color:#ffd98a}.lbl.tap{pointer-events:auto;cursor:pointer;text-decoration:underline dotted;padding:4px 6px;touch-action:manipulation}
 .lbl::before{content:"";position:absolute;left:-8px;top:50%;width:6px;height:1px;background:currentColor}
-.view{position:absolute;right:8px;top:8px;display:flex;gap:4px;z-index:3}
-.ov button{background:#000b;color:#dde6f2;border:1px solid #33445f;border-radius:8px;font-size:12px;padding:4px 8px}
-.legend{position:absolute;left:6px;bottom:6px;display:none;grid-template-columns:repeat(2,auto);gap:3px}
-.legend button{display:flex;align-items:center;gap:5px;font-size:11px;padding:2px 7px;text-align:left}
-.legend i{width:14px;height:4px;border-radius:2px}.legend em{font-style:normal;color:#8fa0b8;margin-left:2px}
+.under{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.view{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.ov button{background:var(--card);color:#dde6f2;border:1px solid var(--line);border-radius:8px;font-size:13px;padding:6px 12px}
+.legend{display:none;grid-template-columns:repeat(3,1fr);gap:4px}
+.legend button{display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 6px;text-align:left}
+.legend i{width:14px;height:4px;border-radius:2px;flex:none}.legend em{font-style:normal;color:#8fa0b8;margin-left:2px}
 .legend.picked button{opacity:.45}.legend button.on{opacity:1;border-color:var(--cy)}
-.roles{position:absolute;left:6px;top:8px;display:none;flex-direction:column;gap:2px;font-size:11px;background:#000a;border:1px solid #33445f;border-radius:8px;padding:5px 7px}
+.roles{display:none;flex-wrap:wrap;gap:4px 10px;font-size:12px}
 .roles span i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
-.mread{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:13px;display:none;pointer-events:none;text-shadow:0 0 4px #000}
+.mread{text-align:center;font-size:14px;display:none}
 .mread b{color:#ffd166}
-.hint{position:absolute;right:8px;top:40px;text-align:right;font-size:11px;color:var(--mut);pointer-events:none}
+.hint{font-size:11px;color:var(--mut);margin-left:auto}
 #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px;pointer-events:none}
 .sec{font-size:12px;color:var(--mut);margin:12px 0 6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -58,16 +60,19 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .all{border-color:var(--red)}.all h3{color:#ff8a7a}
 .cta{display:block;text-align:center;background:#06c755;color:#fff;text-decoration:none;padding:12px;border-radius:12px;margin:14px 0;font-weight:600}
 .note{color:var(--mut);font-size:11px;text-align:center;line-height:1.6}.note a{color:var(--mut)}
+.tulink{display:block;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:#8b1e1e;color:#fff;text-decoration:none;text-align:center;font-weight:600;touch-action:manipulation}
 </style></head><body><div class="wrap">
 <h1>身體整合地圖<small>鈞衡舍 ChunBalance</small></h1>
 <p class="sub">同一個部位，用解剖、肌動、經絡、董氏、五行、脈輪一起看。</p>
 <div class="regions"><span class="on">肩頸</span><span class="soon">下背</span><span class="soon">膝蓋</span><span class="soon">足弓</span><span class="soon">製作中</span></div>
 <div class="stage" id="stage"><canvas id="cv"></canvas><div id="labels"></div><div id="load">3D 人體載入中…</div>
- <div class="view ov"><button data-v="front">正面</button><button data-v="back">背面</button><button data-v="side">側面</button></div>
- <div class="legend ov" id="legend"></div>
- <div class="roles" id="roles"><span><i style="background:#ff4d3a"></i>主動肌（收縮變短）</span><span><i style="background:#ff9f43"></i>協同肌（幫忙）</span><span><i style="background:#4f8dff"></i>拮抗肌（被拉長）</span><span><i style="background:#ffd166"></i>穩定肌（固定關節）</span></div>
+</div>
+<div class="under">
+ <div class="view ov"><button data-v="front">正面</button><button data-v="back">背面</button><button data-v="side">側面</button><span class="hint">一指轉動・兩指縮放・點骨頭/肌肉看單一部位</span></div>
  <div class="mread" id="mread"></div>
- <div class="hint">一指轉動・兩指縮放<br>點骨頭/肌肉看單一部位</div></div>
+ <div class="roles" id="roles"><span><i style="background:#ff4d3a"></i>主動肌（收縮變短）</span><span><i style="background:#ff9f43"></i>協同肌（幫忙）</span><span><i style="background:#4f8dff"></i>拮抗肌（被拉長）</span><span><i style="background:#ffd166"></i>穩定肌（固定關節）</span></div>
+ <div class="legend ov" id="legend"></div>
+</div>
 <div class="card pick" id="pick"><h3 id="pkName"></h3><div id="pkInfo"></div><div class="acts"><button id="bSolo">只看它</button><button id="bHide">隱藏它</button><button id="bAll">全部顯示</button></div></div>
 <div class="sec">要疊哪幾層？（可以複選）</div>
 <div class="chips" id="chips">
@@ -99,10 +104,13 @@ const LAYER_TXT={
 skin:['皮膚','半透明的身體外型，讓你看到骨頭和肌肉在身體裡的位置。'],
 bone:['解剖｜骨骼',['肩胛骨：貼在背上的三角形骨頭，肩膀能不能放鬆，常看它的位置','鎖骨：連接胸骨和肩胛骨，手抬高時會跟著轉','頸椎：7 節，頭往前一點，負擔就多好幾倍','肩關節其實有 4 個：胸鎖(SC)、肩鎖(AC)、盂肱(GH)、肩胛胸廓(ST)'],'結構對了，肌肉才不用一直撐。'],
 mus:['肌動｜肌肉',['點任何一條肌肉，看它的起點、止點、動作和神經','起點通常是比較固定的一端，止點是被拉動的一端；肌肉收縮＝止點往起點靠近','下方「肌動學」選一個動作，看哪些是主動肌、協同肌、拮抗肌、穩定肌'],'按它會舒服，但要問：它為什麼一直在出力？'],
-mer:['經絡｜十二正經',['全身十二條正經都畫上了：手三陰（肺、心包、心）、手三陽（大腸、三焦、小腸）、足三陽（胃、膽、膀胱）、足三陰（脾、肝、腎）','光點流動的方向就是經氣運行的方向：手三陰從胸走手、手三陽從手走頭、足三陽從頭走腳、足三陰從腳走胸','點左下角圖例的一條經，畫面會轉到全身，只看那一條和它的主要穴位','經過肩頸的有 5 條：小腸經、三焦經、大腸經、膽經、膀胱經'],'肩胛那一圈卡住，小腸經、三焦經的路線就整條不順；腳的膽經、膀胱經也會一路牽到肩頸。'],
+mer:['經絡｜十二正經',['全身十二條正經都畫上了：手三陰（肺、心包、心）、手三陽（大腸、三焦、小腸）、足三陽（胃、膽、膀胱）、足三陰（脾、肝、腎）','光點流動的方向就是經氣運行的方向：手三陰從胸走手、手三陽從手走頭、足三陽從頭走腳、足三陰從腳走胸','點 3D 畫面下方圖例的一條經，畫面會轉到全身，只看那一條和它的主要穴位','經過肩頸的有 5 條：小腸經、三焦經、大腸經、膽經、膀胱經'],'肩胛那一圈卡住，小腸經、三焦經的路線就整條不順；腳的膽經、膀胱經也會一路牽到肩頸。'],
 tung:['董氏奇穴｜遠端帶動',['用下方「上一個／下一個」切換穴位，鏡頭會飛過去','董氏的特色：不一定扎在痛的地方，而是從遠端帶動'],'痛在肩頸，答案常常在手、在腳。'],
 five:['五行能量｜屬於哪一行',['小腸經、三焦經屬「火」；大腸經屬「金」','膽經屬「木」；膀胱經屬「水」','壓力大、容易煩躁時（木、火），肩頸常一起緊起來'],'身體的緊，常常也是情緒的緊。'],
 chak:['脈輪｜能量中心',['喉輪（第五脈輪・藍）：表達與溝通，話常吞回去的人，脖子常緊','心輪（第四脈輪・綠）：位在胸口與兩肩胛之間，與接納、放下有關'],'呼吸放到胸口和喉嚨，肩膀才真的放得下來。']};
+const TU_BASE='https://www.tungs-acupuncture.com/';
+const TU={'腕順一':'%e8%85%95%e9%a0%86%e4%b8%80%e7%a9%b4','腕順二':'%e8%85%95%e9%a0%86%e4%b8%80%e7%a9%b4','肩中':'%e8%82%a9%e4%b8%ad%e7%a9%b4%e3%80%81%e5%bb%ba%e4%b8%ad%e7%a9%b4','建中':'%e8%82%a9%e4%b8%ad%e7%a9%b4%e3%80%81%e5%bb%ba%e4%b8%ad%e7%a9%b4','足千金':'%e8%b6%b3%e5%8d%83%e9%87%91%e7%a9%b4%e3%80%81%e8%b6%b3%e4%ba%94%e9%87%91%e7%a9%b4','足五金':'%e8%b6%b3%e5%8d%83%e9%87%91%e7%a9%b4%e3%80%81%e8%b6%b3%e4%ba%94%e9%87%91%e7%a9%b4','正筋':'%e6%ad%a3%e7%ad%8b%e7%a9%b4%e3%80%81%e6%ad%a3%e5%ae%97%e7%a9%b4','正宗':'%e6%ad%a3%e7%ad%8b%e7%a9%b4%e3%80%81%e6%ad%a3%e5%ae%97%e7%a9%b4','火串':'%e7%81%ab%e4%b8%b2%e7%a9%b4%e3%80%81%e7%81%ab%e9%99%b5%e7%a9%b4%e3%80%81%e7%81%ab%e5%b1%b1%e7%a9%b4','火陵':'%e7%81%ab%e4%b8%b2%e7%a9%b4%e3%80%81%e7%81%ab%e9%99%b5%e7%a9%b4%e3%80%81%e7%81%ab%e5%b1%b1%e7%a9%b4','火山':'%e7%81%ab%e4%b8%b2%e7%a9%b4%e3%80%81%e7%81%ab%e9%99%b5%e7%a9%b4%e3%80%81%e7%81%ab%e5%b1%b1%e7%a9%b4','手五金':'%e6%89%8b%e4%ba%94%e9%87%91%e7%a9%b4%e3%80%81%e6%89%8b%e5%8d%83%e9%87%91%e7%a9%b4','手千金':'%e6%89%8b%e4%ba%94%e9%87%91%e7%a9%b4%e3%80%81%e6%89%8b%e5%8d%83%e9%87%91%e7%a9%b4','曲陵':'%e6%9b%b2%e9%99%b5%e7%a9%b4%e3%80%81%e5%bb%ba%e5%8a%9b%e7%a9%b4%e3%80%81%e4%b8%ad%e5%8a%9b%e7%a9%b4','建力':'%e6%9b%b2%e9%99%b5%e7%a9%b4%e3%80%81%e5%bb%ba%e5%8a%9b%e7%a9%b4%e3%80%81%e4%b8%ad%e5%8a%9b%e7%a9%b4','中力':'%e6%9b%b2%e9%99%b5%e7%a9%b4%e3%80%81%e5%bb%ba%e5%8a%9b%e7%a9%b4%e3%80%81%e4%b8%ad%e5%8a%9b%e7%a9%b4','靈骨':'%e9%9d%88%e9%aa%a8%e7%a9%b4','大白':'%e9%9d%88%e9%aa%a8%e7%a9%b4','四花上':'%e5%9b%9b%e8%8a%b1%e4%b8%8a%e7%a9%b4','四花中':'%e5%9b%9b%e8%8a%b1%e4%b8%ad%e7%a9%b4','四花下':'%e5%9b%9b%e8%8a%b1%e4%b8%8b%e7%a9%b4','四花副':'%e5%9b%9b%e8%8a%b1%e5%89%af%e7%a9%b4','側三里':'%e5%81%b4%e4%b8%89%e9%87%8c%e7%a9%b4%e3%80%81%e5%81%b4%e4%b8%8b%e4%b8%89%e9%87%8c','側下三里':'%e5%81%b4%e4%b8%89%e9%87%8c%e7%a9%b4%e3%80%81%e5%81%b4%e4%b8%8b%e4%b8%89%e9%87%8c','水通':'%e6%b0%b4%e9%80%9a%e7%a9%b4','水金':'%e6%b0%b4%e9%87%91%e7%a9%b4','通關':'%e9%80%9a%e9%97%9c%e7%a9%b4','通山':'%e9%80%9a%e5%b1%b1%e7%a9%b4','通天':'%e9%80%9a%e5%a4%a9%e7%a9%b4','雲白':'%e9%9b%b2%e7%99%bd%e7%a9%b4','李白':'%e6%9d%8e%e7%99%bd%e7%a9%b4'};
+const tuUrl=n=>TU[n]?TU_BASE+TU[n]+'/':null;
 const TUNG=[
  {n:'腕順一',g:'腕順一、二',where:'小指掌骨外側（手掌小指那一側），距手腕橫紋 2.5 寸',zz:'腎虧之頭痛眼花、坐骨神經痛、腰痛、背痛、骨刺、兩腿痛、耳鳴、頸項骨刺、鼻出血、落枕',use:'落枕、脖子轉不動',spec:[-.225,.835,.05,'m',-1]},
  {n:'腕順二',g:'腕順一、二',where:'小指掌骨外側，距手腕橫紋 1.5 寸（在腕順一上方 1 寸）',zz:'腎虧之頭痛眼花、坐骨神經痛、腰痛、背痛、骨刺、兩腿痛、耳鳴、頸項骨刺、鼻出血、落枕',use:'落枕、脖子轉不動',spec:[-.225,.857,.05,'m',-1]},
@@ -279,14 +287,14 @@ leg.onclick=e=>{const b=e.target.closest('button');if(!b)return;sel=sel===b.data
 const pain=surf(-.1,1.44,0,'b',1)?.p||V(-.1,1.44,-.08);const tungPts=[];
 TUNG.forEach(t=>{const h=surf(...t.spec);if(!h)return;const p=h.p;t.p=p;t.nrm=h.n;
  const r=new THREE.Mesh(new THREE.TorusGeometry(.016,.003,8,32),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
- const g=new THREE.Mesh(new THREE.SphereGeometry(.026,12,10),glowMat(0xffd166,.35));g.position.copy(p);L('tung').add(g);label('tung',t.n,p,'gold big');
+ const g=new THREE.Mesh(new THREE.SphereGeometry(.026,12,10),glowMat(0xffd166,.35));g.position.copy(p);L('tung').add(g);label('tung',t.n,p,'gold big tap');{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
  const mid=p.clone().lerp(pain,.5).add(V(0,0,-.15));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const tb=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));tb.renderOrder=5;L('tung').add(tb);tungPts.push(t)});
 dot(L('tung'),pain,0xff6b5a,.008);label('tung','肩頸痛點',pain,'big');
 let tIdx=-1;
 function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,.55).add(V(0,.08,0))};
- setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr><tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>肩頸用途</td><td>${t.use}</td></tr></table><div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
+ setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr><tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>肩頸用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
 document.getElementById('tPrev').onclick=()=>goTung(tIdx-1);document.getElementById('tNext').onclick=()=>goTung(tIdx+1);
 // ===== 五行 / 脈輪 =====
 [['火',0xff4a3a,[-.13,1.36],'小腸經・三焦經'],['木',0x4fd26b,[-.1,1.46],'膽經'],['金',0xf8e16c,[-.2,1.39],'大腸經'],['水',0x6c8cff,[-.035,1.25],'膀胱經']].forEach(([e,c,[x,y],n])=>{
