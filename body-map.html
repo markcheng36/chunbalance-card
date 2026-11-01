@@ -14,9 +14,9 @@ button,a{touch-action:manipulation}canvas{touch-action:none}
 .wrap{max-width:560px;margin:0 auto;padding:14px}
 h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font-weight:400;margin-left:6px}
 .sub{color:var(--mut);font-size:13px;margin:0 0 10px}
-.regions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.regions span{padding:5px 12px;border-radius:99px;border:1px solid var(--line);font-size:13px;color:var(--mut)}
-.regions span.on{background:var(--red);border-color:var(--red);color:#fff}
+.regions{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.regions button{padding:7px 2px;white-space:nowrap;border-radius:99px;border:1px solid var(--line);font-size:14px;color:var(--mut);background:var(--card)}
+.regions button.on{background:var(--red);border-color:var(--red);color:#fff}
 .stage{position:relative;height:64vh;min-height:430px;max-height:700px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#132036,#05090f 75%);touch-action:none}
 #cv{width:100%;height:100%;display:block}
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
@@ -34,6 +34,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .roles span i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
 .mread{text-align:center;font-size:14px;display:none}
 .mread b{color:#ffd166}
+.rstat{display:none;text-align:center;color:#ffd9a0;font-size:13px;padding:4px}
 .hint{font-size:11px;color:var(--mut);margin-left:auto}
 #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--mut);font-size:14px;pointer-events:none}
 .sec{font-size:12px;color:var(--mut);margin:12px 0 6px}
@@ -64,10 +65,11 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 </style></head><body><div class="wrap">
 <h1>身體整合地圖<small>鈞衡舍 ChunBalance</small></h1>
 <p class="sub">同一個部位，用解剖、肌動、經絡、董氏、五行、脈輪一起看。</p>
-<div class="regions"><span class="on">肩頸</span><span class="soon">下背</span><span class="soon">膝蓋</span><span class="soon">足弓</span><span class="soon">製作中</span></div>
+<div class="regions" id="regions"><button data-r="neck">頭頸</button><button data-r="shoulder">肩頸</button><button data-r="arm">手臂</button><button data-r="trunk">胸腹</button><button data-r="lowback">下背</button><button data-r="hip">髖部骨盆</button><button data-r="knee">膝蓋</button><button data-r="foot">足踝足弓</button></div>
 <div class="stage" id="stage"><canvas id="cv"></canvas><div id="labels"></div><div id="load">3D 人體載入中…</div>
 </div>
 <div class="under">
+ <div class="rstat" id="rstat"></div>
  <div class="view ov"><button data-v="front">正面</button><button data-v="back">背面</button><button data-v="side">側面</button><span class="hint">一指轉動・兩指縮放・點骨頭/肌肉看單一部位</span></div>
  <div class="mread" id="mread"></div>
  <div class="roles" id="roles"><span><i style="background:#ff4d3a"></i>主動肌（收縮變短）</span><span><i style="background:#ff9f43"></i>協同肌（幫忙）</span><span><i style="background:#4f8dff"></i>拮抗肌（被拉長）</span><span><i style="background:#ffd166"></i>穩定肌（固定關節）</span></div>
@@ -80,13 +82,12 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 <div class="tnav" id="tnav"><button id="tPrev">◀ 上一個</button><span id="tName"></span><button id="tNext">下一個 ▶</button></div>
 <div id="info"></div>
 <div class="sec">肌動學：選一個動作，看肌肉怎麼收縮、伸長</div>
-<div class="moves" id="moves"><button data-mv="abd">右手側舉（肩外展）</button><button data-mv="shrug">聳肩（肩胛上提）</button><button data-mv="retract">夾背（肩胛內收）</button><button data-mv="tilt">頭往左側彎</button></div>
+<div class="moves" id="moves"></div>
 <button class="mbasic" id="mBasic">📘 肌動學原理</button>
 <div class="mctl" id="mctl"><button id="mPlay">⏸</button><input type="range" id="mSlide" min="0" max="1000" value="0"><button id="mStop">結束</button></div>
 <div id="minfo"></div>
-<div class="card all"><h3>馬克的整合看法</h3>
-肩頸緊，很少只是肩頸的問題。結構上先看肩胛有沒有歸位、頭有沒有往前；肌動上看哪條一直縮著、哪條被拉長沒力；經絡上看小腸經、三焦經、膽經有沒有被卡住；董氏用遠端的穴位帶動，再從呼吸和能量把身體放鬆下來。<br><b>調整我來，維持交給你。</b></div>
-<a class="cta" href="https://line.me/R/ti/p/@chunbalance">加入官方 LINE「鈞衡舍」聊聊你的肩頸</a>
+<div class="card all"><h3>馬克的整合看法｜<span id="markR"></span></h3><span id="markT"></span><br><b>調整我來，維持交給你。</b></div>
+<a class="cta" id="cta" href="https://line.me/R/ti/p/@chunbalance">加入官方 LINE「鈞衡舍」聊聊</a>
 <p class="note">本頁為衛教與身體覺察用途，不取代醫療診斷。經絡與穴位位置為示意。<br>
 3D 人體：BodyParts3D © The Database Center for Life Science (CC BY 4.0)，經 <a href="https://github.com/MervinR07/open-anatomy-3d">open-anatomy-3d</a> 與 <a href="https://github.com/ivershuo/somakine">Somakine</a> 改作（CC BY 4.0）；本頁再加上經絡、肌動等標示與動作。</p>
 </div>
@@ -104,20 +105,147 @@ const LAYER_TXT={
 skin:['皮膚','半透明的身體外型，讓你看到骨頭和肌肉在身體裡的位置。'],
 bone:['解剖｜骨骼',['肩胛骨：貼在背上的三角形骨頭，肩膀能不能放鬆，常看它的位置','鎖骨：連接胸骨和肩胛骨，手抬高時會跟著轉','頸椎：7 節，頭往前一點，負擔就多好幾倍','肩關節其實有 4 個：胸鎖(SC)、肩鎖(AC)、盂肱(GH)、肩胛胸廓(ST)'],'結構對了，肌肉才不用一直撐。'],
 mus:['肌動｜肌肉',['點任何一條肌肉，看它的起點、止點、動作和神經','起點通常是比較固定的一端，止點是被拉動的一端；肌肉收縮＝止點往起點靠近','下方「肌動學」選一個動作，看哪些是主動肌、協同肌、拮抗肌、穩定肌'],'按它會舒服，但要問：它為什麼一直在出力？'],
-mer:['經絡｜十二正經',['全身十二條正經都畫上了：手三陰（肺、心包、心）、手三陽（大腸、三焦、小腸）、足三陽（胃、膽、膀胱）、足三陰（脾、肝、腎）','光點流動的方向就是經氣運行的方向：手三陰從胸走手、手三陽從手走頭、足三陽從頭走腳、足三陰從腳走胸','點 3D 畫面下方圖例的一條經，畫面會轉到全身，只看那一條和它的主要穴位','經過肩頸的有 5 條：小腸經、三焦經、大腸經、膽經、膀胱經'],'肩胛那一圈卡住，小腸經、三焦經的路線就整條不順；腳的膽經、膀胱經也會一路牽到肩頸。'],
+mer:['經絡｜十四經',['十四經都畫上了：十二正經（手三陰：肺、心包、心；手三陽：大腸、三焦、小腸；足三陽：胃、膽、膀胱；足三陰：脾、肝、腎），加上前面正中線的任脈、背後正中線的督脈','光點流動的方向就是經氣運行的方向：手三陰從胸走手、手三陽從手走頭、足三陽從頭走腳、足三陰從腳走胸','點 3D 畫面下方圖例的一條經，畫面會轉到全身，只看那一條和它的主要穴位','經過肩頸的有 5 條：小腸經、三焦經、大腸經、膽經、膀胱經'],'肩胛那一圈卡住，小腸經、三焦經的路線就整條不順；腳的膽經、膀胱經也會一路牽到肩頸。'],
 tung:['董氏奇穴｜遠端帶動',['用下方「上一個／下一個」切換穴位，鏡頭會飛過去','董氏的特色：不一定扎在痛的地方，而是從遠端帶動'],'痛在肩頸，答案常常在手、在腳。'],
 five:['五行能量｜屬於哪一行',['小腸經、三焦經屬「火」；大腸經屬「金」','膽經屬「木」；膀胱經屬「水」','壓力大、容易煩躁時（木、火），肩頸常一起緊起來'],'身體的緊，常常也是情緒的緊。'],
 chak:['脈輪｜能量中心',['喉輪（第五脈輪・藍）：表達與溝通，話常吞回去的人，脖子常緊','心輪（第四脈輪・綠）：位在胸口與兩肩胛之間，與接納、放下有關'],'呼吸放到胸口和喉嚨，肩膀才真的放得下來。']};
 const TU_BASE='https://www.tungs-acupuncture.com/';
 const TU={'腕順一':'%e8%85%95%e9%a0%86%e4%b8%80%e7%a9%b4','腕順二':'%e8%85%95%e9%a0%86%e4%b8%80%e7%a9%b4','肩中':'%e8%82%a9%e4%b8%ad%e7%a9%b4%e3%80%81%e5%bb%ba%e4%b8%ad%e7%a9%b4','建中':'%e8%82%a9%e4%b8%ad%e7%a9%b4%e3%80%81%e5%bb%ba%e4%b8%ad%e7%a9%b4','足千金':'%e8%b6%b3%e5%8d%83%e9%87%91%e7%a9%b4%e3%80%81%e8%b6%b3%e4%ba%94%e9%87%91%e7%a9%b4','足五金':'%e8%b6%b3%e5%8d%83%e9%87%91%e7%a9%b4%e3%80%81%e8%b6%b3%e4%ba%94%e9%87%91%e7%a9%b4','正筋':'%e6%ad%a3%e7%ad%8b%e7%a9%b4%e3%80%81%e6%ad%a3%e5%ae%97%e7%a9%b4','正宗':'%e6%ad%a3%e7%ad%8b%e7%a9%b4%e3%80%81%e6%ad%a3%e5%ae%97%e7%a9%b4','火串':'%e7%81%ab%e4%b8%b2%e7%a9%b4%e3%80%81%e7%81%ab%e9%99%b5%e7%a9%b4%e3%80%81%e7%81%ab%e5%b1%b1%e7%a9%b4','火陵':'%e7%81%ab%e4%b8%b2%e7%a9%b4%e3%80%81%e7%81%ab%e9%99%b5%e7%a9%b4%e3%80%81%e7%81%ab%e5%b1%b1%e7%a9%b4','火山':'%e7%81%ab%e4%b8%b2%e7%a9%b4%e3%80%81%e7%81%ab%e9%99%b5%e7%a9%b4%e3%80%81%e7%81%ab%e5%b1%b1%e7%a9%b4','手五金':'%e6%89%8b%e4%ba%94%e9%87%91%e7%a9%b4%e3%80%81%e6%89%8b%e5%8d%83%e9%87%91%e7%a9%b4','手千金':'%e6%89%8b%e4%ba%94%e9%87%91%e7%a9%b4%e3%80%81%e6%89%8b%e5%8d%83%e9%87%91%e7%a9%b4','曲陵':'%e6%9b%b2%e9%99%b5%e7%a9%b4%e3%80%81%e5%bb%ba%e5%8a%9b%e7%a9%b4%e3%80%81%e4%b8%ad%e5%8a%9b%e7%a9%b4','建力':'%e6%9b%b2%e9%99%b5%e7%a9%b4%e3%80%81%e5%bb%ba%e5%8a%9b%e7%a9%b4%e3%80%81%e4%b8%ad%e5%8a%9b%e7%a9%b4','中力':'%e6%9b%b2%e9%99%b5%e7%a9%b4%e3%80%81%e5%bb%ba%e5%8a%9b%e7%a9%b4%e3%80%81%e4%b8%ad%e5%8a%9b%e7%a9%b4','靈骨':'%e9%9d%88%e9%aa%a8%e7%a9%b4','大白':'%e9%9d%88%e9%aa%a8%e7%a9%b4','四花上':'%e5%9b%9b%e8%8a%b1%e4%b8%8a%e7%a9%b4','四花中':'%e5%9b%9b%e8%8a%b1%e4%b8%ad%e7%a9%b4','四花下':'%e5%9b%9b%e8%8a%b1%e4%b8%8b%e7%a9%b4','四花副':'%e5%9b%9b%e8%8a%b1%e5%89%af%e7%a9%b4','側三里':'%e5%81%b4%e4%b8%89%e9%87%8c%e7%a9%b4%e3%80%81%e5%81%b4%e4%b8%8b%e4%b8%89%e9%87%8c','側下三里':'%e5%81%b4%e4%b8%89%e9%87%8c%e7%a9%b4%e3%80%81%e5%81%b4%e4%b8%8b%e4%b8%89%e9%87%8c','水通':'%e6%b0%b4%e9%80%9a%e7%a9%b4','水金':'%e6%b0%b4%e9%87%91%e7%a9%b4','通關':'%e9%80%9a%e9%97%9c%e7%a9%b4','通山':'%e9%80%9a%e5%b1%b1%e7%a9%b4','通天':'%e9%80%9a%e5%a4%a9%e7%a9%b4','雲白':'%e9%9b%b2%e7%99%bd%e7%a9%b4','李白':'%e6%9d%8e%e7%99%bd%e7%a9%b4'};
 const tuUrl=n=>TU[n]?TU_BASE+TU[n]+'/':null;
-const TUNG=[
- {n:'腕順一',g:'腕順一、二',where:'小指掌骨外側（手掌小指那一側），距手腕橫紋 2.5 寸',zz:'腎虧之頭痛眼花、坐骨神經痛、腰痛、背痛、骨刺、兩腿痛、耳鳴、頸項骨刺、鼻出血、落枕',use:'落枕、脖子轉不動',spec:[-.225,.835,.05,'m',-1]},
- {n:'腕順二',g:'腕順一、二',where:'小指掌骨外側，距手腕橫紋 1.5 寸（在腕順一上方 1 寸）',zz:'腎虧之頭痛眼花、坐骨神經痛、腰痛、背痛、骨刺、兩腿痛、耳鳴、頸項骨刺、鼻出血、落枕',use:'落枕、脖子轉不動',spec:[-.225,.857,.05,'m',-1]},
- {n:'肩中',g:'肩中、建中',where:'後臂肱骨外側，手臂自然下垂，去肩骨縫 2.5 寸（註：此處對照十四經，約在肩髃穴下 2.5 寸）',zz:'膝蓋關節炎、膝蓋扭傷、皮膚病、肩痛、五十肩、流鼻血',use:'肩痛、五十肩、手舉不高',spec:[0,1.34,-.015,'s',-1]},
- {n:'建中',g:'肩中、建中',where:'肩中穴直下 2 寸',zz:'膝蓋關節炎、膝蓋扭傷、皮膚病、肩痛、五十肩、流鼻血',use:'肩痛、五十肩、手舉不高',spec:[0,1.30,-.015,'s',-1]},
- {n:'足千金',g:'足千金、足五金',where:'腓骨前緣：側下三里向外開 5 分，再直下 2 寸（側三里＝四花上穴向外橫開 2.5 寸，側下三里在側三里直下 2 寸，三者皆為董氏穴）',zz:'魚骨刺住喉管、喉炎、喉嚨生瘡、扁桃腺炎、肩背痛',use:'肩背痛',spec:[0,.27,-.035,'L',-1]},
- {n:'足五金',g:'足千金、足五金',where:'足千金直下 2 寸（腓骨前緣）',zz:'魚骨刺住喉管、喉炎、喉嚨生瘡、扁桃腺炎、肩背痛',use:'肩背痛',spec:[0,.22,-.035,'L',-1]}];
+// ===== 董氏奇穴：位置照董氏原文（以董氏穴互相對應取穴，用到十四經會註明） =====
+const ZZ_WS='腎虧之頭痛眼花、坐骨神經痛、腰痛、背痛、骨刺、兩腿痛、耳鳴、頸項骨刺、鼻出血、落枕';
+const ZZ_JZ='膝蓋關節炎、膝蓋扭傷、皮膚病、肩痛、五十肩、流鼻血';
+const ZZ_QJ='魚骨刺住喉管、喉炎、喉嚨生瘡、扁桃腺炎、肩背痛';
+const ZZ_ZJ='腰脊椎痛、閃腰、脊椎骨閃痛、頸項骨骨刺、扭轉不靈及頸項筋痛、腦骨脹大、腦積水、岔氣、後腦頭痛';
+const ZZ_HC='胸痛、背痛、重聽、胸悶、手下臂痛、小腿前側痛';
+const ZZ_SW='坐骨神經痛、手腳麻木、小腿發脹、腳痛、解膽固醇過多、解針口痛、項痛、頭痛、腹痛、藥物中毒、食物中毒、瘡瘍毒';
+const ZZ_QL='抽筋、氣喘、肘關節炎、心悸、甲狀腺腫、心臟擴大、心臟麻痺、胸痛、背痛、重感冒、鼻塞、咳嗽、支氣管炎';
+const ZZ_ST='風濕性腎臟病、腎機能不足引起之疲勞、頭暈、眼花、腎虛、腰痛、閃腰、岔氣、背痛、口乾、胃潰瘍、十二指腸潰瘍、腹脹氣';
+const ZZ_TG='膝蓋痛、四肢痛、頭暈、眼花、腦貧血、胃病、風濕性心臟病、心兩側痛、心悸、心臟病、心口痛';
+const TUNG={
+ wan1:{n:'腕順一',g:'腕順一、二',where:'小指掌骨外側（手掌小指那一側），距手腕橫紋 2.5 寸',zz:ZZ_WS,spec:[-.225,.835,.05,'m',-1]},
+ wan2:{n:'腕順二',g:'腕順一、二',where:'小指掌骨外側，距手腕橫紋 1.5 寸（在腕順一上方 1 寸）',zz:ZZ_WS,spec:[-.225,.857,.05,'m',-1]},
+ shoulderZ:{n:'肩中',g:'肩中、建中',where:'後臂肱骨外側，手臂自然下垂，去肩骨縫 2.5 寸（註：此處對照十四經，約在肩髃穴下 2.5 寸）',zz:ZZ_JZ,spec:[0,1.34,-.015,'s',-1]},
+ buildZ:{n:'建中',g:'肩中、建中',where:'肩中穴直下 2 寸',zz:ZZ_JZ,spec:[0,1.30,-.015,'s',-1]},
+ zuqianjin:{n:'足千金',g:'足千金、足五金',where:'腓骨前緣：側下三里向外開 5 分，再直下 2 寸（側三里＝四花上穴向外橫開 2.5 寸，側下三里在側三里直下 2 寸，三者皆為董氏穴）',zz:ZZ_QJ,spec:[0,.27,-.035,'L',-1]},
+ zuwujin:{n:'足五金',g:'足千金、足五金',where:'足千金直下 2 寸（腓骨前緣）',zz:ZZ_QJ,spec:[0,.22,-.035,'L',-1]},
+ zhengjin:{n:'正筋',g:'正筋、正宗',where:'足跟筋（跟腱）的正中央上，距足底 3.5 寸',zz:ZZ_ZJ,spec:[-.075,.089,0,'b',-1]},
+ zhengzong:{n:'正宗',g:'正筋、正宗',where:'正筋穴直上 2 寸',zz:ZZ_ZJ,spec:[-.075,.137,0,'b',-1]},
+ huochuan:{n:'火串',g:'火串、火陵、火山',where:'手背朝上平伸，手腕橫紋中央往上 2.5 寸',zz:ZZ_HC,spec:[-.252,.93,0,'b',-1]},
+ huoling:{n:'火陵',g:'火串、火陵、火山',where:'火串穴往上 2 寸',zz:ZZ_HC,spec:[-.25,.968,0,'b',-1]},
+ huoshan:{n:'火山',g:'火串、火陵、火山',where:'火陵穴往上 1.5 寸',zz:ZZ_HC,spec:[-.248,.997,0,'b',-1]},
+ shouwujin:{n:'手五金',g:'手五金、手千金',where:'手撫胸取穴，腕橫紋上 6.5 寸，即火山穴外 5 分、上 5 分',zz:ZZ_SW,spec:[-.236,1.007,0,'b',-1]},
+ shouqianjin:{n:'手千金',g:'手五金、手千金',where:'腕橫紋上 8 寸（肘橫紋下 4 寸），即手五金上 1.5 寸',zz:ZZ_SW,spec:[-.233,1.036,0,'b',-1]},
+ quling:{n:'曲陵',g:'曲陵、建力、中力',where:'掌心向上，肘窩橫紋中央直下 1.5 寸',zz:ZZ_QL,spec:[-.22,1.092,0,'f',-1]},
+ jianli:{n:'建力',g:'曲陵、建力、中力',where:'曲陵穴外側 5 分',zz:ZZ_QL,spec:[-.232,1.092,0,'f',-1]},
+ zhongli:{n:'中力',g:'曲陵、建力、中力',where:'建力穴外側 5 分',zz:ZZ_QL,spec:[-.244,1.092,0,'f',-1]},
+ linggu:{n:'靈骨',g:'靈骨、大白',where:'手背虎口，拇指與食指叉骨間，第一掌骨與第二掌骨接合處（握拳取穴）',zz:'肺氣不足所引起的疾病、肺氣腫、坐骨神經痛、腰痛、背痛、腳痛、顏面神經麻痺、半身不遂、頭痛、月經不調、經痛、難產、冠心症、心律不整、狹心症、胃及十二指腸潰瘍、大小腸炎、面疤、眼疾、耳鳴、耳聾',spec:[-.292,.868,0,'b',-1]},
+ dabai:{n:'大白',g:'靈骨、大白',where:'手背第一、二掌骨之間，距靈骨穴遠端 1 寸（握拳取穴）',zz:'頭痛、偏頭痛、肺炎、肺積水、坐骨神經痛、腰痛、背痛、小兒氣喘、發高燒、急性肺炎',spec:[-.295,.848,0,'b',-1]},
+ sihua1:{n:'四花上',g:'四花上、中、下',where:'外膝眼下 3 寸，脛骨外緣貼骨陷中',zz:'哮喘、牙痛、心悸、口內生瘤、頭暈、心臟病、轉筋霍亂、十二指腸潰瘍',spec:[-.1,.368,0,'f',-1]},
+ sihua2:{n:'四花中',g:'四花上、中、下',where:'四花上穴直下 4.5 寸（原文：四花裡穴外開 1.2 寸）',zz:'哮喘、眼球病（酸痛、角膜炎、結膜炎、白內障）、心臟內膜炎、狹心症、心肌梗塞',spec:[-.1,.26,0,'f',-1]},
+ sihua3:{n:'四花下',g:'四花上、中、下',where:'四花副穴直下 2.5 寸；四花副在四花中直下 2.5 寸（註：對照十四經，四花副約在下巨虛下 1 寸）',zz:'腸炎、腹脹、胃痛、下肢浮腫、睡中咬牙',spec:[-.098,.142,0,'f',-1]},
+ shuitong:{n:'水通',g:'水通、水金',where:'嘴角下 5 分',zz:ZZ_ST,spec:[-.022,1.525,0,'f',-1]},
+ shuijin:{n:'水金',g:'水通、水金',where:'水通穴向裡斜開 5 分',zz:ZZ_ST,spec:[-.013,1.518,0,'f',-1]},
+ tongguan:{n:'通關',g:'通關、通山、通天',where:'大腿正中線的大腿骨上，距膝蓋橫紋上 5 寸',zz:ZZ_TG,spec:[-.088,.555,0,'f',-1]},
+ tongshan:{n:'通山',g:'通關、通山、通天',where:'通關穴直上 2 寸',zz:ZZ_TG,spec:[-.088,.597,0,'f',-1]},
+ tongtian:{n:'通天',g:'通關、通山、通天',where:'通關穴直上 4 寸',zz:ZZ_TG,spec:[-.088,.639,0,'f',-1]},
+ yunbai:{n:'雲白',g:'雲白、李白',where:'垂手取穴，肩關節前方去肩尖約 2 寸，即肩中穴前 2 寸',zz:'婦科陰道炎、子宮炎、卵巢炎、陰道癢、陰道痛、赤白帶下、小兒麻痺、腳扭傷（特效）',spec:[-.215,1.35,0,'f',-1]},
+ libai:{n:'李白',g:'雲白、李白',where:'手撫胸取穴，建中穴前側 2 寸',zz:'狐臭、多汗症、腳扭傷、腳痛、小腿痛、小兒麻痺',spec:[-.215,1.30,0,'f',-1]}};
+
+// ===== 分區資料 =====
+const REG_ORDER=['neck','shoulder','arm','trunk','lowback','hip','knee','foot'];
+const G5={木:0x4fd26b,火:0xff4a3a,土:0xe0a458,金:0xf8e16c,水:0x6c8cff};
+const CHAK_N=['海底輪','臍輪','太陽神經叢輪','心輪','喉輪','眉心輪','頂輪'];
+const REG={
+ neck:{n:'頭頸',cam:{t:[0,1.53,0],d:1.15,v:'back'},files:['supplement-shoulder-muscle','head-neck'],moves:['nflex','tilt'],
+  tung:[['zhengjin','頸項骨刺、頸項筋痛、扭轉不靈、後腦頭痛'],['zhengzong','頸項骨刺、頸項筋痛、扭轉不靈、後腦頭痛'],['wan1','落枕、頸項骨刺'],['wan2','落枕、頸項骨刺']],
+  pain:[0,1.5,0,'b',1],
+  bone:[['頭骨：腦袋的外殼，頭往前一點，後頸就要多撐好幾公斤','頸椎：7 節，第 1、2 節負責點頭和轉頭','下顎骨：咬緊牙根時，頸部前側和側邊也會一起緊'],'頭擺在對的位置，脖子才不用一直撐。'],
+  mus:[['胸鎖乳突肌：從耳後斜到胸骨鎖骨，低頭、轉頭都靠它','斜方肌上束、提肩胛肌：從後腦和頸椎拉到肩膀，壓力一大就聳起來','頸部深層肌群（斜角肌等）：吸氣時也會幫忙'],'脖子緊，常是頭一直往前，後面的肌肉被拉著出力。'],
+  mer:'經過頭頸的有：膀胱經（天柱）、膽經（風池）、三焦經（翳風）、小腸經（天窗、聽宮）、大腸經、胃經（人迎）',
+  five:[['木',[-.035,1.6,0,'b'],'膽經・風池'],['水',[-.025,1.535,0,'b'],'膀胱經・天柱'],['土',[-.035,1.49,0,'f'],'胃經・人迎'],['火',[-.06,1.47,0,'b'],'小腸經・三焦經']],
+  fiveT:[['後頸是膽經（木）和膀胱經（水）上行的路','前頸有胃經（土）、大腸經（金）','壓力、熬夜（木、水不足）時，後頸常先緊'],'頭頸鬆了，人才睡得好。'],
+  chak:[4,5],chakT:[['喉輪（第五脈輪・藍）：表達與溝通','眉心輪（第六脈輪・靛）：專注、思考，想太多時頭頸常一起緊'],'讓腦袋休息，脖子才會跟著鬆。'],
+  mark:'頭頸緊，先看頭有沒有往前、下巴有沒有往前推。結構上把頭放回身體上方；肌動上看胸鎖乳突肌、斜方肌上束是不是一直在撐；經絡上看膽經、膀胱經從頭走下來順不順；董氏用腳跟上的正筋、正宗、手上的腕順帶動；最後把呼吸放慢，讓眉心和喉嚨也鬆下來。',
+  cta:'聊聊你的頭頸'},
+ shoulder:{n:'肩頸',cam:{t:[0,1.3,0],d:1.6,v:'back'},files:['supplement-shoulder-muscle','supplement-spine-trunk-muscle-pectorals','supplement-elbow-forearm-muscle','head-neck'],moves:['abd','shrug','retract','tilt'],
+  tung:[['wan1','落枕、脖子轉不動'],['wan2','落枕、脖子轉不動'],['shoulderZ','肩痛、五十肩、手舉不高'],['buildZ','肩痛、五十肩、手舉不高'],['zuqianjin','肩背痛'],['zuwujin','肩背痛']],
+  pain:[-.1,1.44,0,'b',1],
+  bone:[['肩胛骨：貼在背上的三角形骨頭，肩膀能不能放鬆，常看它的位置','鎖骨：連接胸骨和肩胛骨，手抬高時會跟著轉','頸椎：7 節，頭往前一點，負擔就多好幾倍','肩關節其實有 4 個：胸鎖(SC)、肩鎖(AC)、盂肱(GH)、肩胛胸廓(ST)'],'結構對了，肌肉才不用一直撐。'],
+  mus:[['點任何一條肌肉，看它的起點、止點、動作和神經','起點通常是比較固定的一端，止點是被拉動的一端；肌肉收縮＝止點往起點靠近','下方「肌動學」選一個動作，看哪些是主動肌、協同肌、拮抗肌、穩定肌'],'按它會舒服，但要問：它為什麼一直在出力？'],
+  mer:'經過肩頸的有 5 條：小腸經、三焦經、大腸經、膽經、膀胱經',
+  five:[['火',[-.13,1.36,0,'b'],'小腸經・三焦經'],['木',[-.1,1.46,0,'b'],'膽經'],['金',[-.2,1.39,0,'b'],'大腸經'],['水',[-.035,1.25,0,'b'],'膀胱經']],
+  fiveT:[['小腸經、三焦經屬「火」；大腸經屬「金」','膽經屬「木」；膀胱經屬「水」','壓力大、容易煩躁時（木、火），肩頸常一起緊起來'],'身體的緊，常常也是情緒的緊。'],
+  chak:[3,4],chakT:[['喉輪（第五脈輪・藍）：表達與溝通，話常吞回去的人，脖子常緊','心輪（第四脈輪・綠）：位在胸口與兩肩胛之間，與接納、放下有關'],'呼吸放到胸口和喉嚨，肩膀才真的放得下來。'],
+  mark:'肩頸緊，很少只是肩頸的問題。結構上先看肩胛有沒有歸位、頭有沒有往前；肌動上看哪條一直縮著、哪條被拉長沒力；經絡上看小腸經、三焦經、膽經有沒有被卡住；董氏用遠端的穴位帶動，再從呼吸和能量把身體放鬆下來。',
+  cta:'聊聊你的肩頸'},
+ arm:{n:'手臂',cam:{t:[-.2,1.05,0],d:1.25,v:'front'},files:['supplement-elbow-forearm-muscle','supplement-wrist-hand-muscle'],moves:['eflex','wext'],
+  tung:[['huochuan','手下臂痛'],['huoling','手下臂痛'],['huoshan','手下臂痛'],['quling','肘關節炎、抽筋'],['jianli','肘關節炎、抽筋'],['zhongli','肘關節炎、抽筋'],['shouwujin','手腳麻木'],['shouqianjin','手腳麻木']],
+  pain:[0,1.1,0,'s',-1],
+  bone:[['肱骨：上臂骨，下端和前臂組成肘關節','橈骨在拇指側、尺骨在小指側；前臂轉動（旋前、旋後）就是橈骨繞著尺骨轉','腕骨 8 塊、掌骨 5 塊、指骨 14 塊'],'手肘、手腕痛，常是肩膀沒出力，換它們在硬撐。'],
+  mus:[['手肘前面：肱二頭肌、肱橈肌負責彎手肘','手肘後面：肱三頭肌負責伸直','前臂外側（手背那側）是伸腕肌群，網球肘就在這裡；內側（掌心那側）是屈腕、屈指肌群'],'一直滑手機、打電腦，前臂兩側都在出力。'],
+  mer:'手臂上六條經都會經過：手三陰（肺、心包、心）走掌心那一側，手三陽（大腸、三焦、小腸）走手背那一側',
+  five:[['金',[-.25,1.12,0,'f'],'肺經・大腸經'],['火',[-.195,1.1,0,'f'],'心經・心包經'],['火',[-.235,1.04,0,'b'],'小腸經・三焦經']],
+  fiveT:[['拇指側：肺經、大腸經屬「金」','掌心中間與小指側：心包經、心經屬「火」','手背：三焦經、小腸經也屬「火」'],'手常冰冷、發麻，也看看心和肺。'],
+  chak:[3],chakT:[['心輪（第四脈輪・綠）：手臂和雙手是心輪往外的延伸，給予和擁抱都從這裡出去'],'手一直用力抓，心也很難放鬆。'],
+  mark:'手肘、手腕痛，先往上看肩膀和肩胛有沒有出力。結構上看手肘、手腕的角度；肌動上分清楚是伸腕肌群（網球肘）還是屈腕肌群（高爾夫球肘）在喊累；經絡上看手三陽、手三陰哪條卡住；董氏用前臂的火串組、曲陵組、手五金組帶動。',
+  cta:'聊聊你的手肘手腕'},
+ trunk:{n:'胸腹',cam:{t:[0,1.17,0],d:1.45,v:'front'},files:['supplement-spine-trunk-muscle-pectorals','supplement-spine-trunk-muscle-abdominals','supplement-shoulder-muscle'],moves:['tflex','trot'],
+  tung:[['huochuan','胸痛、胸悶、背痛'],['huoling','胸痛、胸悶、背痛'],['huoshan','胸痛、胸悶、背痛'],['sihua1','心悸、哮喘'],['sihua2','哮喘、心臟'],['sihua3','腸炎、腹脹、胃痛'],['shuitong','岔氣、腹脹氣'],['shuijin','岔氣、腹脹氣']],
+  pain:[0,1.15,0,'f',1],
+  bone:[['胸骨、肋骨圍成胸廓，保護心和肺；呼吸時肋骨會上下打開','胸椎 12 節，每一節都連著一對肋骨','肚子前面沒有骨頭，靠腹肌像束腹一樣撐住'],'胸口打不開，呼吸就淺。'],
+  mus:[['胸大肌、胸小肌：太緊會把肩膀往前拉（圓肩）','腹外斜肌：轉身、側彎；岔氣常在這附近','腹肌群（腹直肌、腹橫肌）：捲腹、穩定腰骨盆','橫膈膜：最主要的吸氣肌'],'腹部撐得住，腰才不用硬撐。'],
+  mer:'經過胸腹的有：肺經（中府）、心包經（天池）、胃經（乳中、天樞）、脾經（大橫、大包）、腎經（肓俞、俞府）、肝經（章門、期門）、膽經（淵腋、京門）',
+  five:[],organs:[['lung','金','肺'],['heart','火','心'],['liver','木','肝'],['gallbladder','木','膽'],['spleen','土','脾'],['stomach','土','胃'],['small_intestine','火','小腸'],['colon','金','大腸']],
+  fiveT:[['打開五行後，胸腹裡的臟腑會依五行上色','金：肺、大腸｜火：心、小腸｜木：肝、膽｜土：脾、胃','腎、膀胱（水）在後腰，請看「下背」'],'情緒會落在臟腑上，臟腑也會反映到身體的緊。'],
+  chak:[2,3],chakT:[['太陽神經叢輪（第三脈輪・黃）：在胃的位置，和自信、壓力有關，緊張時胃常一起不舒服','心輪（第四脈輪・綠）：胸口中間，與接納、放下有關'],'胃縮著、胸口悶，先把氣吐乾淨。'],
+  mark:'胸悶、岔氣、肚子脹，先看呼吸。結構上看胸廓能不能打開、肋骨有沒有卡住；肌動上看橫膈膜、腹肌、腹外斜肌有沒有一起工作；經絡上胸腹是好多條經交會的地方；董氏用火串組、四花組、水通水金帶動；能量上把太陽神經叢和心輪放鬆。',
+  cta:'聊聊你的胸悶岔氣'},
+ lowback:{n:'下背',cam:{t:[0,1.0,0],d:1.4,v:'back'},files:['supplement-spine-trunk-muscle-erector-spinae','supplement-hip-pelvis-muscle','supplement-spine-trunk-muscle-abdominals'],moves:['text','bend'],
+  tung:[['zhengjin','腰脊椎痛、閃腰、脊椎骨閃痛'],['zhengzong','腰脊椎痛、閃腰、脊椎骨閃痛'],['linggu','腰痛、背痛、坐骨神經痛'],['dabai','腰痛、背痛、坐骨神經痛'],['shuitong','腰痛、閃腰、岔氣'],['shuijin','腰痛、閃腰、岔氣']],
+  pain:[0,1.02,0,'b',1],
+  bone:[['腰椎 5 節，椎體最大，扛上半身的重量','薦骨連接腰椎和骨盆；骨盆前傾，腰椎前凸就跟著變大','正常脊柱是 S 形：頸前凸、胸後凸、腰前凸、薦後凸'],'腰痛常是骨盆歪了，腰在幫忙扛。'],
+  mus:[['豎脊肌：脊椎兩旁的長條肌肉，由外到內是髂肋肌、最長肌、棘肌','腰大肌：從腰椎前面拉到大腿骨，久坐會縮短、把腰往前拉','臀大肌：伸髖的主力，臀部沒力，腰就得多出力','多裂肌、腹橫肌：深層穩定，下背痛的人常常沒在工作'],'腰不是不夠力，常是該出力的沒出力。'],
+  mer:'經過下背的有：膀胱經（腎俞、大腸俞，在脊椎兩旁）、膽經（京門，在側腰）；腎經在身體裡面',
+  five:[['水',[-.042,1.06,0,'b'],'膀胱經・腎俞'],['木',[0,1.07,-.02,'L'],'膽經・京門']],organs:[['kidney','水','腎'],['bladder','水','膀胱']],
+  fiveT:[['後腰是「水」的位置：腎和膀胱','腎主骨，累積的疲勞、熬夜，常落在腰','側腰的膽經屬「木」，久坐不動也容易卡'],'腰痠，先問問自己最近睡飽了沒。'],
+  chak:[0,1],chakT:[['海底輪（第一脈輪・紅）：尾骨，和安全感、站穩有關','臍輪（第二脈輪・橘）：下腹與薦骨，和流動、創造有關'],'站得穩，腰才放得下。'],
+  mark:'下背痛，先看骨盆。結構上看骨盆有沒有前傾、左右高低；肌動上看腰大肌是不是太緊、臀大肌和腹部深層有沒有在工作；經絡上看膀胱經從背一路到腳順不順；董氏用正筋、正宗、靈骨、大白、水通水金帶動；能量上回到海底輪，把腳踩穩。',
+  cta:'聊聊你的腰'},
+ hip:{n:'髖部骨盆',cam:{t:[0,.86,0],d:1.35,v:'back'},files:['supplement-hip-pelvis-muscle','supplement-knee-muscle'],moves:['hflex','hext'],
+  tung:[['linggu','坐骨神經痛'],['dabai','坐骨神經痛'],['shouwujin','坐骨神經痛'],['shouqianjin','坐骨神經痛']],
+  pain:[-.09,.86,0,'b',-1],
+  bone:[['骨盆：髂骨、坐骨、恥骨合成，兩邊髖臼接大腿骨','髖關節是球窩關節，活動度大，也要靠肌肉穩住','坐骨結節：坐著時壓到的骨頭，大腿後側肌群從這裡出發'],'骨盆是身體的底座，底座歪了，上面都要跟著歪。'],
+  mus:[['臀大肌：伸髖、外旋，爬樓梯、起身的主力','臀小肌、梨狀肌、閉孔內肌：深層，負責外旋和穩住髖關節；坐骨神經從梨狀肌下面經過','髂腰肌（腰大肌＋髂肌）：屈髖，久坐會縮短','內收肌群：大腿內側，閉孔神經支配'],'屁股不出力，膝蓋和腰就會代替它出力。'],
+  mer:'經過髖部的有：膀胱經（承扶）、膽經（環跳）、胃經和脾經（腹股溝）、肝經和腎經（大腿內側）',
+  five:[['木',[-.11,.87,0,'b'],'膽經・環跳'],['水',[-.09,.79,0,'b'],'膀胱經・承扶'],['土',[-.065,.88,0,'f'],'胃經・脾經'],['木',[0,.64,0,'I'],'肝經']],
+  fiveT:[['外側環跳是膽經（木），後面承扶是膀胱經（水）','前面腹股溝是胃經、脾經（土）','大腿內側是肝經（木）、腎經（水）'],'髖卡住，常和情緒壓著、不敢動有關。'],
+  chak:[0,1],chakT:[['海底輪（第一脈輪・紅）：骨盆底，和安全感、生存感有關','臍輪（第二脈輪・橘）：骨盆裡面，和流動、感受有關'],'骨盆鬆了，走路才會輕。'],
+  mark:'髖卡、坐骨神經痛，先看骨盆左右平不平、臀部有沒有在出力。結構上看骨盆和大腿骨的角度；肌動上看髂腰肌太緊、臀肌太弱、梨狀肌有沒有壓到坐骨神經；經絡上看膽經、膀胱經；董氏用手上的靈骨、大白、手五金組帶動。',
+  cta:'聊聊你的髖和坐骨神經'},
+ knee:{n:'膝蓋',cam:{t:[0,.47,0],d:1.15,v:'front'},files:['supplement-knee-muscle','supplement-ankle-foot-muscle'],moves:['kflex','kext'],
+  tung:[['tongguan','膝蓋痛、四肢痛'],['tongshan','膝蓋痛、四肢痛'],['tongtian','膝蓋痛、四肢痛'],['shoulderZ','膝蓋關節炎、膝蓋扭傷'],['buildZ','膝蓋關節炎、膝蓋扭傷']],
+  pain:[-.085,.46,0,'f',-1],
+  bone:[['股骨（大腿骨）和脛骨組成膝關節；腓骨在外側，不太承重','髕骨（膝蓋骨）是人體最大的籽骨，讓股四頭肌更好出力','膝蓋裡有半月板吸收衝擊、前後十字韌帶和內外側副韌帶穩住'],'膝蓋常是受害者：上面的髖、下面的腳沒顧好，它就痛。'],
+  mus:[['股四頭肌：大腿前面，伸直膝蓋；股直肌還跨過髖關節','膕旁肌（股二頭肌、半腱肌、半膜肌）：大腿後面，彎膝、伸髖','鵝足：縫匠肌、股薄肌、半腱肌在膝蓋內側下方的共同附著點','膕肌：膝窩深處，負責「解鎖」膝蓋開始彎'],'膝蓋痛，要看大腿前後有沒有平衡。'],
+  mer:'膝蓋周圍六條腳的經都會經過：前面胃經（犢鼻、足三里）、外側膽經（陽陵泉）、後面膀胱經（委中）、內側脾經（陰陵泉）、肝經（曲泉）、腎經（陰谷）',
+  five:[['土',[-.1,.44,0,'f'],'胃經・犢鼻'],['木',[0,.40,.005,'L'],'膽經・陽陵泉'],['水',[-.085,.45,0,'b'],'膀胱經・委中'],['土',[0,.40,0,'I'],'脾經・陰陵泉']],
+  fiveT:[['前面胃經、內側脾經屬「土」','外側膽經、內側肝經屬「木」','後面膀胱經、內側腎經屬「水」'],'膝蓋怕冷、怕累，也看看脾胃和腎。'],
+  chak:[0],chakT:[['海底輪（第一脈輪・紅）：雙腿是海底輪往下的延伸，負責接地、往前走'],'腳踩得穩，膝蓋才不用硬撐。'],
+  mark:'膝蓋痛，很少只是膝蓋的問題。結構上往上看髖、往下看腳踝和足弓；肌動上看股四頭肌和膕旁肌平不平衡、膝蓋是不是往內夾；經絡上膝蓋是腳六條經的交會；董氏用大腿上的通關、通山、通天，和手臂上的肩中、建中帶動。',
+  cta:'聊聊你的膝蓋'},
+ foot:{n:'足踝足弓',cam:{t:[0,.13,0],d:1.0,v:'front'},files:['supplement-ankle-foot-muscle'],moves:['pflex','dflex'],
+  tung:[['yunbai','腳扭傷（特效）'],['libai','腳扭傷、腳痛、小腿痛'],['quling','抽筋'],['jianli','抽筋'],['zhongli','抽筋'],['shouwujin','小腿發脹、腳痛'],['shouqianjin','小腿發脹、腳痛']],
+  pain:[0,.06,0,'L',-1],
+  bone:[['單側足部 26 塊骨：跗骨 7、蹠骨 5、趾骨 14','三個足弓：內側縱弓最高、外側縱弓、橫弓','距骨是唯一沒有肌肉附著的足骨，夾在脛骨、腓骨中間'],'腳是身體的地基，地基歪一點，上面就歪一大片。'],
+  mus:[['小腿三頭肌（腓腸肌＋比目魚肌）：墊腳尖，接成阿基里斯腱','脛前肌：勾腳、把腳尖抬起來','腓骨長肌、短肌：外翻，腓骨長肌繞到足底像吊帶撐住足弓','脛後肌（模型沒單獨顯示）：支撐內側縱弓最重要的肌肉'],'足弓塌，常是小腿和腳底的肌肉沒在工作。'],
+  mer:'腳上六條經的起點、終點都在這裡：胃經（厲兌）、膽經（足竅陰）、膀胱經（至陰）在腳趾，脾經（隱白）、肝經（大敦）從大拇趾出發，腎經從腳底湧泉出發',
+  five:[['水',[0,.07,-.03,'I'],'腎經・太谿'],['水',[0,.065,-.045,'L'],'膀胱經・崑崙'],['土',[-.08,.068,0,'f'],'胃經・解谿'],['木',[-.097,.15,.06,'T'],'肝經・太衝']],
+  fiveT:[['內側腳踝：腎經（水）、脾經（土）、肝經（木）','外側腳踝：膀胱經（水）、膽經（木）','腳背：胃經（土）'],'腳底冰冷、無力，常是「水」不夠。'],
+  chak:[0],chakT:[['海底輪（第一脈輪・紅）：腳底是接地的地方，站得穩，心才會安'],'先把腳踩穩，人才走得久。'],
+  mark:'站得穩，才走得久。結構上先看足弓有沒有塌、腳跟有沒有歪；肌動上看小腿三頭肌、脛前肌、腓骨長肌和腳底的小肌肉有沒有一起工作；經絡上腳是六條經的起點和終點；董氏用肩膀前面的雲白、李白和前臂的曲陵組帶動；最後回到海底輪，把腳踩穩。',
+  cta:'聊聊你的腳'}};
+
 const MER=[
  {id:'lu',n:'手太陰肺經',e:'金',c:0xe6edf5,nm:2,h:'寅時 3–5 點',v:'front',t:'從胸口外上方出來，沿手臂前面靠拇指那一側往下，到拇指',
   g:[[-.15,1.37,0,'f'],[-.19,1.31,0,'f'],[-.225,1.24,0,'f'],[-.235,1.12,0,'f'],[-.255,1.02,0,'f'],[-.295,.885,0,'f'],[-.305,.85,0,'f'],[-.325,.805,0,'f']],
@@ -154,7 +282,13 @@ const MER=[
   acu:[[0,'瞳子髎'],[3,'風池'],[4,'肩井'],[5,'淵腋'],[6,'京門'],[7,'環跳'],[8,'風市'],[9,'陽陵泉'],[10,'懸鐘'],[11,'丘墟'],[12,'足竅陰']]},
  {id:'lr',n:'足厥陰肝經',e:'木',c:0x1fbf6a,nm:5,h:'丑時 1–3 點',v:'front',t:'從大拇趾出發，經過腳背、小腿和大腿內側往上，到側腹與肋骨下',
   g:[[-.118,.15,.13,'T'],[-.097,.15,.06,'T'],[-.055,.07,0,'f'],[0,.195,.02,'I'],[0,.45,-.025,'I'],[0,.65,-.01,'I'],[-.045,.84,0,'f'],[-.13,1.08,0,'f'],[-.1,1.2,0,'f']],
-  acu:[[0,'大敦'],[1,'太衝'],[2,'中封'],[3,'蠡溝'],[4,'曲泉'],[7,'章門'],[8,'期門']]}];
+  acu:[[0,'大敦'],[1,'太衝'],[2,'中封'],[3,'蠡溝'],[4,'曲泉'],[7,'章門'],[8,'期門']]},
+ {id:'ren',n:'任脈',sh:'任脈',e:'',mid:1,c:0xc792ff,nm:6,v:'front',t:'奇經八脈之一，「陰脈之海」。從會陰出發，沿身體前面正中線往上，經過肚臍、胸口中間，到下唇下方',
+  g:[[0,0,-.005,'D'],[0,.875,0,'f'],[0,.934,0,'f'],[0,.982,0,'f'],[0,1.03,0,'f'],[0,1.136,0,'f'],[0,1.32,0,'f'],[0,1.425,0,'f'],[0,1.5,0,'f'],[0,1.575,0,'f']],
+  acu:[[0,'會陰'],[1,'曲骨'],[2,'關元'],[3,'氣海'],[4,'神闕（肚臍）'],[5,'中脘'],[6,'膻中'],[7,'天突'],[8,'廉泉'],[9,'承漿']]},
+ {id:'du',n:'督脈',sh:'督脈',e:'',mid:1,c:0xff6fae,nm:4,v:'back',t:'奇經八脈之一，「陽脈之海」。從尾骨下方的長強出發，沿脊椎正中線往上，過後頸、頭頂，到上唇的人中',
+  g:[[0,.86,0,'b'],[0,.99,0,'b'],[0,1.04,0,'b'],[0,1.22,0,'b'],[0,1.33,0,'b'],[0,1.43,0,'b'],[0,1.565,0,'b'],[0,1.68,0,'b'],[0,0,-.005,'T'],[0,1.71,0,'f'],[0,1.605,0,'f']],
+  acu:[[0,'長強'],[1,'腰陽關'],[2,'命門'],[3,'至陽'],[4,'身柱'],[5,'大椎'],[6,'風府'],[8,'百會'],[9,'神庭'],[10,'水溝（人中）']]}];
 // 肌肉資料（肌動學）
 const MUS={
  trapezius:{zh:'斜方肌',o:'枕外隆凸、項韌帶、C7–T12 棘突',i:'鎖骨外 1/3、肩峰、肩胛棘',a:'上束：肩胛上提、上旋；中束：肩胛內收；下束：肩胛下壓、上旋',nv:'副神經（第 11 對腦神經）',mer:'膽經（肩井）、小腸經（曲垣、肩外俞、肩中俞）、三焦經（天髎）、膀胱經',sf:"上束＋提肩胛肌＝聳肩；上、下束＋前鋸肌＝肩胛上旋。",tung:'腕順一、二（落枕、頸項）；足千金、足五金（肩背痛）'},
@@ -177,6 +311,69 @@ const MUS={
 const BONE_ZH={spine_cervical:'頸椎',clavicle:'鎖骨',foot:'足骨',forearm:'前臂骨（橈骨・尺骨）',hand:'手骨',mandible:'下顎骨',patella:'髕骨',spine_lumbar:'腰椎',pelvis:'骨盆與薦骨',ribs:'肋骨',lower_leg:'小腿骨（脛骨・腓骨）',scapula:'肩胛骨',skull:'頭骨',sternum:'胸骨',teeth:'牙齒',femur:'股骨',spine_thoracic:'胸椎',humerus:'肱骨',
  abdominal_muscles:'腹壁肌群',back_muscles:'背部深層肌群',calf:'小腿後側肌群',diaphragm:'橫膈膜',foot_muscles:'足部肌群',forearm_muscles:'前臂肌群',gluteal:'臀肌群',hamstrings:'膕旁肌（大腿後側）',hand_muscles:'手部肌群',iliopsoas:'髂腰肌',adductors:'內收肌群',intercostals:'肋間肌',neck_muscles:'頸部深層肌群',pelvic_floor:'骨盆底肌',quadriceps:'股四頭肌',shin_muscles:'小腿前側肌群'};
 const BONE_INFO={scapula:'手臂動作的底座，肩胛不歸位，肩頸就得一直出力。經絡：小腸經（天宗、秉風、曲垣）、三焦經（天髎）',clavicle:'連接胸骨和肩胛，手抬高時會跟著轉。經絡：大腸經（巨骨附近）',spine_cervical:'7 節頸椎，頭往前一點，負擔就多好幾倍。經絡：膀胱經（天柱、大杼）',humerus:'上臂骨，和肩胛骨組成盂肱關節（GH）。經絡：大腸經（臂臑）、三焦經、小腸經'};
+// ===== 其他分區的肌肉 =====
+Object.assign(MUS,{
+ brachioradialis:{zh:'肱橈肌',o:'肱骨外上髁上方的嵴',i:'橈骨莖突',a:'屈肘（前臂在中間位置時最有力）',nv:'橈神經（C5–C6）',mer:'大腸經（手三里、曲池附近）',tung:'曲陵、建力、中力（肘關節炎）'},
+ 'extensor-carpi-radialis-longus':{zh:'橈側伸腕長肌',o:'肱骨外上髁上方的嵴',i:'第 2 掌骨底背側',a:'伸腕、手腕往拇指側偏',nv:'橈神經（C6–C7）',mer:'大腸經',tung:'火串、火陵、火山（手下臂痛）'},
+ 'extensor-carpi-radialis-brevis':{zh:'橈側伸腕短肌',o:'肱骨外上髁（總伸肌腱）',i:'第 3 掌骨底背側',a:'伸腕；網球肘最常累到它',nv:'橈神經深支（C7–C8）',mer:'大腸經、三焦經',tung:'火串、火陵、火山'},
+ 'extensor-digitorum':{zh:'伸指總肌',o:'肱骨外上髁（總伸肌腱）',i:'第 2–5 指背側',a:'伸手指，也幫忙伸腕',nv:'橈神經深支（C7–C8）',mer:'三焦經（外關、支溝附近）',tung:'火串、火陵、火山'},
+ 'extensor-carpi-ulnaris':{zh:'尺側伸腕肌',o:'肱骨外上髁、尺骨後緣',i:'第 5 掌骨底',a:'伸腕、手腕往小指側偏',nv:'橈神經深支（C7–C8）',mer:'小腸經',tung:''},
+ supinator:{zh:'旋後肌',o:'肱骨外上髁、尺骨上端',i:'橈骨上段外側',a:'前臂旋後（掌心轉向上）',nv:'橈神經深支（C5–C6）',mer:'三焦經、大腸經',tung:''},
+ 'flexor-carpi-radialis':{zh:'橈側屈腕肌',o:'肱骨內上髁（總屈肌腱）',i:'第 2、3 掌骨底掌側',a:'屈腕、手腕往拇指側偏',nv:'正中神經（C6–C7）',mer:'心包經',tung:'曲陵、建力、中力'},
+ 'palmaris-longus':{zh:'掌長肌',o:'肱骨內上髁',i:'掌腱膜',a:'屈腕、拉緊掌心',nv:'正中神經（C7–C8）',mer:'心包經（內關、大陵附近）',tung:'曲陵、建力、中力'},
+ 'finger-flexors':{zh:'屈指肌群（屈指淺肌、屈指深肌）',o:'肱骨內上髁、尺骨和橈骨前面',i:'第 2–5 指中節、遠節',a:'屈手指（握拳），也幫忙屈腕',nv:'正中神經、尺神經',mer:'心包經、心經',tung:'',sf:'腕隧道症候群是正中神經在手腕被壓到：拇指、食指、中指麻。'},
+ 'pronator-quadratus':{zh:'旋前方肌',o:'尺骨下段前面',i:'橈骨下段前面',a:'前臂旋前（掌心轉向下）',nv:'正中神經（前骨間神經）',mer:'心包經、肺經',tung:''},
+ 'external-oblique':{zh:'腹外斜肌',o:'第 5–12 肋骨外面',i:'髂嵴、腹白線',a:'軀幹彎曲、同側側彎、往對側轉',nv:'肋間神經（T7–T12）',mer:'脾經（大橫、腹哀）、膽經（帶脈）',tung:'水通、水金（岔氣）',sf:'右側腹外斜肌收縮＋左側腹內斜肌，讓軀幹往左轉。'},
+ 'erector-spinae':{zh:'豎脊肌',o:'薦骨、髂嵴、腰椎棘突',i:'肋骨、上面的椎骨、顱底',a:'脊椎伸直（挺腰）、側彎；彎腰時邊出力邊被拉長（離心收縮）',nv:'脊神經後支',mer:'膀胱經（腎俞、大腸俞，在脊椎兩旁）',tung:'正筋、正宗（腰脊椎痛、閃腰）',sf:'由外到內三群：髂肋肌、最長肌、棘肌（I Love Spine）。'},
+ 'psoas-major':{zh:'腰大肌',o:'T12–L4 椎體和橫突',i:'股骨小轉子',a:'屈髖、穩定腰椎；久坐容易縮短',nv:'腰神經叢（L1–L3）',mer:'在身體深處，和脾經、腎經走的方向一致',tung:'靈骨、大白',sf:'腰大肌＋髂肌＝髂腰肌，一起止於股骨小轉子。'},
+ iliacus:{zh:'髂肌',o:'髂窩（骨盆內側面）',i:'股骨小轉子',a:'屈髖',nv:'股神經（L2–L3）',mer:'脾經（衝門附近）',tung:''},
+ 'gluteus-maximus':{zh:'臀大肌',o:'髂骨後面、薦骨、尾骨',i:'股骨臀肌粗隆、髂脛束',a:'伸髖、髖外旋；爬樓梯、起身的主力',nv:'臀下神經（L5–S2）',mer:'膀胱經（承扶）、膽經（環跳）',tung:'靈骨、大白（坐骨神經痛）'},
+ 'gluteus-minimus':{zh:'臀小肌',o:'髂骨外側面',i:'大轉子前緣',a:'髖外展、內旋，單腳站時穩住骨盆',nv:'臀上神經（L4–S1）',mer:'膽經（環跳附近）',tung:'',sf:'臀中肌、臀小肌無力：單腳站時對側骨盆往下掉（特倫德倫堡徵象）。'},
+ piriformis:{zh:'梨狀肌',o:'薦骨前面',i:'大轉子上緣',a:'髖外旋（髖伸直時）',nv:'梨狀肌神經（S1–S2）',mer:'膀胱經、膽經（環跳）',tung:'靈骨、大白（坐骨神經痛）',sf:'坐骨神經從它下方（少數穿過）經過，太緊會壓到。'},
+ 'obturator-internus':{zh:'閉孔內肌',o:'閉孔膜內面',i:'大轉子內側',a:'髖外旋、穩住髖關節',nv:'閉孔內肌神經（L5–S1）',mer:'膽經（深層）',tung:''},
+ 'adductor-longus':{zh:'內收長肌',o:'恥骨體',i:'股骨粗線中段',a:'髖內收（大腿往內夾），幫忙屈髖',nv:'閉孔神經（L2–L4）',mer:'肝經（足五里、陰廉附近）',tung:''},
+ 'adductor-brevis':{zh:'內收短肌',o:'恥骨下支',i:'股骨粗線上段',a:'髖內收',nv:'閉孔神經（L2–L4）',mer:'肝經',tung:''},
+ 'adductor-magnus':{zh:'內收大肌',o:'恥骨下支、坐骨結節',i:'股骨粗線、內收肌結節',a:'髖內收；後面那部分幫忙伸髖',nv:'閉孔神經＋坐骨神經',mer:'肝經、腎經',tung:''},
+ gracilis:{zh:'股薄肌',o:'恥骨下支',i:'脛骨上端內側（鵝足）',a:'髖內收、屈膝',nv:'閉孔神經（L2–L3）',mer:'肝經、腎經',tung:''},
+ quadriceps:{zh:'股四頭肌（股直肌、股外側肌、股內側肌、股中間肌）',o:'股直肌：髂前下棘；其他三條：股骨',i:'髕骨→髕韌帶→脛骨粗隆',a:'伸直膝蓋；股直肌還會屈髖（跨兩個關節）',nv:'股神經（L2–L4）',mer:'胃經（伏兔、梁丘）、脾經（血海）',tung:'通關、通山、通天就在大腿正中線上',sf:'股四頭肌中只有股直肌同時跨過髖和膝。'},
+ 'biceps-femoris':{zh:'股二頭肌',o:'長頭：坐骨結節；短頭：股骨粗線',i:'腓骨頭',a:'彎膝、伸髖（長頭）、膝蓋往外轉',nv:'坐骨神經（L5–S2）',mer:'膀胱經（委陽附近）、膽經',tung:''},
+ semitendinosus:{zh:'半腱肌',o:'坐骨結節',i:'脛骨上端內側（鵝足）',a:'彎膝、伸髖、膝蓋往內轉',nv:'坐骨神經（脛神經部分）',mer:'膀胱經、腎經（陰谷附近）',tung:'',sf:'鵝足＝縫匠肌、股薄肌、半腱肌，一起止在脛骨上端內側。'},
+ semimembranosus:{zh:'半膜肌',o:'坐骨結節',i:'脛骨內髁後面',a:'彎膝、伸髖、膝蓋往內轉',nv:'坐骨神經（脛神經部分）',mer:'腎經（陰谷）、膀胱經',tung:''},
+ sartorius:{zh:'縫匠肌',o:'髂前上棘',i:'脛骨上端內側（鵝足）',a:'屈髖、髖外展外旋、屈膝（盤腿的動作）',nv:'股神經（L2–L3）',mer:'脾經、肝經',tung:''},
+ popliteus:{zh:'膕肌',o:'股骨外髁',i:'脛骨後面上段',a:'「解鎖」膝關節，讓膝蓋開始彎',nv:'脛神經（L4–S1）',mer:'膀胱經（委中）',tung:''},
+ gastrocnemius:{zh:'腓腸肌',o:'股骨內、外髁',i:'跟骨（阿基里斯腱）',a:'墊腳尖（蹠屈），也幫忙彎膝',nv:'脛神經（S1–S2）',mer:'膀胱經（合陽、承山）',tung:'正筋、正宗就在跟腱上'},
+ soleus:{zh:'比目魚肌',o:'脛骨、腓骨後面上段',i:'跟骨（阿基里斯腱）',a:'墊腳尖；膝蓋彎著時是主力',nv:'脛神經（S1–S2）',mer:'膀胱經、腎經',tung:'',sf:'坐著墊腳尖主要靠比目魚肌，因為腓腸肌跨過膝蓋，膝蓋彎時已經縮短、出不了力。'},
+ plantaris:{zh:'蹠肌',o:'股骨外上髁上方',i:'跟骨',a:'輔助墊腳尖、彎膝',nv:'脛神經',mer:'膀胱經',tung:''},
+ 'tibialis-anterior':{zh:'脛前肌',o:'脛骨外側面上 2/3',i:'內側楔骨、第 1 蹠骨底',a:'勾腳（背屈）、足內翻；走路時把腳尖抬起來',nv:'腓深神經（L4–L5）',mer:'胃經（足三里、條口附近）',tung:'四花上就在脛骨外緣'},
+ 'fibularis-longus':{zh:'腓骨長肌',o:'腓骨頭、腓骨外側上 2/3',i:'第 1 蹠骨底、內側楔骨（繞過足底）',a:'足外翻、蹠屈；像吊帶撐住足弓',nv:'腓淺神經（L5–S1）',mer:'膽經（陽陵泉、光明）',tung:'足千金、足五金在腓骨前緣',sf:'腓骨長肌不會讓腳踝背屈，它負責外翻和蹠屈。'},
+ 'fibularis-brevis':{zh:'腓骨短肌',o:'腓骨外側下 2/3',i:'第 5 蹠骨粗隆',a:'足外翻、蹠屈；腳踝內翻扭傷時常被拉傷',nv:'腓淺神經（L5–S1）',mer:'膽經（懸鐘、丘墟）',tung:''},
+ 'flexor-digitorum-longus':{zh:'屈趾長肌',o:'脛骨後面',i:'第 2–5 趾遠節',a:'屈腳趾、蹠屈，也幫忙撐足弓',nv:'脛神經',mer:'腎經、脾經',tung:''},
+ 'flexor-digitorum-brevis':{zh:'屈趾短肌',o:'跟骨',i:'第 2–5 趾中節',a:'屈腳趾、撐足弓',nv:'足底內側神經',mer:'腎經（湧泉附近）',tung:''},
+ 'extensor-digitorum-longus':{zh:'伸趾長肌',o:'脛骨外髁、腓骨前面',i:'第 2–5 趾背側',a:'翹腳趾、勾腳',nv:'腓深神經（L5–S1）',mer:'胃經、膽經',tung:''}});
+// 每個檔案裡要找的肌肉（避免名字互相誤認）
+const FILE_KEYS={
+ 'supplement-shoulder-muscle':['trapezius','levator-scapulae','rhomboid-major','supraspinatus','infraspinatus','teres-minor','subscapularis','teres-major','deltoid','serratus-anterior'],
+ 'supplement-spine-trunk-muscle-pectorals':['pectoralis-major','pectoralis-minor'],
+ 'supplement-elbow-forearm-muscle':['biceps-brachii','triceps-brachii','brachioradialis','extensor-carpi-radialis-longus','extensor-carpi-radialis-brevis','extensor-digitorum','flexor-carpi-radialis','pronator-quadratus'],
+ 'supplement-wrist-hand-muscle':['finger-flexors','extensor-carpi-ulnaris','palmaris-longus','supinator'],
+ 'head-neck':['sternocleidomastoid'],
+ 'supplement-spine-trunk-muscle-abdominals':['external-oblique'],
+ 'supplement-spine-trunk-muscle-erector-spinae':['erector-spinae'],
+ 'supplement-hip-pelvis-muscle':['gluteus-maximus','gluteus-minimus','psoas-major','iliacus','piriformis','obturator-internus'],
+ 'supplement-knee-muscle':['quadriceps','biceps-femoris','semitendinosus','semimembranosus','adductor-longus','adductor-brevis','adductor-magnus','sartorius','gracilis','popliteus'],
+ 'supplement-ankle-foot-muscle':['gastrocnemius','soleus','plantaris','tibialis-anterior','fibularis-longus','fibularis-brevis','flexor-digitorum-longus','flexor-digitorum-brevis','extensor-digitorum-longus']};
+// 細部肌肉載入後，要隱藏的大肌群
+const BASE_REP={trapezius:'supplement-shoulder-muscle',deltoid:'supplement-shoulder-muscle',rotator_cuff:'supplement-shoulder-muscle',shoulder_muscles:'supplement-shoulder-muscle',chest_muscles:'supplement-spine-trunk-muscle-pectorals',upper_arm_muscles:'supplement-elbow-forearm-muscle',forearm_muscles:'supplement-elbow-forearm-muscle',back_muscles:'supplement-spine-trunk-muscle-erector-spinae',gluteal:'supplement-hip-pelvis-muscle',iliopsoas:'supplement-hip-pelvis-muscle',quadriceps:'supplement-knee-muscle',hamstrings:'supplement-knee-muscle',adductors:'supplement-knee-muscle',calf:'supplement-ankle-foot-muscle',shin_muscles:'supplement-ankle-foot-muscle'};
+// 大肌群（沒有細分的部分）點下去的說明
+const BASEG_INFO={
+ abdominal_muscles:{zh:'腹肌群（腹直肌、腹內斜肌、腹橫肌）',o:'恥骨、髂嵴、胸腰筋膜',i:'肋軟骨、胸骨劍突、腹白線',a:'腹直肌：捲腹、讓骨盆後傾；腹橫肌：像束腹一樣增加腹壓、穩定腰骨盆',nv:'肋間神經（T7–T12）、髂腹下神經',mer:'任脈兩旁有腎經、胃經、脾經',tung:'四花下（腹脹）、水通水金（岔氣）',sf:'腹橫肌在手腳動作之前會先啟動，下背痛的人常常慢半拍。'},
+ neck_muscles:{zh:'頸部深層肌群（斜角肌、頭夾肌、頸夾肌等）',o:'頸椎橫突、棘突',i:'第 1、2 肋骨、顱底、上面的頸椎',a:'穩住頸椎、轉頭、側彎；斜角肌在用力吸氣時幫忙',nv:'頸神經（C3–C8）',mer:'膀胱經、膽經、三焦經、小腸經',tung:'正筋、正宗、腕順一、二',sf:'平靜呼吸主要靠橫膈膜，斜角肌是輔助吸氣肌；呼吸太淺時它會一直出力。'},
+ diaphragm:{zh:'橫膈膜',o:'胸骨劍突、下面 6 對肋骨、腰椎',i:'中心腱',a:'最主要的吸氣肌：收縮往下，胸腔變大',nv:'膈神經（C3–C5）',mer:'肝經、膽經、脾經都經過它附近',tung:'水通、水金（岔氣）',sf:'「C3、4、5 keeps the diaphragm alive」：膈神經來自 C3–C5。'},
+ intercostals:{zh:'肋間肌',o:'上一根肋骨下緣',i:'下一根肋骨上緣',a:'讓肋骨上提、下降，幫忙呼吸',nv:'肋間神經',mer:'胸側的膽經、脾經',tung:'',sf:''},
+ foot_muscles:{zh:'足部小肌群',o:'跟骨、蹠骨',i:'腳趾',a:'撐住足弓、讓腳趾抓地',nv:'足底內側、外側神經',mer:'腎經（湧泉）',tung:'',sf:'腳趾往上翹時足底筋膜拉緊、足弓升高，叫做絞盤機制。'},
+ hand_muscles:{zh:'手部小肌群（大魚際、小魚際、骨間肌）',o:'腕骨、掌骨',i:'手指',a:'拇指對掌、手指張開併攏、細部動作',nv:'正中神經、尺神經',mer:'肺經（魚際）、心經（少府）',tung:'靈骨、大白就在虎口',sf:''},
+ pelvic_floor:{zh:'骨盆底肌',o:'恥骨、坐骨、尾骨',i:'會陰中心腱、尾骨',a:'托住骨盆裡的器官，和腹橫肌、橫膈膜一起穩定核心',nv:'陰部神經（S2–S4）',mer:'任脈、督脈的起點附近',tung:'',sf:''}};
+
 // 肌動學動作：角色 c=主動 s=協同 a=拮抗 st=穩定
 const MOVES={
  abd:{name:'右手側舉（肩外展）',max:150,sf:["肩外展發生在冠狀面，繞前後軸（矢狀軸）。", "棘上肌負責啟動外展，也最常夾擠、撕裂。", "肩胛上旋（關節盂朝上）靠上斜方肌、下斜方肌與前鋸肌完成。", "肩肱節律：外展 180° 約＝盂肱 120°＋肩胛上旋 60°（2:1）。", "三角肌由腋神經（C5–C6）支配，它也支配小圓肌。"],q:["手舉到 180° 時，肱骨（盂肱）和肩胛的角度比大約是？", ["1:1", "2:1", "3:1", "1:2"], 1, "盂肱約 120°、肩胛上旋約 60°。"],
@@ -195,6 +392,112 @@ const MOVES={
   roles:{c:['sternocleidomastoid_l','trapezius_l','levator-scapulae_l'],s:[],a:['sternocleidomastoid_r','trapezius_r','levator-scapulae_r'],st:[]},
   txt:['主動肌（左邊收縮）：左胸鎖乳突肌、左斜方肌上束、左提肩胛肌','拮抗肌（右邊被拉長）：右側同一群肌肉','落枕常是一側縮著放不開，另一側一拉就痛'],
   say:'側彎時一邊縮、一邊拉，兩邊都要照顧到。'}};
+// ===== 其他分區的肌動動作（關節轉軸） =====
+// h: p=轉軸中心, ax=軸, sg=方向, lo/hi=過渡帶, dir: below=轉軸下方會動, above=上方會動, xr=只動這個左右範圍, arms=手臂一起動, ex=不動的骨頭
+Object.assign(MOVES,{
+ nflex:{name:'低頭（頸屈曲）',max:40,view:'side',h:{p:[0,1.47,-.03],ax:'x',sg:1,dir:'above',lo:1.46,hi:1.53,xa:.12},rd:'低頭',
+  roles:{c:['sternocleidomastoid_l','sternocleidomastoid_r'],s:[],a:['trapezius_l','trapezius_r','levator-scapulae_l','levator-scapulae_r'],st:[]},
+  txt:['主動肌：兩側胸鎖乳突肌、頸部深層屈肌一起收縮','拮抗肌：斜方肌上束、提肩胛肌、後頸肌群被拉長','頭的重量約 5 公斤，往前低 15° 後頸要撐的力就多好幾倍'],
+  say:'低頭滑手機，後頸的肌肉一直被拉著出力。',
+  sf:['頸椎 7 節；點頭主要發生在寰枕關節，轉頭約一半發生在寰樞關節（C1–C2）。','胸鎖乳突肌兩側一起收縮：低頭；單側收縮：頭往同側彎、臉轉向對側。'],
+  q:['頸椎有幾節？',['5 節','7 節','12 節','3–5 節'],1,'頸椎 7 節、胸椎 12 節、腰椎 5 節。']},
+ eflex:{name:'彎手肘（屈肘）',max:130,view:'side',h:{p:[-.215,1.12,-.02],ax:'x',sg:-1,dir:'below',lo:1.10,hi:1.14,xr:[-.6,-.17],armOnly:1},rd:'手肘彎',
+  roles:{c:['biceps-brachii_r','brachioradialis_r'],s:['extensor-carpi-radialis-longus_r','pronator-quadratus_r'],a:['triceps-brachii_r'],st:['deltoid-ant_r','supraspinatus_r']},
+  txt:['主動肌：肱二頭肌、肱橈肌（還有藏在肱二頭肌下面的肱肌，模型沒單獨顯示）','拮抗肌：肱三頭肌被拉長','穩定肌：肩膀周圍把上臂固定住，手肘才有支點'],
+  say:'提重物手肘痠，常是肩膀沒穩住，前臂在硬撐。',
+  sf:['屈肘是第三類槓桿：施力點在支點和重物中間，犧牲力量換速度和角度。','肱二頭肌止於橈骨粗隆，除了屈肘也讓前臂旋後。','肱肌止於尺骨粗隆，不管掌心朝上或朝下都能屈肘，是屈肘主力。'],
+  q:['前臂不論旋前或旋後都能有效屈肘的主力是？',['肱二頭肌','肱肌','肱橈肌','肱三頭肌'],1,'肱肌止於尺骨粗隆，不受前臂轉動影響。']},
+ wext:{name:'手腕往後翻（伸腕）',max:60,view:'side',h:{p:[-.265,.885,.02],ax:'x',sg:1,dir:'below',lo:.87,hi:.90,xr:[-.6,-.2],armOnly:1},rd:'手腕往後翻',
+  roles:{c:['extensor-carpi-radialis-longus_r','extensor-carpi-radialis-brevis_r','extensor-carpi-ulnaris_r'],s:['extensor-digitorum_r'],a:['flexor-carpi-radialis_r','palmaris-longus_r','finger-flexors_r'],st:[]},
+  txt:['主動肌：橈側伸腕長肌、短肌、尺側伸腕肌（都在前臂手背那一側，起點在肱骨外上髁）','協同肌：伸指總肌','拮抗肌：屈腕、屈指肌群被拉長','網球肘：手背那側的伸腕肌群在肘外側的起點被拉傷'],
+  say:'打電腦手腕一直翹著，手肘外側就一直被拉。',
+  sf:['伸腕肌群共同起於肱骨外上髁；屈腕肌群共同起於肱骨內上髁。','腕隧道症候群：正中神經在手腕被壓到，拇指、食指、中指麻。'],
+  q:['腕隧道症候群是哪條神經被壓到？',['尺神經','橈神經','正中神經','肌皮神經'],2,'正中神經受壓，拇指、食指、中指麻，嚴重時大魚際萎縮。']},
+ tflex:{name:'彎腰（軀幹前彎）',max:55,view:'side',h:{p:[0,1.0,-.03],ax:'x',sg:1,dir:'above',lo:1.0,hi:1.18,arms:1,ex:/^(pelvis|femur|patella|lower_leg|foot_)/},rd:'軀幹前彎',
+  roles:{c:['abdominal_muscles','external-oblique_l','external-oblique_r'],s:['psoas-major_l','psoas-major_r'],a:['erector-spinae_l','erector-spinae_r','back_muscles_l','back_muscles_r'],st:[]},
+  txt:['開始彎：腹肌（腹直肌、腹外斜肌）收縮把身體往前帶','往下彎時：背後的豎脊肌一邊出力一邊被拉長，像剎車控制速度（離心收縮）','直膝彎腰摸不到地：大腿後側膕旁肌被兩個關節同時拉長（被動不足）'],
+  say:'彎腰閃到，常是腰在剎車時太累，而不是彎下去那一下。',
+  sf:['腹直肌：軀幹屈曲（捲腹），讓骨盆後傾。','用力時肌肉被拉長＝離心收縮，像剎車。','直膝時屈髖角度受限，是膕旁肌在兩個關節同時被拉長＝被動不足。'],
+  q:['直膝彎腰摸不到腳尖，大腿後側卡住，叫做？',['主動不足','被動不足','交互抑制','自體抑制'],1,'雙關節肌在兩個關節同時被拉長，動作就卡住，叫被動不足。']},
+ trot:{name:'轉身（軀幹往左轉）',max:40,view:'front',h:{p:[0,1.0,0],ax:'y',sg:1,dir:'above',lo:1.0,hi:1.32,arms:1,ex:/^(pelvis|femur|patella|lower_leg|foot_)/},rd:'往左轉',
+  roles:{c:['external-oblique_r','abdominal_muscles'],s:['erector-spinae_l'],a:['external-oblique_l'],st:[]},
+  txt:['主動肌：右側腹外斜肌＋左側腹內斜肌（腹內斜肌在腹肌群裡）一起讓身體往左轉','拮抗肌：左側腹外斜肌被拉長','胸椎負責大部分的轉動，腰椎能轉的角度很小'],
+  say:'胸椎轉不動，腰就會被逼著轉，久了就痛。',
+  sf:['右側腹外斜肌收縮＋左側腹內斜肌：軀幹往左轉。'],
+  q:['右側腹外斜肌收縮，軀幹會往哪邊轉？',['往右轉','往左轉','往前彎','不會轉'],1,'右外斜加左內斜，一起讓軀幹往左轉。']},
+ text:{name:'挺腰（軀幹後仰）',max:25,view:'side',h:{p:[0,1.0,-.03],ax:'x',sg:-1,dir:'above',lo:1.0,hi:1.18,arms:1,ex:/^(pelvis|femur|patella|lower_leg|foot_)/},rd:'軀幹後仰',
+  roles:{c:['erector-spinae_l','erector-spinae_r','back_muscles_l','back_muscles_r'],s:['gluteus-maximus_l','gluteus-maximus_r'],a:['abdominal_muscles','psoas-major_l','psoas-major_r'],st:[]},
+  txt:['主動肌：豎脊肌（由外到內：髂肋肌、最長肌、棘肌）','協同肌：臀大肌把骨盆往後帶','拮抗肌：腹肌、腰大肌被拉長','深層的多裂肌負責一節一節穩住脊椎，下背痛的人常常萎縮'],
+  say:'腰往後彎會痛，常是只用腰在彎，胸椎和髖都沒幫忙。',
+  sf:['豎脊肌三群由外到內：髂肋肌、最長肌、棘肌（I Love Spine）。','骨盆前傾增加 → 腰椎前凸增加；常見髖屈肌緊、腹肌臀肌無力（下交叉症候群）。','多裂肌跨 2–4 節，負責節段性穩定。'],
+  q:['豎脊肌由外到內是哪三群？',['棘肌、最長肌、髂肋肌','髂肋肌、最長肌、棘肌','多裂肌、迴旋肌、棘肌','最長肌、髂肋肌、棘肌'],1,'口訣 I Love Spine：Iliocostalis、Longissimus、Spinalis。']},
+ bend:{name:'往左側彎腰',max:28,view:'back',h:{p:[0,1.0,0],ax:'z',sg:-1,dir:'above',lo:1.0,hi:1.25,arms:1,ex:/^(pelvis|femur|patella|lower_leg|foot_)/},rd:'往左側彎',
+  roles:{c:['external-oblique_l','erector-spinae_l'],s:['abdominal_muscles'],a:['external-oblique_r','erector-spinae_r'],st:[]},
+  txt:['主動肌（左邊收縮）：左側腹外斜肌、左側豎脊肌，還有腰方肌（模型沒單獨顯示）','拮抗肌（右邊被拉長）：右側同一群肌肉','腹橫肌像束腹，在手腳動之前先啟動，把腰穩住'],
+  say:'一邊腰常痠，看看是不是習慣站三七步、單邊背包。',
+  sf:['腹橫肌：增加腹內壓、穩定腰骨盆，在肢體動作前先啟動。','正常脊柱是 S 形：頸前凸、胸後凸、腰前凸、薦後凸，用來分散負荷。'],
+  q:['腹橫肌最主要的功能是？',['讓軀幹往前彎','增加腹內壓、穩定腰骨盆','讓軀幹轉動','幫忙吐氣'],1,'腹橫肌像束腹，在手腳動作前先啟動。']},
+ hflex:{name:'抬大腿（屈髖）',max:70,view:'side',h:{p:[-.09,.88,0],ax:'x',sg:-1,dir:'below',lo:.80,hi:.86,xr:[-.3,-.005],ex:/^(pelvis|spine_)/},rd:'屈髖',
+  roles:{c:['psoas-major_r','iliacus_r'],s:['quadriceps_r','sartorius_r','adductor-longus_r'],a:['gluteus-maximus_r','biceps-femoris_r','semitendinosus_r','semimembranosus_r'],st:['gluteus-minimus_l']},
+  txt:['主動肌：髂腰肌（腰大肌＋髂肌），止在股骨小轉子','協同肌：股直肌、縫匠肌、內收長肌','拮抗肌：臀大肌、大腿後側膕旁肌被拉長','穩定肌：站著那隻腳的臀中肌、臀小肌把骨盆穩住'],
+  say:'久坐的人，髂腰肌一直縮著，站起來腰就被往前拉。',
+  sf:['腰大肌起於腰椎，止於股骨小轉子；和髂肌合成髂腰肌。','股四頭肌中只有股直肌跨髖和膝：屈髖＋伸膝。','膝蓋打直抬腿時，膕旁肌被拉長，會限制抬腿的高度。'],
+  q:['腰大肌的止點在哪裡？',['股骨大轉子','股骨小轉子','髂前上棘','脛骨粗隆'],1,'腰大肌和髂肌一起止於股骨小轉子。']},
+ hext:{name:'大腿往後（伸髖）',max:20,view:'side',h:{p:[-.09,.88,0],ax:'x',sg:1,dir:'below',lo:.80,hi:.86,xr:[-.3,-.005],ex:/^(pelvis|spine_)/},rd:'伸髖',
+  roles:{c:['gluteus-maximus_r'],s:['biceps-femoris_r','semitendinosus_r','semimembranosus_r','adductor-magnus_r'],a:['psoas-major_r','iliacus_r','quadriceps_r'],st:['gluteus-minimus_l']},
+  txt:['主動肌：臀大肌','協同肌：膕旁肌、內收大肌後部','拮抗肌：髂腰肌、股直肌被拉長','穩定肌：站著那隻腳的臀中肌、臀小肌（臀中肌模型沒單獨顯示）'],
+  say:'屁股不出力，腰和大腿後側就會代替它，越走越累。',
+  sf:['臀大肌：髖伸展、外旋，起身、爬樓梯、衝刺的主力。','臀中肌無力：單腳站時對側骨盆往下掉（特倫德倫堡徵象）。'],
+  q:['右腳單腳站，左邊骨盆往下掉，是哪邊的臀中肌無力？',['左邊','右邊（站著那邊）','兩邊都是','和臀中肌無關'],1,'站立側臀中肌無力，懸空側骨盆往下掉。']},
+ kflex:{name:'彎膝蓋（屈膝）',max:110,view:'side',h:{p:[-.085,.45,-.02],ax:'x',sg:1,dir:'below',lo:.43,hi:.47,xr:[-.22,-.005],ex:/^(patella|pelvis|femur)/},rd:'膝蓋彎',
+  roles:{c:['biceps-femoris_r','semitendinosus_r','semimembranosus_r'],s:['gastrocnemius_r','sartorius_r','gracilis_r','popliteus_r'],a:['quadriceps_r'],st:[]},
+  txt:['主動肌：膕旁肌（股二頭肌、半腱肌、半膜肌）','協同肌：腓腸肌、縫匠肌、股薄肌；膕肌先「解鎖」膝蓋才開始彎','拮抗肌：股四頭肌被拉長','鵝足（縫匠肌、股薄肌、半腱肌）在膝蓋內側下方，常是膝內側痛的位置'],
+  say:'膝蓋後面緊，看看大腿後側和小腿是不是一起在拉。',
+  sf:['膕肌負責解鎖膝關節、啟動屈膝。','伸膝最後 30° 脛骨相對股骨外旋，把膝蓋鎖住（screw-home）。','鵝足三條肌腱：縫匠肌、股薄肌、半腱肌。'],
+  q:['負責「解鎖」膝關節、讓膝蓋開始彎的是？',['股二頭肌','膕肌','腓腸肌','縫匠肌'],1,'膕肌在膝窩深處，先解鎖膝蓋。']},
+ kext:{name:'伸直膝蓋（伸膝）',max:90,rev:1,view:'side',h:{p:[-.085,.45,-.02],ax:'x',sg:1,dir:'below',lo:.43,hi:.47,xr:[-.22,-.005],ex:/^(patella|pelvis|femur)/},rd:'膝蓋彎',
+  roles:{c:['quadriceps_r'],s:[],a:['biceps-femoris_r','semitendinosus_r','semimembranosus_r','gastrocnemius_r'],st:['popliteus_r']},
+  txt:['主動肌：股四頭肌（股直肌、股外側肌、股內側肌、股中間肌）','拮抗肌：膕旁肌、腓腸肌被拉長','下樓梯、蹲下時，股四頭肌一邊出力一邊被拉長（離心收縮），最容易累'],
+  say:'下樓梯膝蓋痛，常是股四頭肌剎不住，膝蓋在硬撐。',
+  sf:['股神經（L2–L4）支配股四頭肌。','髕骨是人體最大的籽骨。','Q 角太大，髕骨容易往外偏，膝蓋前面容易痛。'],
+  q:['下樓梯時股四頭肌控制身體往下，是哪種收縮？',['向心收縮','離心收縮','等長收縮','不收縮'],1,'肌肉一邊出力一邊被拉長，就是離心收縮，像剎車。']},
+ pflex:{name:'腳尖往下壓（蹠屈）',max:40,view:'side',h:{p:[-.075,.075,-.01],ax:'x',sg:1,dir:'below',lo:.06,hi:.09,xr:[-.22,-.005]},rd:'蹠屈',
+  roles:{c:['gastrocnemius_r','soleus_r'],s:['fibularis-longus_r','fibularis-brevis_r','flexor-digitorum-longus_r','plantaris_r'],a:['tibialis-anterior_r','extensor-digitorum-longus_r'],st:[]},
+  txt:['主動肌：小腿三頭肌（腓腸肌＋比目魚肌），一起接到阿基里斯腱','協同肌：腓骨長肌、短肌、屈趾長肌','拮抗肌：脛前肌、伸趾長肌被拉長','站著墊腳尖是第二類槓桿：腳趾根部是支點，比較省力'],
+  say:'小腿一直很硬，常是腳底沒在出力，小腿代替它撐。',
+  sf:['小腿三頭肌＝腓腸肌內、外側頭＋比目魚肌，共成阿基里斯腱。','膝蓋彎著墊腳尖主要靠比目魚肌，因為腓腸肌跨過膝蓋，已經縮短出不了力。'],
+  q:['坐著（膝蓋彎）墊腳尖，主要靠哪條肌肉？',['腓腸肌','比目魚肌','脛前肌','腓骨長肌'],1,'腓腸肌跨膝，膝蓋彎時已縮短、出力差，主要靠比目魚肌。']},
+ dflex:{name:'勾腳（背屈）',max:20,view:'side',h:{p:[-.075,.075,-.01],ax:'x',sg:-1,dir:'below',lo:.06,hi:.09,xr:[-.22,-.005]},rd:'背屈',
+  roles:{c:['tibialis-anterior_r','extensor-digitorum-longus_r'],s:[],a:['gastrocnemius_r','soleus_r'],st:['fibularis-longus_r']},
+  txt:['主動肌：脛前肌、伸趾長肌（走路時把腳尖抬起來，才不會絆到）','拮抗肌：小腿三頭肌被拉長','腳踝勾不上來，深蹲或走路時足弓容易塌、腳跟容易提早抬起來'],
+  say:'腳踝勾不上來，力量就會往膝蓋和足弓跑。',
+  sf:['踝背屈：腳背往小腿前方靠近。','腓總神經在腓骨頸被壓到 → 垂足（腳尖抬不起來）。','背屈角度不夠，常見代償是足部過度旋前（塌陷）或提早抬腳跟。'],
+  q:['腓總神經受損，會出現什麼？',['足弓變高','垂足（腳尖抬不起來）','膝蓋鎖不住','腳趾無法彎曲'],1,'腓總神經支配脛前肌等背屈肌，受損就垂足。']}});
+const REG_LBL={
+ neck:{bone:[['skull','頭骨'],['spine_cervical','頸椎'],['mandible','下顎骨']],mus:['sternocleidomastoid','trapezius','levator-scapulae']},
+ shoulder:{bone:[['scapula_l','肩胛骨'],['clavicle_l','鎖骨'],['spine_cervical','頸椎'],['humerus_l','肱骨'],['spine_thoracic','胸椎']],mus:['trapezius','levator-scapulae','rhomboid-major','supraspinatus','infraspinatus','teres-minor','teres-major','deltoid-post','deltoid-mid','sternocleidomastoid']},
+ arm:{bone:[['humerus_r','肱骨'],['forearm_r','橈骨・尺骨'],['hand_r','手骨']],mus:['biceps-brachii','triceps-brachii','brachioradialis','extensor-digitorum','flexor-carpi-radialis','finger-flexors']},
+ trunk:{bone:[['sternum','胸骨'],['ribs_l','肋骨'],['spine_thoracic','胸椎']],mus:['pectoralis-major','pectoralis-minor','external-oblique','serratus-anterior',['abdominal_muscles','腹肌群']]},
+ lowback:{bone:[['spine_lumbar','腰椎'],['pelvis','骨盆・薦骨']],mus:['erector-spinae','psoas-major','gluteus-maximus']},
+ hip:{bone:[['pelvis','骨盆'],['femur_l','股骨']],mus:['gluteus-maximus','gluteus-minimus','piriformis','iliacus','adductor-longus']},
+ knee:{bone:[['femur_r','股骨'],['patella_r','髕骨'],['lower_leg_r','脛骨・腓骨']],mus:['quadriceps','biceps-femoris','semitendinosus','sartorius','gracilis','popliteus']},
+ foot:{bone:[['foot_r','足骨'],['lower_leg_r','脛骨・腓骨']],mus:['gastrocnemius','soleus','tibialis-anterior','fibularis-longus','extensor-digitorum-longus','flexor-digitorum-brevis']}};
+Object.assign(BONE_INFO,{
+ skull:'腦袋的外殼。頭往前移 1 公分，後頸要多撐的力就增加不少。經絡：膀胱經、膽經、督脈從頭頂經過',
+ mandible:'下顎骨。咬緊牙根時，咀嚼肌、頸前和頸側會一起緊。經絡：胃經（頰車）',
+ teeth:'牙齒。磨牙、咬緊和頸肩緊常常一起出現。經絡：胃經（上牙）、大腸經（下牙）',
+ spine_thoracic:'12 節胸椎，每節連一對肋骨。胸椎轉不動，腰和脖子就要代償。經絡：膀胱經（脊椎兩旁）、督脈',
+ spine_lumbar:'5 節腰椎，椎體最大，扛上半身的重量。骨盆前傾時腰椎前凸變大。經絡：膀胱經（腎俞、大腸俞）、督脈（命門）',
+ ribs:'12 對肋骨圍成胸廓，呼吸時上下打開。經絡：側胸有膽經、脾經（大包）；前胸有胃經、腎經',
+ sternum:'胸骨，胸廓前面的中心。經絡：任脈（膻中）',
+ pelvis:'骨盆（髂骨、坐骨、恥骨＋薦骨），兩邊髖臼接大腿骨。骨盆是身體的底座。經絡：膀胱經（八髎）、膽經（環跳）',
+ femur:'股骨，人體最長的骨頭。股骨頸幹角約 125°，太大是髖外翻、太小是髖內翻。經絡：胃經在前、膽經在外、膀胱經在後、肝脾腎經在內',
+ patella:'髕骨，人體最大的籽骨，讓股四頭肌更好出力。經絡：胃經（犢鼻在髕骨外下方）',
+ lower_leg:'脛骨在內側承重、腓骨在外側。經絡：胃經（脛骨外緣）、膽經（腓骨前）、脾經（脛骨內側後緣）',
+ foot:'單側 26 塊骨：跗骨 7、蹠骨 5、趾骨 14。距骨是唯一沒有肌肉附著的足骨。經絡：腳上六條經的起點和終點',
+ forearm:'橈骨在拇指側、尺骨在小指側；前臂旋前旋後就是橈骨繞著尺骨轉。經絡：手三陰在掌側、手三陽在背側',
+ hand:'腕骨 8、掌骨 5、指骨 14。大拇指腕掌關節是鞍狀關節，可以對掌。經絡：靈骨、大白在虎口；腕順在小指掌骨外側'});
+
 // ===== 3D 基本 =====
 const stage=document.getElementById('stage'),cv=document.getElementById('cv'),LB=document.getElementById('labels');
 const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,devicePixelRatio));
@@ -227,37 +530,40 @@ const ROLE_M={c:new THREE.MeshStandardMaterial({color:0xff4d3a,emissive:0x400800
 const mIdle=new THREE.MeshStandardMaterial({color:0x6b5450,roughness:.6,transparent:true,opacity:.5});
 const BONE_HI=/^(scapula|clavicle|spine_cervical|humerus)/;
 const isBone=n=>/^(skull|mandible|teeth|spine_|clavicle|scapula|humerus|forearm_[lr]$|hand_[lr]$|ribs|sternum|pelvis|femur|patella|lower_leg|foot_[lr]$)/.test(n);
-const REPLACED=/^(trapezius|deltoid|rotator_cuff|shoulder_muscles|chest_muscles|upper_arm_muscles)_/;
-const isMusG=n=>/(muscles|calf|gluteal|hamstrings|iliopsoas|adductors|intercostals|quadriceps|diaphragm|pelvic_floor)/.test(n);
+const isMusG=n=>/(trapezius|deltoid|rotator_cuff|muscles|calf|gluteal|hamstrings|iliopsoas|adductors|intercostals|quadriceps|diaphragm|pelvic_floor)/.test(n);
 // ===== 載入 =====
+const ORGANS=/^(lung_[lr]|heart|liver|gallbladder|spleen|stomach|small_intestine|colon|kidney_[lr]|bladder)$/;const ORG={};
 const parts={};let skin;
 const base=await loader.loadAsync(BASE);base.scene.updateMatrixWorld(true);
 const world=new THREE.Group();S.add(world);
-base.scene.traverse(o=>{if(!o.isMesh)return;const n=o.name;
- let kind=n.startsWith('skin')?'skin':isBone(n)?'bone':(isMusG(n)&&!REPLACED.test(n))?'musg':null;if(!kind)return;
+base.scene.traverse(o=>{if(!o.isMesh)return;const n=o.name;if(ORGANS.test(n)){ORG[n]=bake(o);return}
+ let kind=n.startsWith('skin')?'skin':isBone(n)?'bone':isMusG(n)?'musg':null;if(!kind)return;
  const m=new THREE.Mesh(bake(o),kind==='skin'?mSkin:kind==='bone'?mBone:mMusFar);m.name=kind==='skin'?'skin':n;m.userData.kind=kind;parts[m.name]=m;world.add(m);if(kind==='skin'){skin=m;m.renderOrder=3}});
 document.getElementById('load').textContent='細部肌肉載入中…';
-const SKFILES=['supplement-shoulder-muscle','supplement-spine-trunk-muscle-pectorals','supplement-elbow-forearm-muscle','head-neck'];
 const DELT={FJ1468:'deltoid-ant',FJ1467:'deltoid-mid',FJ1513:'deltoid-post'};
-const scmTris=[];
-for(const f of SKFILES){let g;try{g=await loader.loadAsync(SK+f+'.glb')}catch(e){console.warn(f,e);continue}g.scene.updateMatrixWorld(true);
- g.scene.traverse(o=>{if(!o.isMesh)return;const nm=(o.name+'|'+(o.parent?o.parent.name:''));
+const loaded=new Set();let hingeCache={},skinData=null;
+function addMus(name,key,geo){if(parts[name]&&parts[name].userData.kind==='mus'){parts[name].geometry=mergeGeo(parts[name].geometry,geo);return}
+ const m=new THREE.Mesh(geo,mMus);m.name=name;m.userData.kind='mus';m.userData.key=key;parts[name]=m;world.add(m)}
+async function loadFile(f){if(loaded.has(f))return;loaded.add(f);let g;try{g=await loader.loadAsync(SK+f+'.glb')}catch(e){console.warn(f,e);loaded.delete(f);return}
+ for(const [b,ff] of Object.entries(BASE_REP))if(ff===f)for(const sd of['','_l','_r']){const o=parts[b+sd];if(o&&o.userData.kind==='musg'){world.remove(o);delete parts[b+sd]}}
+ g.scene.updateMatrixWorld(true);const keys=(FILE_KEYS[f]||[]).slice().sort((a,b)=>b.length-a.length);const scm=[];
+ g.scene.traverse(o=>{if(!o.isMesh)return;const nm=o.name+'|'+(o.parent?o.parent.name:'');
+  let key=keys.find(k=>nm.includes(k+'isa')||nm.includes(k+':isa')||nm.includes(k+'_isa'));if(!key)return;
   const fj=(nm.match(/FJ\d+M?/)||[''])[0];const left=/M$/.test(fj);
-  let key=null;for(const k of Object.keys(MUS)){const slug=k.replace(/-(ant|mid|post)$/,'');if(nm.includes(slug)){key=k;break}}
-  if(!key)return;if(key.startsWith('deltoid')){key=DELT[fj.replace('M','')];if(!key)return}
-  const geo=bake(o,SKOFF);
-  if(key==='sternocleidomastoid'){scmTris.push(geo);return}
-  const name=key+(left?'_l':'_r');const m=new THREE.Mesh(geo,mMus);m.name=name;m.userData.kind='mus';m.userData.key=key;
-  if(parts[name]){const old=parts[name];const merged=mergeGeo(old.geometry,geo);old.geometry=merged;return}
-  parts[name]=m;world.add(m)})}
+  if(key==='deltoid'){key=DELT[fj.replace('M','')];if(!key)return}
+  const geo=bake(o,SKOFF);if(key==='sternocleidomastoid'){scm.push(geo);return}
+  addMus(key+(left?'_l':'_r'),key,geo)});
+ if(scm.length)splitSCM(scm);skinData=null;hingeCache={};world.updateMatrixWorld(true)}
 function mergeGeo(a,b){const pa=a.attributes.position.array,pb=b.attributes.position.array;const p=new Float32Array(pa.length+pb.length);p.set(pa);p.set(pb,pa.length);
  const ia=a.index?Array.from(a.index.array):[...Array(pa.length/3).keys()],ib=b.index?Array.from(b.index.array):[...Array(pb.length/3).keys()];const off=pa.length/3;
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(p,3));g.setIndex(ia.concat(ib.map(i=>i+off)));g.computeVertexNormals();g.computeBoundingSphere();return g}
 // 胸鎖乳突肌：依左右切開
-if(scmTris.length){let all=scmTris[0];for(let i=1;i<scmTris.length;i++)all=mergeGeo(all,scmTris[i]);const P=all.attributes.position.array,I=all.index?all.index.array:[...Array(P.length/3).keys()];
+function splitSCM(scmTris){let all=scmTris[0];for(let i=1;i<scmTris.length;i++)all=mergeGeo(all,scmTris[i]);const P=all.attributes.position.array,I=all.index?all.index.array:[...Array(P.length/3).keys()];
  for(const sd of['l','r']){const keep=[];for(let t=0;t<I.length;t+=3){const cx=(P[I[t]*3]+P[I[t+1]*3]+P[I[t+2]*3])/3;if(sd==='l'?cx>0:cx<=0)keep.push(I[t],I[t+1],I[t+2])}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P.slice(),3));g.setIndex(keep);g.computeVertexNormals();g.computeBoundingSphere();
   const m=new THREE.Mesh(g,mMus);m.name='sternocleidomastoid_'+sd;m.userData.kind='mus';m.userData.key='sternocleidomastoid';parts[m.name]=m;world.add(m)}}
+let cur=REG[location.hash.slice(1)]?location.hash.slice(1):'shoulder';
+for(const f of REG[cur].files)await loadFile(f);
 document.getElementById('load').remove();
 world.updateMatrixWorld(true);
 // ===== 投影到皮膚表面 =====
@@ -274,39 +580,47 @@ function path(g,s){const H=g.map(q=>surf(q[0],q[1],q[2],q[3],s));const out=[];
 // ===== 經絡 =====
 const merG={},flows=[];
 MER.forEach(m=>{const g=new THREE.Group();L('mer').add(g);merG[m.id]=g;
- for(const s of[-1,1]){const {pts,H}=path(m.g,s);if(pts.length<2)continue;const cu=tube(g,pts,m.c,.0016);flows.push({cu,c:m.c,g});
+ for(const s of(m.mid?[1]:[-1,1])){const {pts,H}=path(m.g,s);if(pts.length<2)continue;const cu=tube(g,pts,m.c,.0016);flows.push({cu,c:m.c,g});
   m.acu.forEach(([i,n])=>{if(!H[i])return;dot(g,H[i].p);if(s>0)label('mer',n,H[i].p,'',{m:m.id,t:'acu'})});
   if(s>0&&H[m.nm])label('mer',m.n,H[m.nm].p,'big',{m:m.id,t:'name',c:m.c})}});
 const flowDots=flows.map(f=>{const d=dot(f.g,f.cu.getPoint(0),0xffffff,.004);const h=new THREE.Mesh(new THREE.SphereGeometry(.012,12,10),glowMat(f.c,.5));h.renderOrder=6;d.add(h);return d});
 let sel=null;const leg=document.getElementById('legend');
-leg.innerHTML=MER.map(m=>`<button data-m="${m.id}"><i style="background:${hex(m.c)}"></i>${m.n.slice(3)}<em>${m.e}</em></button>`).join('');
+leg.innerHTML=MER.map(m=>`<button data-m="${m.id}"><i style="background:${hex(m.c)}"></i>${m.sh||m.n.slice(3)}<em>${m.e||'奇經'}</em></button>`).join('');
 leg.onclick=e=>{const b=e.target.closest('button');if(!b)return;sel=sel===b.dataset.m?null:b.dataset.m;
  MER.forEach(m=>merG[m.id].visible=!sel||sel===m.id);leg.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.m===sel));leg.classList.toggle('picked',!!sel);
- const m=MER.find(x=>x.id===sel);if(m){const dv=V(...VIEWS[m.v]).setY(0).setLength(4.4);goal={t:V(0,.84,0),p:dv.setY(.95)}}else frame('back');if(m)setCard(`<h3>${m.n}｜五行屬「${m.e}」</h3><ul><li>走向：${m.t}</li><li>主要穴位：${m.acu.map(a=>a[1]).join('、')}</li><li>氣血最旺的時辰：${m.h}</li></ul><p style="margin:8px 0 0;color:#ffd9a0">再點一次圖例，回到全部經絡。</p>`);else layerCard('mer')};
-// ===== 董氏 =====
-const pain=surf(-.1,1.44,0,'b',1)?.p||V(-.1,1.44,-.08);const tungPts=[];
-TUNG.forEach(t=>{const h=surf(...t.spec);if(!h)return;const p=h.p;t.p=p;t.nrm=h.n;
- const r=new THREE.Mesh(new THREE.TorusGeometry(.016,.003,8,32),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
- const g=new THREE.Mesh(new THREE.SphereGeometry(.026,12,10),glowMat(0xffd166,.35));g.position.copy(p);L('tung').add(g);label('tung',t.n,p,'gold big tap');{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
- const mid=p.clone().lerp(pain,.5).add(V(0,0,-.15));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const tb=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));tb.renderOrder=5;L('tung').add(tb);tungPts.push(t)});
-dot(L('tung'),pain,0xff6b5a,.008);label('tung','肩頸痛點',pain,'big');
-let tIdx=-1;
+ const m=MER.find(x=>x.id===sel);if(m){const dv=V(...VIEWS[m.v]).setY(0).setLength(4.4);goal={t:V(0,.84,0),p:dv.setY(.95)}}else frameRegion();if(m)setCard(`<h3>${m.n}${m.e?'｜五行屬「'+m.e+'」':''}</h3><ul><li>走向：${m.t}</li><li>主要穴位：${m.acu.map(a=>a[1]).join('、')}</li>${m.h?`<li>氣血最旺的時辰：${m.h}</li>`:''}</ul><p style="margin:8px 0 0;color:#ffd9a0">再點一次圖例，回到全部經絡。</p>`);else layerCard('mer')};
+// ===== 董氏（每個分區自己的穴位） =====
+let pain=null,tungPts=[],tIdx=-1,chak=[];
+function clearLabels(ks){for(let i=labels.length-1;i>=0;i--)if(ks.includes(labels[i].k)){labels[i].d.remove();labels.splice(i,1)}}
+function clearGroup(k){const g=L(k);while(g.children.length){const c=g.children.pop();if(!c.userData.keep)c.traverse(o=>{if(o.geometry)o.geometry.dispose()})}}
+function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1;const R0=REG[cur];
+ const ph=surf(...R0.pain);pain=ph?ph.p:V(...R0.cam.t);const fz=R0.cam.v==='back'?-.15:.15;
+ R0.tung.forEach(([id,use])=>{const t0=TUNG[id];if(!t0)return;const h=surf(...t0.spec);if(!h)return;const p=h.p;const t=Object.assign({},t0,{use,p,nrm:h.n});
+  const r=new THREE.Mesh(new THREE.TorusGeometry(.016,.003,8,32),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
+  const g=new THREE.Mesh(new THREE.SphereGeometry(.026,12,10),glowMat(0xffd166,.35));g.position.copy(p);L('tung').add(g);
+  label('tung',t.n,p,'gold big tap');{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
+  const mid=p.clone().lerp(pain,.5).add(V(0,0,fz));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const tb=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));tb.renderOrder=5;L('tung').add(tb);tungPts.push(t)});
+ dot(L('tung'),pain,0xff6b5a,.008);label('tung',R0.n+'痛點',pain,'big');document.getElementById('tName').textContent=''}
 function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
- goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,.55).add(V(0,.08,0))};
- setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr><tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>肩頸用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
+ goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,.95).add(V(0,.1,0))};
+ setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr><tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
 document.getElementById('tPrev').onclick=()=>goTung(tIdx-1);document.getElementById('tNext').onclick=()=>goTung(tIdx+1);
 // ===== 五行 / 脈輪 =====
-[['火',0xff4a3a,[-.13,1.36],'小腸經・三焦經'],['木',0x4fd26b,[-.1,1.46],'膽經'],['金',0xf8e16c,[-.2,1.39],'大腸經'],['水',0x6c8cff,[-.035,1.25],'膀胱經']].forEach(([e,c,[x,y],n])=>{
- for(const s of[-1,1]){const h=surf(x,y,0,'b',s);if(!h)continue;const g=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),glowMat(c,.5));g.position.copy(h.p);g.scale.set(1,1,.5);L('five').add(g);if(s>0)label('five',e+'・'+n,h.p,'big',{c})}});
-const chakC=[0xe74c3c,0xe67e22,0xf1c40f,0x2ecc71,0x3498db,0x6c5ce7,0xb57edc],chakY=[.92,1.0,1.12,1.3,1.5,1.66,1.75],chak=[];
-chakY.forEach((y,i)=>{const on=i==3||i==4;const m=new THREE.Mesh(new THREE.SphereGeometry(on?.022:.013,16,12),new THREE.MeshBasicMaterial({color:chakC[i],transparent:true,opacity:on?1:.45,depthTest:false}));m.renderOrder=6;m.position.set(0,y,-.01);L('chak').add(m);
- if(on){const h=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),glowMat(chakC[i],.4));h.renderOrder=6;m.add(h);chak.push(h)}});
-label('chak','喉輪',V(.02,1.5,-.01),'big');label('chak','心輪',V(.02,1.3,-.01),'big');
+function buildFive(){clearGroup('five');clearLabels(['five']);const R0=REG[cur];
+ (R0.five||[]).forEach(([e,[x,y,z,f],n])=>{const c=G5[e];for(const s of[-1,1]){const h=surf(x,y,z,f,s);if(!h)continue;const g=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),glowMat(c,.5));g.position.copy(h.p);L('five').add(g);if(s>0)label('five',e+'・'+n,h.p,'big',{c})}});
+ (R0.organs||[]).forEach(([k,e,zh])=>{const ms=Object.keys(ORG).filter(n=>n===k||n.startsWith(k+'_'));if(!ms.length)return;
+  const mat=new THREE.MeshStandardMaterial({color:G5[e],emissive:G5[e],emissiveIntensity:.3,roughness:.5});const box=new THREE.Box3();
+  ms.forEach(n=>{const m=new THREE.Mesh(ORG[n],mat);m.userData.keep=1;L('five').add(m);box.expandByObject(m)});label('five',zh+'・'+e,box.getCenter(V()),'big',{c:G5[e]})})}
+const chakC=[0xe74c3c,0xe67e22,0xf1c40f,0x2ecc71,0x3498db,0x6c5ce7,0xb57edc],chakY=[.92,1.0,1.12,1.3,1.5,1.66,1.75];
+function buildChak(){clearGroup('chak');clearLabels(['chak']);chak=[];const hi=REG[cur].chak;
+ chakY.forEach((y,i)=>{const on=hi.includes(i);const m=new THREE.Mesh(new THREE.SphereGeometry(on?.022:.013,16,12),new THREE.MeshBasicMaterial({color:chakC[i],transparent:true,opacity:on?1:.45,depthTest:false}));m.renderOrder=6;m.position.set(0,y,-.01);L('chak').add(m);
+  if(on){const h=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),glowMat(chakC[i],.4));h.renderOrder=6;m.add(h);chak.push(h);label('chak',CHAK_N[i],V(.02,y,-.01),'big')}})}
 // 骨骼、肌肉標籤
 const ctr=(n,d)=>{const o=parts[n];if(!o)return null;const c=new THREE.Box3().setFromObject(o).getCenter(V());return d?c.add(d):c};
-[['scapula_l','肩胛骨',V(0,0,-.06)],['clavicle_l','鎖骨',V(0,.01,.03)],['spine_cervical','頸椎',V(0,0,-.03)],['humerus_l','肱骨'],['spine_thoracic','胸椎',V(0,.05,-.06)]].forEach(([n,t,d])=>{const p=ctr(n,d);if(p)label('bone',t,p,'big')});
-[['trapezius_l',V(.03,.06,-.05)],['levator-scapulae_l',V(0,.03,-.04)],['rhomboid-major_l',V(0,0,-.05)],['supraspinatus_l',V(0,0,-.05)],['infraspinatus_l',V(0,0,-.04)],['teres-minor_l',V(0,0,-.04)],['teres-major_l',V(0,0,-.04)],['deltoid-post_l',V(.01,0,-.03)],['deltoid-mid_l',V(.02,0,0)],['sternocleidomastoid_l',V(0,0,.02)]].forEach(([n,d])=>{const p=ctr(n,d);if(p)label('mus',MUS[n.replace(/_[lr]$/,'')].zh,p,'big')});
+function buildLabels(){clearLabels(['bone','mus']);const L0=REG_LBL[cur];
+ L0.bone.forEach(([n,t])=>{const p=ctr(n);if(p)label('bone',t,p,'big')});
+ L0.mus.forEach(e=>{const isA=Array.isArray(e);const n=isA?e[0]:e+'_l';const t=isA?e[1]:((MUS[e]&&MUS[e].zh)||e).replace(/（.*$/,'');const p=ctr(n)||ctr(n.replace(/_l$/,'_r'));if(p)label('mus',t,p,'big')})}
 // ===== 疊層、點選 =====
 const on={skin:true,bone:true,mus:false,mer:true,tung:false,five:false,chak:false};
 let picked=null,solo=null,mv=null;const hidden=new Set();
@@ -324,13 +638,13 @@ function setMCard(html){basicOpen=false;const mb=document.getElementById('mBasic
 function layerCard(k){const d=LAYER_TXT[k];if(!d)return;if(typeof d[1]==='string'){setCard(`<h3>${d[0]}</h3><p style="margin:0">${d[1]}</p>`);return}
  setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`)}
 document.getElementById('chips').onclick=e=>{const b=e.target.closest('button');if(!b)return;const k=b.dataset.l;on[k]=!on[k];if(mv&&(k==='skin'))stopMove();
- applyVis();if(on[k]){layerCard(k);if(k==='tung'&&tIdx<0)goTung(0)}};
+ applyVis();if(on[k]){lastLayer=k;layerCard(k);if(k==='tung'&&tIdx<0)goTung(0)}};
 const side=n=>/_l$/.test(n)?'（左）':/_r$/.test(n)?'（右）':'';
 function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis();if(!o){box.style.display='none';return}
- const n=o.name,b=n.replace(/_[lr]$/,''),m=MUS[o.userData.key||b];
+ const n=o.name,b=n.replace(/_[lr]$/,''),m=MUS[o.userData.key||b]||BASEG_INFO[b];
  if(m){document.getElementById('pkName').textContent=m.zh+side(n);
   document.getElementById('pkInfo').innerHTML=`<table><tr><td>起點</td><td>${m.o}</td></tr><tr><td>止點</td><td>${m.i}</td></tr><tr><td>動作</td><td>${m.a}</td></tr><tr><td>神經</td><td>${m.nv}</td></tr><tr><td>經絡</td><td>${m.mer}</td></tr>${m.tung?`<tr><td>董氏</td><td>${m.tung}</td></tr>`:''}${m.sf?`<tr><td>重點</td><td>${m.sf}</td></tr>`:''}</table>`}
- else{document.getElementById('pkName').textContent=(BONE_ZH[b]||n)+side(n);document.getElementById('pkInfo').innerHTML=BONE_INFO[b]?`<p style="margin:0">${BONE_INFO[b]}</p>`:'<p style="margin:0;color:#8fa0b8">這個部位的細節，做到其他部位時會補上。</p>'}
+ else{document.getElementById('pkName').textContent=(BONE_ZH[b]||n)+side(n);document.getElementById('pkInfo').innerHTML=BONE_INFO[b]?`<p style="margin:0">${BONE_INFO[b]}</p>`:'<p style="margin:0;color:#8fa0b8">切換到對應的分區，可以看到這裡的細部肌肉。</p>'}
  box.style.display='block'}
 let down=null;cv.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
 cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;const r=cv.getBoundingClientRect();
@@ -340,13 +654,14 @@ cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.cli
 document.getElementById('bSolo').onclick=()=>{if(!picked)return;solo=picked;hidden.clear();applyVis();const b=new THREE.Box3().setFromObject(picked),c=b.getCenter(V()),r=b.getSize(V()).length();
  const dir=C.position.clone().sub(ctl.target).normalize();goal={t:c,p:c.clone().addScaledVector(dir,Math.max(.3,r*2.2))};stage.scrollIntoView({behavior:'smooth',block:'start'})};
 document.getElementById('bHide').onclick=()=>{if(!picked)return;const o=picked;if(solo===o)solo=null;hidden.add(o);pickPart(null)};
-document.getElementById('bAll').onclick=()=>{solo=null;hidden.clear();pickPart(null);frame('back')};
+document.getElementById('bAll').onclick=()=>{solo=null;hidden.clear();pickPart(null);frameRegion()};
 // ===== 肌動：骨頭帶著肌肉動 =====
 const BODIES={T:['ribs_l','ribs_r','sternum','spine_thoracic','spine_lumbar','pelvis','scapula_l','clavicle_l','humerus_l','forearm_l','hand_l'],H:['skull','mandible','teeth'],N:['spine_cervical'],S:['scapula_r'],Cl:['clavicle_r'],A:['humerus_r','forearm_r','hand_r']};
-const BK=Object.keys(BODIES),NB=BK.length;let skinData=null;
+const SHK=new Set([...FILE_KEYS['supplement-shoulder-muscle'],'deltoid-ant','deltoid-mid','deltoid-post',...FILE_KEYS['supplement-spine-trunk-muscle-pectorals'],'biceps-brachii','triceps-brachii','sternocleidomastoid']);
+const BK=Object.keys(BODIES),NB=BK.length;
 function samples(names){const out=[];for(const n of names){const o=parts[n];if(!o)continue;const a=o.geometry.attributes.position.array;const step=Math.max(1,Math.floor(a.length/3/350));for(let i=0;i<a.length/3;i+=step)out.push(a[i*3],a[i*3+1],a[i*3+2])}return new Float32Array(out)}
 function buildSkin(){const smp=BK.map(k=>samples(BODIES[k]));const list=[];
- for(const o of Object.values(parts)){if(o.userData.kind!=='mus'&&o.userData.kind!=='musg')continue;const bs=o.geometry.boundingSphere;if(bs.center.y+bs.radius<1.0)continue;
+ for(const o of Object.values(parts)){if(o.userData.kind!=='mus'&&o.userData.kind!=='musg')continue;if(o.userData.kind==='mus'&&!SHK.has(o.userData.key))continue;const bs=o.geometry.boundingSphere;if(bs.center.y+bs.radius<1.0)continue;
   const a=o.geometry.attributes.position.array,n=a.length/3,w=new Float32Array(n*NB),orig=a.slice();
   for(let i=0;i<n;i++){const x=a[i*3],y=a[i*3+1],z=a[i*3+2];const d=new Float32Array(NB);let dm=1e9;
    for(let b=0;b<NB;b++){const s=smp[b];let m=1e9;for(let j=0;j<s.length;j+=3){const dx=s[j]-x,dy=s[j+1]-y,dz=s[j+2]-z,q=dx*dx+dy*dy+dz*dz;if(q<m)m=q}d[b]=Math.sqrt(m);if(d[b]<dm)dm=d[b]}
@@ -363,12 +678,13 @@ function mats(k,a){const I=new THREE.Matrix4(),M={T:I,H:I,N:I,S:I,Cl:I,A:I};let 
  else if(k==='tilt'){M.H=piv(P_N,new THREE.Matrix4().makeRotationZ(-.35*a));M.N=piv(P_N,new THREE.Matrix4().makeRotationZ(-.175*a));read=`頭往左側彎 <b>${(a*20).toFixed(0)}°</b>`}
  return {M,read}}
 let mvKey=null,mvA=0,playing=true,fr=0;const tv=V();
-function setMove(k){if(!skinData){document.getElementById('mread').style.display='block';document.getElementById('mread').textContent='計算肌肉附著中…';setTimeout(()=>{buildSkin();setMove(k)},30);return}
- resetPose();mvKey=k;mv=MOVES[k];mvA=0;playing=true;pickPart(null);solo=null;hidden.clear();
+function setMove(k){const M0=MOVES[k];if(!M0.h&&!skinData){document.getElementById('mread').style.display='block';document.getElementById('mread').textContent='計算肌肉附著中…';setTimeout(()=>{buildSkin();setMove(k)},30);return}
+ resetPose();mvKey=k;mv=M0;mvA=0;ph=0;playing=true;if(M0.h)prepHinge(k);pickPart(null);solo=null;hidden.clear();
  document.querySelectorAll('#moves button').forEach(b=>b.classList.toggle('on',b.dataset.mv===k));document.getElementById('mctl').style.display='flex';document.getElementById('mPlay').textContent='⏸';
  document.getElementById('roles').style.display='flex';document.getElementById('mread').style.display='block';applyVis();
- setMCard(`<h3>肌動學｜${mv.name}</h3><ul>${mv.txt.map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${mv.say}</p>${sfHTML(mv)}<p style="margin:8px 0 0;color:#8fa0b8;font-size:12px">看動作時，經絡、董氏等圖層會先隱藏；再點一次動作按鈕或按「結束」就回來。</p>`);frame(k==='tilt'?'back':'back',k==='tilt'?1.55:null)}
-function resetPose(){if(!skinData)return;for(const d of skinData.list){d.o.geometry.attributes.position.array.set(d.orig);d.o.geometry.attributes.position.needsUpdate=true;d.o.geometry.computeVertexNormals()}
+ setMCard(`<h3>肌動學｜${mv.name}</h3><ul>${mv.txt.map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${mv.say}</p>${sfHTML(mv)}<p style="margin:8px 0 0;color:#8fa0b8;font-size:12px">看動作時，經絡、董氏等圖層會先隱藏；再點一次動作按鈕或按「結束」就回來。</p>`);if(M0.h)frameRegion(M0.view,1.7);else frame('back',k==='tilt'?1.55:null)}
+function resetPose(){if(hinge){for(const d of hinge.list){const g=d.o.geometry;g.attributes.position.array.set(d.orig);g.attributes.position.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere()}hinge=null}
+ if(!skinData)return;for(const d of skinData.list){d.o.geometry.attributes.position.array.set(d.orig);d.o.geometry.attributes.position.needsUpdate=true;d.o.geometry.computeVertexNormals()}
  if(skinData.cerv){const g=skinData.cerv.o.geometry;g.attributes.position.array.set(skinData.cerv.orig);g.attributes.position.needsUpdate=true;g.computeVertexNormals()}
  for(const k of BK)for(const n of BODIES[k]){const o=parts[n];if(o&&n!=='spine_cervical'){o.matrixAutoUpdate=true;o.updateMatrix();o.updateMatrixWorld()}}}
 function stopMove(){resetPose();mv=null;mvKey=null;document.querySelectorAll('#moves button').forEach(b=>b.classList.remove('on'));['mctl','roles','mread'].forEach(i=>document.getElementById(i).style.display='none');applyVis();setMCard('')}
@@ -384,6 +700,28 @@ function pose(a){const {M,read}=mats(mvKey,a);const E=BK.map(k=>M[k].elements);
   g.attributes.position.needsUpdate=true;if(fr%3===0)g.computeVertexNormals()}
  fr++;ROLE_M.c.emissive.setRGB(.15+.45*a,.03,0);ROLE_M.a.emissive.setRGB(0,.04+.1*a,.15+.45*a);
  document.getElementById('mread').innerHTML=read;document.getElementById('mSlide').value=Math.round(a*1000)}
+// ===== 關節轉軸（手肘、手腕、軀幹、髖、膝、踝、頸） =====
+let hinge=null;
+const ARMRE=/^(humerus|forearm|hand|deltoid|biceps-brachii|triceps|brachioradialis|extensor-carpi|extensor-digitorum_|flexor-carpi|palmaris|finger-flexors|pronator|supinator|upper_arm|hand_muscles|rotator|teres|infraspinatus|supraspinatus|subscapularis|scapula|clavicle|shoulder_muscles)/;
+function prepHinge(k){if(hingeCache[k]){hinge=hingeCache[k];return}const h=MOVES[k].h,P=V(...h.p),list=[];
+ for(const o of Object.values(parts)){const kd=o.userData.kind;if(kd!=='bone'&&kd!=='mus'&&kd!=='musg')continue;if(h.ex&&h.ex.test(o.name))continue;
+  const arm=ARMRE.test(o.name);if(h.armOnly&&!arm)continue;if(!h.armOnly&&!h.arms&&arm)continue;
+  const a=o.geometry.attributes.position.array,n=a.length/3,w=new Float32Array(n);let any=false;
+  for(let i=0;i<n;i++){const x=a[i*3],y=a[i*3+1];let v;
+   if(h.arms&&arm)v=1;else{v=h.dir==='below'?(y<=h.lo?1:y>=h.hi?0:(h.hi-y)/(h.hi-h.lo)):(y>=h.hi?1:y<=h.lo?0:(y-h.lo)/(h.hi-h.lo));
+    if(h.xr&&(x<h.xr[0]||x>h.xr[1]))v=0;if(h.xa&&Math.abs(x)>h.xa)v=0;v=v*v*(3-2*v)}
+   w[i]=v;if(v>0)any=true}
+  if(any)list.push({o,w,orig:a.slice()})}
+ hinge=hingeCache[k]={list,P,h}}
+function poseH(a){const H=hinge,h=H.h,M0=MOVES[mvKey];const th=(M0.rev?1-a:a)*M0.max*RAD*h.sg,P=H.P,C1=Math.cos(th),S1=Math.sin(th);
+ for(const d of H.list){const arr=d.o.geometry.attributes.position.array,o=d.orig,w=d.w,n=w.length;
+  for(let i=0;i<n;i++){const wi=w[i];if(wi===0)continue;const j=i*3;let c=C1,s=S1;if(wi<1){c=Math.cos(th*wi);s=Math.sin(th*wi)}
+   const x=o[j]-P.x,y=o[j+1]-P.y,z=o[j+2]-P.z;
+   if(h.ax==='x'){arr[j+1]=P.y+y*c-z*s;arr[j+2]=P.z+y*s+z*c}else if(h.ax==='y'){arr[j]=P.x+x*c+z*s;arr[j+2]=P.z-x*s+z*c}else{arr[j]=P.x+x*c-y*s;arr[j+1]=P.y+x*s+y*c}}
+  d.o.geometry.attributes.position.needsUpdate=true;if(fr%3===0)d.o.geometry.computeVertexNormals()}
+ fr++;ROLE_M.c.emissive.setRGB(.15+.45*a,.03,0);ROLE_M.a.emissive.setRGB(0,.04+.1*a,.15+.45*a);
+ document.getElementById('mread').innerHTML=`${M0.rd} <b>${Math.abs(th/RAD).toFixed(0)}°</b>`;document.getElementById('mSlide').value=Math.round(a*1000)}
+function buildMoves(){document.getElementById('moves').innerHTML=REG[cur].moves.map(k=>`<button data-mv="${k}">${MOVES[k].name}</button>`).join('')}
 document.getElementById('moves').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(mvKey===b.dataset.mv){stopMove();return}setMove(b.dataset.mv)};
 document.getElementById('mPlay').onclick=()=>{playing=!playing;document.getElementById('mPlay').textContent=playing?'⏸':'▶'};
 document.getElementById('mSlide').oninput=e=>{playing=false;document.getElementById('mPlay').textContent='▶';mvA=e.target.value/1000};
@@ -391,19 +729,35 @@ document.getElementById('mStop').onclick=stopMove;
 // ===== 鏡頭 =====
 let goal=null;const VIEWS={back:[0,1.36,-1.6],front:[0,1.36,1.6],side:[-1.6,1.36,0]};
 function frame(v,dist){const p=V(...VIEWS[v||'back']);if(dist)p.setLength(dist).setY(1.36);goal={t:V(0,1.3,0),p}}
-document.querySelectorAll('.view button').forEach(b=>b.onclick=()=>frame(b.dataset.v));
+function frameRegion(v,k){const c=REG[cur].cam,t=V(...c.t);const dir=V(...VIEWS[v||c.v]).setY(0).normalize();goal={t,p:t.clone().addScaledVector(dir,c.d*(k||1)).add(V(0,.05,0))}}
+document.querySelectorAll('.view button').forEach(b=>b.onclick=()=>frameRegion(b.dataset.v));
+const MER_TXT0=LAYER_TXT.mer[1].slice(0,3),MER_SAY0=LAYER_TXT.mer[2];let lastLayer='mer';
+function applyRegionText(){const R0=REG[cur];
+ LAYER_TXT.bone=['解剖｜骨骼',R0.bone[0],R0.bone[1]];LAYER_TXT.mus=['肌動｜肌肉',cur==='shoulder'?R0.mus[0]:R0.mus[0].concat(['點任何一條肌肉，看它的起點、止點、動作和神經；下方「肌動學」選一個動作，看哪些肌肉收縮、哪些被拉長']),R0.mus[1]];
+ LAYER_TXT.mer=['經絡｜十四經',MER_TXT0.concat([R0.mer]),cur==='shoulder'?MER_SAY0:'一個地方卡住，整條經絡都會不順。'];
+ LAYER_TXT.tung=['董氏奇穴｜遠端帶動',['用下方「上一個／下一個」切換穴位，或直接點 3D 畫面上的金色穴位名稱','每個穴位的卡片都可以連到「董氏心氣神針傳承網」看完整說明','董氏的特色：不一定扎在痛的地方，而是從遠端帶動'],'痛在'+R0.n+'，答案常常在遠端。'];
+ LAYER_TXT.five=['五行能量｜屬於哪一行',R0.fiveT[0],R0.fiveT[1]];LAYER_TXT.chak=['脈輪｜能量中心',R0.chakT[0],R0.chakT[1]];
+ document.getElementById('markR').textContent=R0.n;document.getElementById('markT').textContent=R0.mark;document.getElementById('cta').textContent='加入官方 LINE「鈞衡舍」'+R0.cta;
+ document.querySelectorAll('#regions button').forEach(b=>b.classList.toggle('on',b.dataset.r===cur))}
+function buildRegion(){applyRegionText();buildTung();buildFive();buildChak();buildLabels();buildMoves();applyVis()}
+async function setRegion(r){if(mv)stopMove();pickPart(null);solo=null;hidden.clear();setMCard('');cur=r;history.replaceState(null,'','#'+r);
+ document.querySelectorAll('#regions button').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
+ const need=REG[r].files.filter(f=>!loaded.has(f)),st=document.getElementById('rstat');
+ if(need.length){st.textContent='載入「'+REG[r].n+'」的細部肌肉…';st.style.display='block';for(const f of need)await loadFile(f);st.style.display='none'}
+ if(cur!==r)return;buildRegion();frameRegion();if(on.tung)goTung(0);else layerCard(on[lastLayer]?lastLayer:'mer')}
+document.getElementById('regions').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.r===cur)return;setRegion(b.dataset.r)};
 ctl.addEventListener('start',()=>goal=null);
 const t0=performance.now(),tmp=V();let ph=0,lastT=0;
 function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  if(goal){ctl.target.lerp(goal.t,.12);C.position.lerp(goal.p,.12);if(C.position.distanceTo(goal.p)<.003)goal=null}ctl.update();
- if(mv){if(playing){ph+=dt*1.1;mvA=(1-Math.cos(ph))/2}pose(mvA)}
+ if(mv){if(playing){ph+=dt*1.1;mvA=(1-Math.cos(ph))/2}if(mv.h)poseH(mvA);else pose(mvA)}
  flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
  tungPts.forEach((p,i)=>p.ring.scale.setScalar((i===tIdx?1.5:1)*(1+.3*Math.sin(t*4+i))));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
  R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
  for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo))vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
-C.position.set(...VIEWS.back);ctl.target.set(0,1.3,0);applyVis();layerCard('mer');loop();window.ready=1;
+buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
 
 
 function sfHTML(m){if(!m.sf)return'';const q=m.q;return `<div class="sf"><div class="sfh">肌動學重點</div><ul>${m.sf.map(x=>'<li>'+x+'</li>').join('')}</ul>${q?`<div class="qz"><div class="qq">考考你：${q[0]}</div>${q[1].map((o,i)=>`<button data-i="${i}">${'ABCD'[i]}. ${o}</button>`).join('')}<div class="qa"></div></div>`:''}</div>`}
