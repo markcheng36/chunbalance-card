@@ -80,7 +80,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 </div>
 <div class="under">
  <div class="rstat" id="rstat"></div>
- <div class="view ov"><button data-v="front">正面</button><button data-v="back">背面</button><button data-v="side">側面</button><span class="hint">一指轉動・兩指縮放・點骨頭/肌肉看單一部位</span></div>
+ <div class="view ov"><button data-v="front">正面</button><button data-v="back">背面</button><button data-v="side">側面</button><span class="hint">一指轉動・兩指縮放／平移・點骨頭/肌肉看單一部位</span></div>
  <div class="mread" id="mread"></div>
  <div class="roles" id="roles"><span><i style="background:#ff4d3a"></i>主動肌（收縮變短）</span><span><i style="background:#ff9f43"></i>協同肌（幫忙）</span><span><i style="background:#4f8dff"></i>拮抗肌（被拉長）</span><span><i style="background:#ffd166"></i>穩定肌（固定關節）</span></div>
  <div class="legend ov" id="legend"></div>
@@ -564,7 +564,7 @@ const stage=document.getElementById('stage'),cv=document.getElementById('cv'),LB
 const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(2,devicePixelRatio));
 const S=new THREE.Scene(),C=new THREE.PerspectiveCamera(30,1,.05,30);
 S.add(new THREE.HemisphereLight(0xdbe8ff,0x182030,1.4));const dl=new THREE.DirectionalLight(0xffffff,1.6);dl.position.set(1,2,-2);S.add(dl);const dl2=new THREE.DirectionalLight(0x9fc0ff,.9);dl2.position.set(-1,1,2);S.add(dl2);
-const ctl=new OrbitControls(C,cv);ctl.enableDamping=true;ctl.enablePan=false;ctl.minDistance=.3;ctl.maxDistance=4.5;ctl.rotateSpeed=.7;
+const ctl=new OrbitControls(C,cv);ctl.enableDamping=true;ctl.enablePan=true;ctl.screenSpacePanning=true;ctl.panSpeed=.8;ctl.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};ctl.minDistance=.3;ctl.maxDistance=4.5;ctl.rotateSpeed=.7;
 function size(){const w=stage.clientWidth,h=stage.clientHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()}addEventListener('resize',size);size();
 const V=(x,y,z)=>new THREE.Vector3(x,y,z);const hex=c=>'#'+c.toString(16).padStart(6,'0');
 const layers={},labels=[];function L(k){if(!layers[k]){layers[k]=new THREE.Group();layers[k].visible=false;S.add(layers[k])}return layers[k]}
