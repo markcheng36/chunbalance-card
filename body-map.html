@@ -62,6 +62,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .tsw button.on,.tparts button.on{background:#5a4510;color:#fff;border-color:#ffd166}
 .tparts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
 .tpts{display:flex;flex-direction:column;gap:6px;margin-top:8px}.tg{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.tg span{width:100%;font-size:12px;color:var(--mut)}.tg button{background:var(--card);color:#ffd98a;border:1px solid #4a3f22;border-radius:8px;padding:6px 9px;font-size:13px}.tg button.on{background:#ffd166;color:#1a1300;border-color:#ffd166;font-weight:600}
+.ebar{display:none;flex-wrap:wrap;gap:6px;margin-top:8px}.ebar button{flex:1 0 18%;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:8px 2px;font-size:14px}.ebar button i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}.ebar button.on{border-color:#fff;background:#1d2a40;font-weight:600}#chakBar button{flex:1 0 22%;font-size:13px}
 .card .grp{margin:0;padding-left:18px}.card .grp li{margin:2px 0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:10px;font-size:14px;line-height:1.7}
 .card h3{margin:0 0 6px;font-size:16px}.card ul{margin:0;padding-left:18px}.card .src{color:var(--mut);font-size:12px;margin-top:6px}
@@ -90,6 +91,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 <div class="chips" id="chips"><button data-l="skin">皮膚</button><button data-l="bone">骨骼</button><button data-l="mus">肌肉</button><button data-l="mer">經絡</button><button data-l="tung">董氏</button></div>
 <div class="sec">單獨看（打開時經絡、董氏會先收起來）</div>
 <div class="chips one" id="chips2"><button data-l="five">五行</button><button data-l="chak">脈輪</button></div>
+<div class="ebar" id="fiveBar"></div><div class="ebar" id="chakBar"></div>
 <div class="tmode" id="tmode"><div class="tparts" id="tparts"></div><div class="tpts" id="tpts"></div></div>
 <div class="tnav" id="tnav"><button id="tPrev">◀ 上一個</button><span id="tName"></span><button id="tNext">下一個 ▶</button></div>
 <div id="info"></div>
@@ -213,6 +215,25 @@ const XYM=[
  {p:7,g:"上里、四腑一、四腑二",zz:"眼壓過高脹痛、酸痛、昏痛、頭痛、顏面神經麻痺、口歪眼斜、嘔吐、反胃、腹脹、神經錯亂",pts:[{n:"上里",u:"%e4%b8%8a%e9%87%8c%e7%a9%b4",spec:[-0.018, 1.648, 0, "f", -1],where:"眉頭內側直上五分（註：對照十四經，攢竹穴直上五分）"},{n:"四腑二",u:"%e5%9b%9b%e8%85%91%e4%ba%8c%e7%a9%b4",spec:[-0.035, 1.652, 0, "f", -1],where:"眉毛正中央點直上五分"},{n:"四腑一",u:"%e5%9b%9b%e8%85%91%e4%b8%80%e7%a9%b4",spec:[-0.052, 1.645, 0, "f", -1],where:"眉毛外側直上五分（註：對照十四經，絲竹空穴直上五分）"}]},
  {p:7,g:"水通、水金",zz:ZZ_ST,pts:[{n:"水通",u:"%e6%b0%b4%e9%80%9a%e7%a9%b4",id:"shuitong"},{n:"水金",u:"%e6%b0%b4%e9%87%91%e7%a9%b4",id:"shuijin"}]},
 ];
+// ===== 五行、脈輪完整內容（五行依《黃帝內經》常見歸類；脈輪依瑜伽傳統常見說法，各派略有不同） =====
+const FIVE_ORDER=['木','火','土','金','水'];
+const FIVE={
+ 木:{zang:'肝',fu:'膽',mer:'足厥陰肝經、足少陽膽經',season:'春',color:'青（綠）',dir:'東',emo:'怒',sense:'目（眼睛）',body:'筋（筋膜、肌腱、韌帶）',hua:'爪（指甲）',taste:'酸',sound:'呼',time:'膽經 子時 23–1 點、肝經 丑時 1–3 點',sheng:'火',ke:'土',from:'水',by:'金',struct:'筋屬木：關節活動度、筋膜的彈性、抽筋和緊繃，在五行裡都歸在木。',org:['liver','gallbladder']},
+ 火:{zang:'心（心包）',fu:'小腸（三焦）',mer:'手少陰心經、手太陽小腸經、手厥陰心包經、手少陽三焦經',season:'夏',color:'赤（紅）',dir:'南',emo:'喜',sense:'舌',body:'脈（血脈）',hua:'面（臉色）',taste:'苦',sound:'笑',time:'心經 午時 11–13 點、小腸經 未時 13–15 點、心包經 戌時 19–21 點、三焦經 亥時 21–23 點',sheng:'土',ke:'金',from:'木',by:'水',struct:'脈屬火：血液循環好不好，會影響肌肉的溫度和恢復。',org:['heart','small_intestine']},
+ 土:{zang:'脾',fu:'胃',mer:'足太陰脾經、足陽明胃經',season:'長夏（夏末）',color:'黃',dir:'中',emo:'思',sense:'口',body:'肉（肌肉）',hua:'唇',taste:'甘',sound:'歌',time:'胃經 辰時 7–9 點、脾經 巳時 9–11 點',sheng:'金',ke:'水',from:'火',by:'木',struct:'肉屬土：肌肉量和力量、四肢有沒有力，在五行裡歸在脾土。',org:['spleen','stomach']},
+ 金:{zang:'肺',fu:'大腸',mer:'手太陰肺經、手陽明大腸經',season:'秋',color:'白',dir:'西',emo:'悲（憂）',sense:'鼻',body:'皮（皮膚）',hua:'毛（體毛）',taste:'辛',sound:'哭',time:'肺經 寅時 3–5 點、大腸經 卯時 5–7 點',sheng:'水',ke:'木',from:'土',by:'火',struct:'皮屬金、肺主呼吸：胸廓打不開、呼吸淺，肩頸和上背常一起緊。',org:['lung','colon']},
+ 水:{zang:'腎',fu:'膀胱',mer:'足少陰腎經、足太陽膀胱經',season:'冬',color:'黑',dir:'北',emo:'恐',sense:'耳',body:'骨（骨骼、骨髓）',hua:'髮（頭髮）',taste:'鹹',sound:'呻',time:'膀胱經 申時 15–17 點、腎經 酉時 17–19 點',sheng:'木',ke:'火',from:'金',by:'土',struct:'骨屬水、腎主骨：骨架是身體的地基，膀胱經也從頭沿著整條脊椎走到腳。',org:['kidney','bladder']}};
+const CHAK=[
+ {n:'海底輪',sk:'Muladhara',pos:'會陰、尾骨的位置',color:'紅',el:'土',theme:'安全感、穩定、扎根',body:'骨盆底、雙腿、雙腳、骨骼、下背',gland:'腎上腺',off:'常被形容為不安、腳下不踏實、容易緊張',try:'赤腳站著，感覺兩個腳底平均踩地，慢慢呼吸幾次'},
+ {n:'臍輪',sk:'Svadhisthana',pos:'肚臍下方約三指的下腹',color:'橙',el:'水',theme:'情緒、創造力、享受與流動',body:'骨盆、髖關節、下腹、生殖與泌尿系統',gland:'性腺',off:'常被形容為情緒卡住、提不起勁、髖部和下腹緊',try:'雙手扶髖，骨盆慢慢畫圈，呼吸放到下腹'},
+ {n:'太陽神經叢輪',sk:'Manipura',pos:'肚臍到胸骨下端之間的上腹',color:'黃',el:'火',theme:'意志力、自信、行動力',body:'胃、肝膽、胰臟、橫膈膜、腰部核心',gland:'胰臟',off:'常被形容為沒自信、壓力一來胃就不舒服、上腹緊',try:'手放在肋骨下緣，吸氣讓肋骨往兩側打開，吐氣慢慢收回'},
+ {n:'心輪',sk:'Anahata',pos:'胸口正中央',color:'綠',el:'風（氣）',theme:'愛、接納、放下、與人連結',body:'心、肺、胸椎、肩膀、手臂',gland:'胸腺',off:'常被形容為放不下、胸悶、駝背、肩膀往前縮',try:'雙手在背後輕扣，胸口往前上方打開，深呼吸三次'},
+ {n:'喉輪',sk:'Vishuddha',pos:'喉嚨',color:'藍',el:'空（以太）',theme:'表達、溝通、說出真話',body:'頸椎、喉嚨、下顎、肩頸',gland:'甲狀腺',off:'常被形容為話吞回去、咬牙、肩頸緊',try:'放鬆下顎，嘴巴微開，慢慢哼一個長音，感覺喉嚨的震動'},
+ {n:'眉心輪',sk:'Ajna',pos:'兩眉之間',color:'靛',el:'光',theme:'直覺、專注、看清楚',body:'眼睛、頭部、神經系統',gland:'松果體（也有系統說是腦下垂體）',off:'常被形容為想太多、頭脹、眼睛累',try:'閉上眼睛，放鬆眼周和眉心，專心數十次呼吸'},
+ {n:'頂輪',sk:'Sahasrara',pos:'頭頂',color:'紫（或白）',el:'意識',theme:'覺知、與整體連結',body:'大腦、頭頂',gland:'腦下垂體（也有系統說是松果體）',off:'常被形容為迷失方向、和自己斷了連結',try:'坐直，想像頭頂被一條線輕輕往上提，讓脊椎拉長'}];
+let fiveSel=null,chakSel=null;
+const chakC=[0xe74c3c,0xe67e22,0xf1c40f,0x2ecc71,0x3498db,0x6c5ce7,0xb57edc],chakY=[.92,1.0,1.12,1.3,1.5,1.66,1.75];
+const MER_E={};
 // ===== 分區資料 =====
 const REG_ORDER=['neck','shoulder','arm','trunk','lowback','hip','knee','foot'];
 const G5={木:0x4fd26b,火:0xff4a3a,土:0xe0a458,金:0xf8e16c,水:0x6c8cff};
@@ -639,7 +660,7 @@ function path(g,s){const H=g.map(q=>surf(q[0],q[1],q[2],q[3],s));const out=[];
  for(let i=0;i<H.length;i++){if(!H[i])continue;out.push(H[i].p);const j=H.slice(i+1).findIndex(Boolean);if(j<0)break;const B=H[i+1+j];
   const steps=Math.max(2,Math.round(H[i].p.distanceTo(B.p)/.012));for(let k=1;k<steps;k++)out.push(refine(H[i],B,k/steps))}return {pts:out,H}}
 // ===== 經絡 =====
-const merG={},flows=[];
+const merG={},flows=[];MER.forEach(m=>MER_E[m.id]=m.e);
 MER.forEach(m=>{const g=new THREE.Group();L('mer').add(g);merG[m.id]=g;
  for(const s of(m.mid?[1]:[-1,1])){const {pts,H}=path(m.g,s);if(pts.length<2)continue;const cu=tube(g,pts,m.c,.0016);flows.push({cu,c:m.c,g});
   m.acu.forEach(([i,n])=>{if(!H[i])return;dot(g,H[i].p);if(s>0)label('mer',n,H[i].p,'',{m:m.id,t:'acu'})});
@@ -687,15 +708,25 @@ function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.len
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,t.all?.5:.95).add(V(0,t.all?.04:.1,0))};
  if(t.all){setCard(`<h3>宣宇門｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>同一組</td><td>${/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table><a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a><div class="src">穴組依宣宇門董氏抽籤筒；位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
  setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
+document.getElementById('fiveBar').innerHTML=FIVE_ORDER.map(e=>`<button data-e="${e}"><i style="background:${hex(G5[e])}"></i>${e}</button>`).join('');
+document.getElementById('chakBar').innerHTML=CHAK.map((c,i)=>`<button data-c="${i}"><i style="background:${hex(chakC[i])}"></i>${c.n.replace('太陽神經叢輪','太陽輪')}</button>`).join('');
+function fiveCard(){if(!fiveSel){const d=LAYER_TXT.five;setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><div class="sf"><div class="sfh">五行怎麼互相影響</div><ul><li>相生（媽媽養小孩）：木生火、火生土、土生金、金生水、水生木</li><li>相剋（互相牽制）：木剋土、土剋水、水剋火、火剋金、金剋木</li><li>點下面的木、火、土、金、水，3D 會亮起這一行的臟腑和經絡</li></ul></div><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`);return}
+ const F=FIVE[fiveSel];setCard(`<h3 style="color:${hex(G5[fiveSel])}">五行｜${fiveSel}</h3><table><tr><td>臟／腑</td><td>${F.zang}／${F.fu}</td></tr><tr><td>經絡</td><td>${F.mer}</td></tr><tr><td>氣血時辰</td><td>${F.time}</td></tr><tr><td>五體</td><td>${F.body}，其華在${F.hua}</td></tr><tr><td>五官</td><td>${F.sense}</td></tr><tr><td>情志</td><td>${F.emo}</td></tr><tr><td>季節</td><td>${F.season}</td></tr><tr><td>顏色／方位</td><td>${F.color}／${F.dir}</td></tr><tr><td>五味／五聲</td><td>${F.taste}／${F.sound}</td></tr><tr><td>相生</td><td>${F.from}生${fiveSel}，${fiveSel}生${F.sheng}</td></tr><tr><td>相剋</td><td>${F.by}剋${fiveSel}，${fiveSel}剋${F.ke}</td></tr><tr><td>和結構的關係</td><td>${F.struct}</td></tr></table><div class="src">依《黃帝內經》常見的五行歸類。再點一次「${fiveSel}」回到五行總覽。</div>`)}
+function chakCard(){if(chakSel==null){const d=LAYER_TXT.chak;setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><div class="sf"><div class="sfh">七個脈輪，從下到上</div><ul>${CHAK.map((c,i)=>`<li><b style="color:${hex(chakC[i])}">${c.n}</b>：${c.pos}，${c.theme}</li>`).join('')}</ul><p style="margin:6px 0 0">點下面的脈輪按鈕，看它對應身體哪裡、可以怎麼練習。</p></div><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`);return}
+ const c=CHAK[chakSel];setCard(`<h3 style="color:${hex(chakC[chakSel])}">第${chakSel+1}脈輪｜${c.n}（${c.sk}）</h3><table><tr><td>位置</td><td>${c.pos}</td></tr><tr><td>顏色／元素</td><td>${c.color}／${c.el}</td></tr><tr><td>主題</td><td>${c.theme}</td></tr><tr><td>對應身體</td><td>${c.body}</td></tr><tr><td>對應腺體</td><td>${c.gland}</td></tr><tr><td>失衡時</td><td>${c.off}</td></tr><tr><td>簡單練習</td><td>${c.try}</td></tr></table><div class="src">依瑜伽傳統常見的說法，各派略有不同；是身體覺察用，不是醫療診斷。再點一次「${c.n}」回到總覽。</div>`)}
+document.getElementById('fiveBar').onclick=e=>{const b=e.target.closest('button');if(!b)return;fiveSel=fiveSel===b.dataset.e?null:b.dataset.e;buildFive();applyVis();fiveCard();
+ if(fiveSel){goal={t:V(0,1.0,0),p:V(0,1.08,3.3)}}else frameRegion()};
+document.getElementById('chakBar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const i=+b.dataset.c;chakSel=chakSel===i?null:i;buildChak();applyVis();chakCard();
+ if(chakSel!=null){const y=chakY[chakSel];goal={t:V(0,y,0),p:V(0,y+.05,1.25)}}else frameRegion()};
 document.getElementById('tPrev').onclick=()=>goTung(tIdx-1);document.getElementById('tNext').onclick=()=>goTung(tIdx+1);
 // ===== 五行 / 脈輪 =====
-function buildFive(){clearGroup('five');clearLabels(['five']);const R0=REG[cur];const RS=scope==='all'?REG_ORDER.map(r=>REG[r]):[R0];const seenF=new Set(),seenO=new Set();
+function buildFive(){clearGroup('five');clearLabels(['five']);if(fiveSel){FIVE[fiveSel].org.forEach(k=>{const ms=Object.keys(ORG).filter(n=>n===k||n.startsWith(k+'_'));if(!ms.length)return;const mat=new THREE.MeshStandardMaterial({color:G5[fiveSel],emissive:G5[fiveSel],emissiveIntensity:.35,roughness:.5});const box=new THREE.Box3();ms.forEach(n=>{const m=new THREE.Mesh(ORG[n],mat);m.userData.keep=1;L('five').add(m);box.expandByObject(m)});label('five',({liver:'肝',gallbladder:'膽',heart:'心',small_intestine:'小腸',spleen:'脾',stomach:'胃',lung:'肺',colon:'大腸',kidney:'腎',bladder:'膀胱'})[k]+'・'+fiveSel,box.getCenter(V()),'big',{c:G5[fiveSel]})});return}const R0=REG[cur];const RS=scope==='all'?REG_ORDER.map(r=>REG[r]):[R0];const seenF=new Set(),seenO=new Set();
  RS.flatMap(R=>(R.five||[]).filter(x=>!seenF.has(x[2])&&seenF.add(x[2]))).forEach(([e,[x,y,z,f],n])=>{const c=G5[e];for(const s of[-1,1]){const h=surf(x,y,z,f,s);if(!h)continue;const g=new THREE.Mesh(new THREE.SphereGeometry(.03,16,12),glowMat(c,.5));g.position.copy(h.p);L('five').add(g);if(s>0)label('five',e+'・'+n,h.p,'big',{c})}});
  RS.flatMap(R=>(R.organs||[]).filter(x=>!seenO.has(x[0])&&seenO.add(x[0]))).forEach(([k,e,zh])=>{const ms=Object.keys(ORG).filter(n=>n===k||n.startsWith(k+'_'));if(!ms.length)return;
   const mat=new THREE.MeshStandardMaterial({color:G5[e],emissive:G5[e],emissiveIntensity:.3,roughness:.5});const box=new THREE.Box3();
   ms.forEach(n=>{const m=new THREE.Mesh(ORG[n],mat);m.userData.keep=1;L('five').add(m);box.expandByObject(m)});label('five',zh+'・'+e,box.getCenter(V()),'big',{c:G5[e]})})}
-const chakC=[0xe74c3c,0xe67e22,0xf1c40f,0x2ecc71,0x3498db,0x6c5ce7,0xb57edc],chakY=[.92,1.0,1.12,1.3,1.5,1.66,1.75];
-function buildChak(){clearGroup('chak');clearLabels(['chak']);chak=[];const hi=scope==='all'?[0,1,2,3,4,5,6]:REG[cur].chak;
+
+function buildChak(){clearGroup('chak');clearLabels(['chak']);chak=[];const hi=chakSel!=null?[chakSel]:scope==='all'?[0,1,2,3,4,5,6]:REG[cur].chak;
  chakY.forEach((y,i)=>{const on=hi.includes(i);const m=new THREE.Mesh(new THREE.SphereGeometry(on?.022:.013,16,12),new THREE.MeshBasicMaterial({color:chakC[i],transparent:true,opacity:on?1:.45,depthTest:false}));m.renderOrder=6;m.position.set(0,y,-.01);L('chak').add(m);
   if(on){const h=new THREE.Mesh(new THREE.SphereGeometry(.06,16,12),glowMat(chakC[i],.4));h.renderOrder=6;m.add(h);chak.push(h);label('chak',CHAK_N[i],V(.02,y,-.01),'big')}})}
 // 骨骼、肌肉標籤
@@ -712,7 +743,8 @@ function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
   if(k==='bone'){o.visible=showB;o.material=(on.bone&&BONE_HI.test(n)&&!mv)?mBoneHi:mBone}
   else{o.visible=showM;const r=roleOf(n);o.material=mv?(r?ROLE_M[r]:mIdle):(k==='mus'?mMus:mMusFar);if(mv&&!r&&k==='musg'&&!/neck|back/.test(n))o.visible=false}
   if(solo)o.visible=o===solo;else if(hidden.has(o))o.visible=false;if(o===picked)o.material=mPick}
- for(const k of['mer','tung','five','chak'])L(k).visible=on[k]&&!mv;
+ for(const k of['mer','tung','five','chak'])L(k).visible=on[k]&&!mv;const fm=on.five&&fiveSel&&!on.mer&&!mv;if(fm)L('mer').visible=true;MER.forEach(m=>merG[m.id].visible=fm?m.e===fiveSel:(!sel||sel===m.id));
+ document.getElementById('fiveBar').style.display=on.five&&!mv?'flex':'none';document.getElementById('chakBar').style.display=on.chak&&!mv?'flex':'none';document.querySelectorAll('#fiveBar button').forEach(b=>b.classList.toggle('on',b.dataset.e===fiveSel));document.querySelectorAll('#chakBar button').forEach(b=>b.classList.toggle('on',+b.dataset.c===chakSel));
  leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv&&scope==='all'?'block':'none';for(const id of['mvSec','moves','mBasic','markCard'])document.getElementById(id).style.display=scope==='all'?'none':'';
  document.querySelectorAll('#chips button,#chips2 button').forEach(b=>b.classList.toggle('on',!!on[b.dataset.l]))}
 let basicOpen=false;function setCard(html){basicOpen=false;const mb=document.getElementById('mBasic');if(mb)mb.classList.remove('on');document.getElementById('info').innerHTML=html?`<div class="card">${html}</div>`:''}
@@ -721,7 +753,7 @@ function layerCard(k){const d=LAYER_TXT[k];if(!d)return;if(typeof d[1]==='string
  setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`)}
 const SOLO=['five','chak'],JOIN=['mer','tung'];
 function chipClick(e){const b=e.target.closest('button');if(!b)return;const k=b.dataset.l;on[k]=!on[k];if(on[k]&&SOLO.includes(k))SOLO.concat(JOIN).forEach(x=>{if(x!==k)on[x]=false});if(on[k]&&JOIN.includes(k))SOLO.forEach(x=>on[x]=false);if(mv&&(k==='skin'))stopMove();
- applyVis();if(on[k]){lastLayer=k;if(k==='tung'){if(tMode==='all'){buildTung();partCard()}else{layerCard(k);goTung(0)}}else{layerCard(k);if(scope==='all')frameRegion()}}}
+ applyVis();if(on[k]){lastLayer=k;if(k==='tung'){if(tMode==='all'){buildTung();partCard()}else{layerCard(k);goTung(0)}}else if(k==='five')fiveCard();else if(k==='chak')chakCard();else{layerCard(k);if(scope==='all')frameRegion()}}}
 document.getElementById('chips').onclick=chipClick;document.getElementById('chips2').onclick=chipClick;
 const side=n=>/_l$/.test(n)?'（左）':/_r$/.test(n)?'（右）':'';
 function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis();if(!o){box.style.display='none';return}
@@ -849,7 +881,7 @@ function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
  tungPts.forEach((p,i)=>p.ring.scale.setScalar((i===tIdx?1.5:1)*(1+.3*Math.sin(t*4+i))));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
  R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
- for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0?o.ti===tIdx:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
+ for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='mer'&&o.t==='name'&&on.five&&fiveSel&&!on.mer&&!mv)vis=MER_E[o.m]===fiveSel;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0?o.ti===tIdx:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
 buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
