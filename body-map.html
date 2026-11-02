@@ -60,7 +60,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .tmode{display:none;margin-top:8px}.tsw{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .tsw button,.tparts button{background:var(--card);color:#d9c58f;border:1px solid #6b5a2a;border-radius:9px;padding:8px 4px;font-size:14px}
 .tsw button.on,.tparts button.on{background:#5a4510;color:#fff;border-color:#ffd166}
-.tparts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.tparts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.tcat{grid-template-columns:repeat(3,1fr)}.tparts button small{display:block;font-size:11px;color:var(--mut)}.tparts button.on small{color:#ffe7a8}.tg button.rel{border-color:#ffd166;color:#ffe7a8}.tsub{font-size:12px;color:var(--mut);margin-top:6px}
 .tpts{display:flex;flex-direction:column;gap:6px;margin-top:8px}.tg{display:flex;flex-wrap:wrap;gap:4px;align-items:center}.tg span{width:100%;font-size:12px;color:var(--mut)}.tg button{background:var(--card);color:#ffd98a;border:1px solid #4a3f22;border-radius:8px;padding:6px 9px;font-size:13px}.tg button.on{background:#ffd166;color:#1a1300;border-color:#ffd166;font-weight:600}
 .ebar{display:none;flex-wrap:wrap;gap:6px;margin-top:8px}.ebar button{flex:1 0 18%;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:8px 2px;font-size:14px}.ebar button i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:0}.ebar button.on{border-color:#fff;background:#1d2a40;font-weight:600}#chakBar button{flex:1 0 22%;font-size:13px}
 .card .grp{margin:0;padding-left:18px}.card .grp li{margin:2px 0}
@@ -92,7 +92,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 <div class="sec">單獨看（打開時經絡、董氏會先收起來）</div>
 <div class="chips one" id="chips2"><button data-l="five">五行</button><button data-l="chak">脈輪</button></div>
 <div class="ebar" id="fiveBar"></div><div class="ebar" id="chakBar"></div>
-<div class="tmode" id="tmode"><div class="tparts" id="tparts"></div><div class="tpts" id="tpts"></div></div>
+<div class="tmode" id="tmode"><div class="tparts tcat" id="tcat"><button data-c="part" class="on">依部位</button><button data-c="gj">同歸經</button><button data-c="zz">同症狀</button></div><div class="tsub" id="tsub">先選部位，再點穴位；同一組的穴會一起亮。</div><div class="tparts" id="tparts"></div><div class="tparts" id="tkeys" style="display:none"></div><div class="tpts" id="tpts"></div></div>
 <div class="tnav" id="tnav"><button id="tPrev">◀ 上一個</button><span id="tName"></span><button id="tNext">下一個 ▶</button></div>
 <div id="info"></div>
 <div class="sec" id="mvSec">肌動學：選一個動作，看肌肉怎麼收縮、伸長</div>
@@ -675,7 +675,15 @@ leg.onclick=e=>{const b=e.target.closest('button');if(!b)return;sel=sel===b.data
 let pain=null,tungPts=[],tIdx=-1,chak=[];
 function clearLabels(ks){for(let i=labels.length-1;i>=0;i--)if(ks.includes(labels[i].k)){labels[i].d.remove();labels.splice(i,1)}}
 function clearGroup(k){const g=L(k);while(g.children.length){const c=g.children.pop();if(!c.userData.keep)c.traverse(o=>{if(o.geometry)o.geometry.dispose()})}}
-let tMode='reg',tPart=0;
+let tMode='reg',tPart=0,tCat='part',tKey=null;
+const GJ_K=['心','肝','脾','肺','腎','胃','膽','大腸','膀胱','三焦','心包','任督'];
+function gjHas(n,k){const s=(GJ[n]||'').replace(/（.*?）/g,'');if(k==='心')return s.replace(/心包/g,'').includes('心');if(k==='任督')return /任|督/.test(s);return s.includes(k)}
+const ZZ_K=[['頭痛頭暈',/頭痛|頭暈|偏頭|頭昏|眩暈/],['眼睛',/眼|視|角膜|結膜|青光|白內障|迎風流淚/],['鼻子',/鼻/],['耳朵',/耳|重聽/],['喉嚨牙齒',/喉|牙|齒|扁桃|咽/],['感冒',/感冒|退燒|發燒/],['頸肩',/頸|項|肩|落枕/],['手臂手指',/手|臂|肘|腕|指/],['背痛',/背/],['腰痛',/腰/],['坐骨腿痛',/坐骨|腿|髖|臀/],['膝蓋',/膝/],['腳踝足跟',/踝|足跟|腳/],['心臟',/心臟|心悸|心律|狹心|心肌|心口|心兩側|胸悶|胸痛/],['咳嗽氣喘',/咳|喘|支氣管/],['腸胃',/胃|腸|腹|消化|便秘|腹瀉|嘔|脹氣/],['肝膽',/肝|膽(?!固醇)|黃疸|脅/],['腎與水腫',/腎|水腫|浮腫|尿|膀胱/],['婦科',/婦|(?<!神)經痛|月經|子宮|卵巢|帶下|不妊|產後|乳/],['皮膚',/皮膚|濕疹|癢|疹|瘡/],['中風麻木',/中風|麻|半身不遂|顏面神經|痿/]];
+function ptZZ(g,q){return q.zz||g.zz||(q.id&&TUNG[q.id]?TUNG[q.id].zz:'')||''}
+function tPass(g,q){if(tCat==='part')return g.p===tPart;if(!tKey)return false;if(tCat==='gj')return gjHas(q.n,tKey);const k=ZZ_K.find(x=>x[0]===tKey);return !!k&&k[1].test(ptZZ(g,q))}
+function keyCount(c,k){let n=0;XYM.forEach(g=>g.pts.forEach(q=>{if(c==='gj'?gjHas(q.n,k):ZZ_K.find(x=>x[0]===k)[1].test(ptZZ(g,q)))n++}));return n}
+function keyLabel(k){return tCat==='gj'?(k==='任督'?'入任、督脈':'入'+k+'經'):k}
+function tTitle(){return tCat==='part'?`宣宇門｜${XYM_PARTS[tPart]}`:tKey?`宣宇門｜${keyLabel(tKey)}`:'宣宇門'}
 function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1;document.getElementById('tpts').innerHTML='';if(tMode==='all')return buildTungAll();const R0=REG[cur];
  const ph=surf(...R0.pain);pain=ph?ph.p:V(...R0.cam.t);const fz=R0.cam.v==='back'?-.15:.15;
  R0.tung.forEach(([id,use])=>{const t0=TUNG[id];if(!t0)return;const h=surf(...t0.spec);if(!h)return;const p=h.p;const t=Object.assign({},t0,{use,p,nrm:h.n});
@@ -685,27 +693,38 @@ function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1
   const mid=p.clone().lerp(pain,.5).add(V(0,0,fz));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const tb=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));tb.renderOrder=5;L('tung').add(tb);tungPts.push(t)});
  dot(L('tung'),pain,0xff6b5a,.008);label('tung',R0.n+'痛點',pain,'big');document.getElementById('tName').textContent=''}
 function buildTungAll(){const box=new THREE.Box3(),nS=V(0,0,0);
- let gi=-1;const btn=[];XYM.filter(g=>g.p===tPart).forEach(g=>{const mem=g.pts.map(x=>x.n).join('、');gi++;let first=true;const row=[];
-  g.pts.forEach(q=>{const t0=q.id?TUNG[q.id]:{};const spec=q.spec||t0.spec;const h=spec&&surf(...spec);if(!h)return;const p=h.p;
-   const t={all:1,n:q.n,u:q.u,where:q.where||t0.where,zz:q.zz||g.zz||t0.zz,g:g.g,mem,p,nrm:h.n,gi};
+ let gi=-1;const btn=[];XYM.forEach(g=>{const qs=g.pts.filter(q=>tPass(g,q));if(!qs.length)return;const mem=g.pts.map(x=>x.n).join('、');gi++;let first=true;const row=[];
+  qs.forEach(q=>{const t0=q.id?TUNG[q.id]:{};const spec=q.spec||t0.spec;const h=spec&&surf(...spec);if(!h)return;const p=h.p;
+   const t={all:1,n:q.n,u:q.u,where:q.where||t0.where,zz:q.zz||g.zz||t0.zz,g:g.g,gp:g.p,mem,p,nrm:h.n,gi};
    const r=new THREE.Mesh(new THREE.TorusGeometry(.009,.002,8,28),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
    const gl=new THREE.Mesh(new THREE.SphereGeometry(.014,12,10),glowMat(0xffd166,.35));gl.position.copy(p);L('tung').add(gl);t.glow=gl;
    label('tung',t.n,p,'gold tap',{grp:gi,head:first,ti:tungPts.length});first=false;row.push(`<button data-ti="${tungPts.length}">${t.n}</button>`);{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
-   box.expandByPoint(p);nS.add(h.n);tungPts.push(t)});btn.push(`<div class="tg"><span>${g.g}</span>${row.join('')}</div>`)});
+   box.expandByPoint(p);nS.add(h.n);tungPts.push(t)});if(row.length)btn.push(`<div class="tg"><span>${tCat==='part'?'':XYM_PARTS[g.p]+'｜'}${g.g}</span>${row.join('')}</div>`)});
  document.getElementById('tpts').innerHTML=btn.join('');
- document.getElementById('tName').textContent=`宣宇門｜${XYM_PARTS[tPart]}`;buildTungAllFrame()}
+ document.getElementById('tName').textContent=tTitle();buildTungAllFrame()}
 function buildTungAllFrame(){if(!tungPts.length)return;const box=new THREE.Box3(),nS=V(0,0,0);tungPts.forEach(t=>{box.expandByPoint(t.p);nS.add(t.nrm)});const c=box.getCenter(V()),sz=box.getSize(V()).length();const n=nS.setY(0).normalize();
  goal={t:c,p:c.clone().addScaledVector(n.lengthSq()?n:V(0,0,1),Math.min(1.4,Math.max(.42,sz*2.4))).add(V(0,.04,0))}}
-function partCard(){const gs=XYM.filter(g=>g.p===tPart);
- setCard(`<h3>宣宇門｜${XYM_PARTS[tPart]}（${gs.length} 組）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.g}</b>${g.pts.length>1?'：'+g.pts.map(x=>x.n).join('、'):''}</li>`).join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，3D 上就只留那一個穴，看位置、歸經和主治；再點一次同一個按鈕，回到這個部位全部的點。</p><div class="src">穴組依宣宇門董氏抽籤筒；位置、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`)}
+function partCard(){const SRC='<div class="src">穴組依宣宇門董氏抽籤筒；位置、歸經、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>';
+ const TIP='<p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，3D 上會留下這個穴和同一組的穴（選到的那個比較大），看位置、歸經和主治；再點一次同一個按鈕，回到全部的點。</p>';
+ if(tCat!=='part'&&!tKey){setCard(`<h3>${tCat==='gj'?'同歸經':'同症狀'}</h3><p>${tCat==='gj'?'選一條經，就把宣宇門 44 組裡「歸經」有寫到這條經的穴全部找出來，一起放在身上看。':'選一個症狀，就把宣宇門 44 組裡「主治」有寫到這類症狀的穴全部找出來，一起放在身上看。'}</p><p style="color:var(--mut)">按鈕下面的小數字是有幾個穴。</p>${SRC}`);return}
+ if(tCat==='part'){const gs=XYM.filter(g=>g.p===tPart);setCard(`<h3>宣宇門｜${XYM_PARTS[tPart]}（${gs.length} 組）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.g}</b>${g.pts.length>1?'：'+g.pts.map(x=>x.n).join('、'):''}</li>`).join('')}</ul>${TIP}${SRC}`);return}
+ const rows=[];let n=0;XYM.forEach(g=>{const qs=g.pts.filter(q=>tPass(g,q));if(!qs.length)return;n+=qs.length;rows.push(`<li><b>${XYM_PARTS[g.p]}｜${g.g}</b>：${qs.map(q=>q.n).join('、')}</li>`)});
+ const how=tCat==='gj'?'歸經照傳承網各穴的原文。':'這裡的分類，是看各穴「主治」原文裡有沒有寫到這類症狀的字（例如「腰痛」「閃腰」都算腰痛），方便一起比較；用哪個穴還是依你的判斷。';
+ setCard(`<h3>${tTitle()}（${n} 穴）</h3><ul class="grp">${rows.join('')}</ul><p style="margin:8px 0 0;color:var(--mut)">${how}</p>${TIP}${SRC}`)}
 document.getElementById('tparts').innerHTML=XYM_PARTS.map((p,i)=>`<button data-tp="${i}"${i?'':' class="on"'}>${p}</button>`).join('');
-function showOnlyTung(){tungPts.forEach((p,i)=>{const v=!p.all||tIdx<0||i===tIdx;p.ring.visible=v;if(p.glow)p.glow.visible=v})}
-function tungOverview(){tIdx=-1;showOnlyTung();document.querySelectorAll('#tpts button').forEach(b=>b.classList.remove('on'));document.getElementById('tName').textContent=`宣宇門｜${XYM_PARTS[tPart]}`;buildTungAllFrame();partCard()}
+function showOnlyTung(){const s0=tIdx>=0?tungPts[tIdx]:null;tungPts.forEach((p,i)=>{const v=!p.all||!s0||p.gi===s0.gi;p.ring.visible=v;const k=s0&&p.all&&i===tIdx?1.7:1;p.ring.scale.setScalar(k);if(p.glow){p.glow.visible=v;p.glow.scale.setScalar(k)}})}
+function tungOverview(){tIdx=-1;showOnlyTung();document.querySelectorAll('#tpts button').forEach(b=>b.classList.remove('on'));document.getElementById('tName').textContent=tTitle();buildTungAllFrame();partCard()}
 document.getElementById('tpts').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(+b.dataset.ti===tIdx){tungOverview();return}goTung(+b.dataset.ti)};
+function renderKeys(){const p=tCat==='part';document.getElementById('tparts').style.display=p?'':'none';const k=document.getElementById('tkeys');k.style.display=p?'none':'';
+ document.getElementById('tsub').textContent=p?'先選部位，再點穴位；同一組的穴會一起亮。':tCat==='gj'?'選一條經，看所有入這條經的穴；再點一次取消。':'選一個症狀，看主治有寫到它的穴；再點一次取消。';
+ if(p)return;const ks=tCat==='gj'?GJ_K:ZZ_K.map(x=>x[0]);k.innerHTML=ks.map(x=>[x,keyCount(tCat,x)]).filter(x=>x[1]).map(([x,n])=>`<button data-k="${x}"${x===tKey?' class="on"':''}>${tCat==='gj'?(x==='任督'?'任督脈':x+'經'):x}<small>${n} 穴</small></button>`).join('')}
+document.getElementById('tcat').onclick=e=>{const b=e.target.closest('button');if(!b)return;tCat=b.dataset.c;tKey=null;document.querySelectorAll('#tcat button').forEach(x=>x.classList.toggle('on',x===b));renderKeys();buildTung();applyVis();partCard()};
+document.getElementById('tkeys').onclick=e=>{const b=e.target.closest('button');if(!b)return;tKey=b.dataset.k===tKey?null:b.dataset.k;document.querySelectorAll('#tkeys button').forEach(x=>x.classList.toggle('on',x.dataset.k===tKey));buildTung();applyVis();partCard()};
 document.getElementById('tparts').onclick=e=>{const b=e.target.closest('button');if(!b)return;tPart=+b.dataset.tp;document.querySelectorAll('#tparts button').forEach(x=>x.classList.toggle('on',x===b));buildTung();partCard()};
-function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];document.querySelectorAll('#tpts button').forEach(b=>b.classList.toggle('on',+b.dataset.ti===tIdx));showOnlyTung();
+function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.length;const t=tungPts[tIdx];document.querySelectorAll('#tpts button').forEach(b=>{const j=+b.dataset.ti;b.classList.toggle('on',j===tIdx);b.classList.toggle('rel',j!==tIdx&&t.all&&tungPts[j]&&tungPts[j].gi===t.gi)});showOnlyTung();
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,t.all?.5:.95).add(V(0,t.all?.04:.1,0))};
+ if(t.all){const gm=tungPts.filter(x=>x.gi===t.gi);if(gm.length>1){const bx=new THREE.Box3();gm.forEach(x=>bx.expandByPoint(x.p));const c=bx.getCenter(V()),d=Math.max(.5,bx.getSize(V()).length()*2.6);goal={t:c,p:c.clone().addScaledVector(t.nrm,d).add(V(0,.04,0))}}}
  if(t.all){setCard(`<h3>宣宇門｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>同一組</td><td>${/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table><a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a><div class="src">穴組依宣宇門董氏抽籤筒；位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
  setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
 document.getElementById('fiveBar').innerHTML=FIVE_ORDER.map(e=>`<button data-e="${e}"><i style="background:${hex(G5[e])}"></i>${e}</button>`).join('');
@@ -881,7 +900,7 @@ function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
  tungPts.forEach((p,i)=>p.ring.scale.setScalar((i===tIdx?1.5:1)*(1+.3*Math.sin(t*4+i))));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
  R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
- for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='mer'&&o.t==='name'&&on.five&&fiveSel&&!on.mer&&!mv)vis=MER_E[o.m]===fiveSel;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0?o.ti===tIdx:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
+ for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='mer'&&o.t==='name'&&on.five&&fiveSel&&!on.mer&&!mv)vis=MER_E[o.m]===fiveSel;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0&&tungPts[tIdx]?o.grp===tungPts[tIdx].gi:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
 buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
