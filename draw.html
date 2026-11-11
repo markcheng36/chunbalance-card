@@ -21,9 +21,19 @@
          font-family: -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
          font-size: 16px; line-height: 1.5; }
   main { max-width: 720px; margin: 0 auto; padding: 16px; }
-  h1 { font-size: 22px; margin: 4px 0 12px; display: flex; align-items: center; gap: 10px; }
-  h1 img { height: 40px; width: auto; }
-  h1 small { display: block; font-size: 11px; letter-spacing: 3px; color: var(--hot); font-weight: 700; }
+  .brand { text-align: center; margin: 6px 0 14px; }
+  .brand img { width: 96px; height: auto; display: block; margin: 0 auto 2px; }
+  .brand .en { font-size: 12px; letter-spacing: .3em; color: #8B7355; font-weight: 700; }
+  .brand h1 { font-family: "Noto Serif TC", "Songti TC", serif; font-size: 26px; margin: 0; letter-spacing: 2px; }
+  .brand h1 em { font-style: normal; color: var(--accent); margin-left: 6px; }
+  .slogan { display: inline-block; margin-top: 6px; padding: 2px 14px; border-radius: 999px;
+            background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; letter-spacing: 2px; }
+  .stage .mark { font-size: 13px; letter-spacing: 3px; color: var(--accent); font-weight: 700; opacity: .8; margin-bottom: 4px; }
+  footer { text-align: center; margin: 20px 0 8px; font-family: "Noto Serif TC", "Songti TC", serif;
+           font-weight: 700; color: #8B7355; }
+  footer small { display: block; font-family: inherit; font-weight: 400; color: var(--muted); font-size: 13px; }
+  .src { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; font-weight: 600; margin: 8px 0; }
+  .filebox { border: 1px dashed var(--line); border-radius: 10px; padding: 10px; margin: 8px 0; }
   /* 抽獎區：連點、長按不要選到字、不要跳出選單、不要放大 */
   html { -webkit-text-size-adjust: 100%; }
   button, .stage, .stage * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
@@ -72,9 +82,15 @@
 </head>
 <body>
 <main>
-  <h1><img src="images/logo.png" alt=""><span>鈞衡舍 抽獎<small>CHUN BALANCE</small></span></h1>
+  <header class="brand">
+    <img src="images/logo.png" alt="鈞衡舍 ChunBalance logo" width="440" height="471">
+    <div class="en">CHUNBALANCE</div>
+    <h1>鈞衡舍<em>抽獎</em></h1>
+    <div class="slogan">站得穩，才走的久</div>
+  </header>
 
   <div class="card stage">
+    <div class="mark">鈞衡舍 · 站得穩，才走的久</div>
     <div class="sess" id="sessLabel"></div>
     <div class="prize-cap" id="prizeCap"></div>
     <div><div class="prize" id="prizeLabel"></div></div>
@@ -99,12 +115,18 @@
         <select id="session"></select>
         <span class="muted">試算表的場次＋今天的日期，臨時加開就選今天</span></div>
       <p class="muted" id="sheetStatus">讀取試算表中…</p>
+      <div class="src" id="srcLabel"></div>
+      <div class="filebox">
+        <div class="row"><label>上傳 Excel</label>
+          <input type="file" id="xlsFile" accept=".xlsx,.xls,.csv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,text/plain"></div>
+        <p class="muted">這場沒有日期設定檔時，可以上傳自己的 Excel：「抽獎設定」頁放 場次｜券號從｜券號到｜不抽號碼｜獎項，「名單」頁放一行一個名字（有名單就改成對名字抽）。也可以不上傳，直接改下面的欄位。</p>
+        <div class="row"><button class="secondary" id="tplBtn">下載 Excel 範本</button>
+          <span class="muted" id="xlsStatus"></span></div>
+      </div>
       <div class="row mode"><label>抽獎方式</label>
-        <label><input type="radio" name="mode" value="ticket"> 對號（照試算表）</label>
-        <label><input type="radio" name="mode" value="name"> 對名字（上傳名單）</label></div>
+        <label><input type="radio" name="mode" value="ticket"> 對號（抽券號）</label>
+        <label><input type="radio" name="mode" value="name"> 對名字（抽名單）</label></div>
       <div class="byname">
-        <div class="row"><label>上傳名單</label><input type="file" id="nameFile" accept=".txt,.csv,text/plain,text/csv">
-          <span class="muted">純文字檔，一行一個名字</span></div>
         <div class="row"><label>名單</label>
           <textarea class="wide" id="names" placeholder="上傳後會出現在這裡，也可以直接貼上或修改，一行一個名字"></textarea></div>
         <p class="muted">名單只存在這台手機或電腦，不會傳到網路上。</p>
@@ -115,7 +137,7 @@
         <input class="wide" id="skip" placeholder="沒發出去的號碼，例如 5, 12, 20-25"></div>
       <div class="row"><label>獎項</label>
         <input class="wide" id="prizes" placeholder="用逗號隔開，例如 足弓墊, 免費調整一次"></div>
-      <p class="muted">兩種設定方式都可以：先在 Google 試算表「專講抽獎名單」填好每一場，這裡會自動帶入；來不及的話，直接改上面的欄位就好，改過的會記在這台手機上。每個場次的中獎名單分開記，同一個號碼或名字不會被抽到兩次。</p>
+      <p class="muted">順序：有這個日期的設定檔就自動帶入；沒有的話用你上傳的 Excel；都沒有就直接在畫面上填。畫面上改過的會記在這台手機上。每個場次的中獎名單分開記，同一個號碼或名字不會被抽到兩次。</p>
       <div class="row">
         <button class="secondary" id="reloadBtn">重新讀取試算表</button>
         <button class="secondary" id="hideBtn">投影模式（藏起設定）</button>
@@ -124,6 +146,7 @@
     </details>
   </div>
   <p class="muted" style="text-align:center"><a href="#" id="showSetup" hidden>顯示設定</a></p>
+  <footer>讓平衡，成為身體最自在的歸屬。<small>鈞衡舍 ChunBalance · chunbalance.com</small></footer>
 </main>
 
 <script>
@@ -132,8 +155,9 @@ const SHEET_ID = '1LqtbRljg33-HiJFFbfieXjbNKS0g_uopELeXGkXqlcA';
 const KEY = 'chun-draw-v2';
 const $ = id => document.getElementById(id);
 
-let store = { current: '', sessions: {} };
+let store = { current: '', sessions: {}, uploaded: {} };
 try { Object.assign(store, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+if (!store.uploaded) store.uploaded = {};
 function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
 
 let sheet = {};           // 場次 -> 設定（從試算表讀到的）
@@ -143,14 +167,14 @@ const today = () => { const d = new Date(); return String(d.getMonth() + 1).padS
 
 function sess() {
   const k = store.current;
-  if (!store.sessions[k]) store.sessions[k] = Object.assign(blank(), sheet[k] || {});
+  if (!store.sessions[k]) store.sessions[k] = Object.assign(blank(), sheet[k] || store.uploaded[k] || {});
   return store.sessions[k];
 }
 function applySheet(force) {
   Object.keys(sheet).forEach(k => {
     const s = store.sessions[k];
     if (!s) return;
-    if (force ? k === store.current : !s.edited) Object.assign(s, sheet[k], { edited: false });
+    if (force ? k === store.current : !s.edited && !s.fromXls) Object.assign(s, sheet[k], { edited: false });
   });
 }
 
@@ -227,11 +251,14 @@ function render() {
   $('undoBtn').hidden = !s.winners.length;
   // 下拉選單：今天＋試算表的每個場次（N+1）；目前選的場次不在裡面也會保留
   const t = today();
-  const keys = [t, ...[...new Set([...Object.keys(sheet), store.current])].filter(k => k && k !== t).sort()];
+  const keys = [t, ...[...new Set([...Object.keys(sheet), ...Object.keys(store.uploaded), store.current])].filter(k => k && k !== t).sort()];
   const md = k => k.slice(0, 2) + '/' + k.slice(2);
   $('session').innerHTML = keys.map(k => '<option value="' + k + '">' + md(k) +
-    (k === t ? '（今天）' : sheet[k] ? '' : '（手動）') + '</option>').join('');
+    (k === t ? '（今天）' : sheet[k] ? '' : store.uploaded[k] ? '（Excel）' : '（手動）') + '</option>').join('');
   $('session').value = store.current;
+  const k = store.current;
+  $('srcLabel').textContent = '這場的設定來源：' + (s.edited ? '畫面上手動修改' : sheet[k] ? '日期設定檔（試算表）' :
+    store.uploaded[k] || s.fromXls ? '上傳的 Excel' : '畫面上手動設定');
 }
 
 $('goBtn').onclick = () => {
@@ -257,7 +284,7 @@ $('goBtn').onclick = () => {
 ['from', 'to', 'skip', 'prizes'].forEach(id => $(id).addEventListener('input', () => {
   const s = sess();
   s[id] = (id === 'from' || id === 'to') ? (+$(id).value || 1) : $(id).value;
-  s.edited = true;
+  s.edited = true; s.fromXls = false;
   save(); render();
 }));
 // 名單不算「改過設定」，試算表的券號設定照樣會更新
@@ -268,15 +295,92 @@ document.querySelectorAll('input[name=mode]').forEach(el => el.addEventListener(
   s.mode = el.value; justWon = null; idleNum();
   save(); render();
 }));
-$('nameFile').addEventListener('change', async () => {
-  const f = $('nameFile').files[0];
+// ===== Excel：上傳設定或名單、下載範本 =====
+let xlsxReady = null;
+function loadXLSX() {
+  if (window.XLSX) return Promise.resolve();
+  if (!xlsxReady) xlsxReady = new Promise((ok, bad) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = ok; sc.onerror = () => { xlsxReady = null; bad(new Error('load')); };
+    document.head.appendChild(sc);
+  });
+  return xlsxReady;
+}
+const cellStr = v => v == null ? '' : String(v).replace(/^﻿/, '').trim();
+function findCol(head, names) { return head.findIndex(h => names.some(n => cellStr(h).includes(n))); }
+// 讀一個工作表（二維陣列）：有「場次/券號」欄就是設定，有「名字/姓名」欄就是名單，都沒有就把第一欄當名單
+function readRows(rows, out) {
+  rows = rows.filter(r => r && r.some(c => cellStr(c)));
+  if (!rows.length) return;
+  const head = rows[0];
+  const cK = findCol(head, ['場次', '日期']), cF = findCol(head, ['券號從', '從']), cT = findCol(head, ['券號到', '到']);
+  const cS = findCol(head, ['不抽']), cP = findCol(head, ['獎項', '獎品']);
+  const cN = findCol(head, ['名字', '姓名', '名單', '名稱']);
+  if (cF >= 0 || cT >= 0) {
+    rows.slice(1).forEach(r => {
+      const row = { from: +cellStr(r[cF]) || 1, to: +cellStr(r[cT]) || 1,
+                    skip: cS >= 0 ? cellStr(r[cS]) : '', prizes: cP >= 0 ? cellStr(r[cP]) : '' };
+      let k = cK >= 0 ? r[cK] : '';
+      if (typeof k === 'number' && k > 30000) { const d = new Date(Math.round((k - 25569) * 864e5)); k = String(d.getUTCMonth() + 1).padStart(2, '0') + String(d.getUTCDate()).padStart(2, '0'); }
+      k = normKey(k);
+      if (k.length > 4) k = k.slice(-4);
+      out.config.push([k, row]);
+    });
+  } else {
+    const col = cN >= 0 ? cN : 0;
+    const body = cN >= 0 ? rows.slice(1) : rows;
+    body.forEach(r => { const v = cellStr(r[col]); if (v) out.names.push(v); });
+    if (cN >= 0 && cP >= 0) rows.slice(1).forEach(r => { const v = cellStr(r[cP]); if (v) out.prizes.push(v); });
+  }
+}
+$('xlsFile').addEventListener('change', async () => {
+  const f = $('xlsFile').files[0];
   if (!f) return;
-  const buf = await f.arrayBuffer();
-  let text = new TextDecoder('utf-8').decode(buf);
-  if (text.includes('\uFFFD')) { try { text = new TextDecoder('big5').decode(buf); } catch (e) {} }
-  const s = sess(); s.names = text.replace(/^\uFEFF/, ''); save();
-  $('names').value = s.names; $('nameFile').value = ''; render();
+  const out = { config: [], names: [], prizes: [] };
+  try {
+    const buf = await f.arrayBuffer();
+    if (/\.(txt|csv)$/i.test(f.name)) {
+      let text = new TextDecoder('utf-8').decode(buf);
+      if (text.includes('�')) { try { text = new TextDecoder('big5').decode(buf); } catch (e) {} }
+      readRows(parseCSV(text.replace(/^﻿/, '')), out);
+    } else {
+      $('xlsStatus').textContent = '讀取中…';
+      await loadXLSX();
+      const wb = XLSX.read(buf, { type: 'array' });
+      wb.SheetNames.forEach(n => readRows(XLSX.utils.sheet_to_json(wb.Sheets[n], { header: 1, raw: true, defval: '' }), out));
+    }
+  } catch (e) {
+    $('xlsStatus').textContent = '讀不到這個檔案，請確認是 Excel（.xlsx）或一行一個名字的文字檔。';
+    $('xlsFile').value = ''; return;
+  }
+  const s = sess();
+  if (s.winners.length) { $('xlsStatus').textContent = '這場已經抽過了，要換設定請先「清空這場中獎名單」。'; $('xlsFile').value = ''; return; }
+  const msg = [];
+  out.config.forEach(([k, row]) => {
+    if (!k || k === store.current) Object.assign(s, row, { edited: false, fromXls: true });
+    if (k) { store.uploaded[k] = row; const o = store.sessions[k]; if (o && o !== s && !o.winners.length) Object.assign(o, row, { edited: false }); }
+  });
+  if (out.config.length) msg.push(out.config.length + ' 個場次設定');
+  if (out.names.length) {
+    s.names = out.names.join('\n'); s.mode = 'name'; s.fromXls = true;
+    if (out.prizes.length) s.prizes = out.prizes.join(', ');
+    msg.push(out.names.length + ' 個名字');
+  }
+  $('xlsStatus').textContent = msg.length ? '已讀到 ' + msg.join('、') + '。' : '檔案裡沒找到設定或名單，請照範本的欄位填。';
+  $('xlsFile').value = ''; justWon = null; idleNum(); save(); render();
 });
+$('tplBtn').onclick = async () => {
+  try { await loadXLSX(); } catch (e) { $('xlsStatus').textContent = '範本載入失敗，請檢查網路後再按一次。'; return; }
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+    ['場次', '券號從', '券號到', '不抽號碼', '獎項'],
+    [today(), 1, 30, '5, 12, 20-25', '足弓墊, 免費調整一次, 足部張力檢測'],
+  ]), '抽獎設定');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['名字'], ['王小明'], ['陳小美']]), '名單');
+  XLSX.writeFile(wb, '鈞衡舍抽獎_範本.xlsx');
+  $('xlsStatus').textContent = '範本已下載。只要對號抽，就把「名單」頁刪掉；只要對名字抽，「抽獎設定」頁只填獎項也可以。';
+};
 $('session').addEventListener('change', () => {
   const k = $('session').value;
   if (!k) return;
