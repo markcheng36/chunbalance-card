@@ -21,7 +21,8 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 #cv{width:100%;height:100%;display:block}
 #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .lbl{position:absolute;left:0;top:0;font-size:11px;color:#dff;white-space:nowrap;text-shadow:0 0 4px #000,0 0 3px #000,0 0 2px #000;transform:translate(7px,-50%)}
-.lbl.big{font-size:12px;font-weight:600}.lbl.gold{color:#ffd98a}.lbl.tap{pointer-events:auto;cursor:pointer;text-decoration:underline dotted;padding:4px 6px;touch-action:manipulation}
+.lbl.big{font-size:12px;font-weight:600}.lbl.oi{font-weight:700;font-size:12px;padding:2px 6px;border-radius:6px;background:rgba(10,14,22,.8)}
+.lbl.gold{color:#ffd98a}.lbl.tap{pointer-events:auto;cursor:pointer;text-decoration:underline dotted;padding:4px 6px;touch-action:manipulation}
 .lbl::before{content:"";position:absolute;left:-8px;top:50%;width:6px;height:1px;background:currentColor}
 .under{margin-top:8px;display:flex;flex-direction:column;gap:6px}
 .view{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
@@ -53,6 +54,10 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .sf{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}.sfh{color:#9fd3ff;font-weight:700;margin-bottom:2px}
 .qz{margin-top:8px}.qq{font-weight:700;margin-bottom:6px}.qz button{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:#0e1726;color:var(--txt);font-size:14px}.qz button.ok{border-color:#3ecf8e;background:#123526}.qz button.no{border-color:#ff6b5a;background:#3a1714}.qa{margin-top:6px;color:#ffd9a0}
 .moves button.on{border-color:#ff7a66;color:#ff9a88}
+.mctl2{display:none;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px;font-size:13px}.mctl2 button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px}.mctl2 button.on{background:#ffd9a0;color:#1a1208;border-color:#ffd9a0}.mctl2 .sp{color:#8fa0b8;margin-left:4px}
+.mphase{display:none;font-size:13px;margin-top:4px;color:#ffd9a0}
+.depnote{display:none;font-size:12px;color:#8fa0b8;margin-top:4px}
+.oikey{font-size:12px;margin:6px 0 0}.oikey i{display:inline-block;width:9px;height:9px;border-radius:50%;margin:0 4px 0 8px;vertical-align:-1px}
 .mctl{display:none;align-items:center;gap:8px;margin-top:8px}.mctl input{flex:1}.mctl button{background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
 .tnav{display:none;align-items:center;gap:6px;margin-top:8px}
 .tnav button{background:var(--card);color:#ffd98a;border:1px solid #6b5a2a;border-radius:9px;padding:8px 10px;font-size:14px}
@@ -86,11 +91,12 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
  <div class="roles" id="roles"><span><i style="background:#ff4d3a"></i>主動肌（收縮變短）</span><span><i style="background:#ff9f43"></i>協同肌（幫忙）</span><span><i style="background:#4f8dff"></i>拮抗肌（被拉長）</span><span><i style="background:#ffd166"></i>穩定肌（固定關節）</span></div>
  <div class="legend ov" id="legend"></div>
 </div>
-<div class="card pick" id="pick"><h3 id="pkName"></h3><div id="pkInfo"></div><div class="acts"><button id="bSolo">只看它</button><button id="bHide">隱藏它</button><button id="bAll">全部顯示</button></div></div>
+<div class="card pick" id="pick"><h3 id="pkName"></h3><div id="pkInfo"></div><div class="oikey" id="oiKey" style="display:none"><i style="background:#58e07a"></i>起點（比較固定的一端）<i style="background:#ff6fb0"></i>止點（被拉動的一端）</div><div class="acts"><button id="bSolo">只看它</button><button id="bHide">隱藏它</button><button id="bAll">全部顯示</button></div></div>
 <div class="sec">可以一起看（複選）</div>
 <div class="chips" id="chips"><button data-l="skin">皮膚</button><button data-l="bone">骨骼</button><button data-l="mus">肌肉</button><button data-l="mer">經絡</button><button data-l="tung">董氏</button></div>
 <div class="sec">單獨看（打開時經絡、董氏會先收起來）</div>
 <div class="chips one" id="chips2"><button data-l="five">五行</button><button data-l="chak">脈輪</button></div>
+<div class="ebar" id="depBar"><button data-d="1" class="on">全部肌肉</button><button data-d="2">剝掉淺層</button><button data-d="3">只看深層</button></div><div class="depnote" id="depNote"></div>
 <div class="ebar" id="fiveBar"></div><div class="ebar" id="chakBar"></div>
 <div class="tmode" id="tmode"><div class="tparts tcat" id="tcat"><button data-c="ten" class="on">董氏十部位</button><button data-c="xym">宣宇門專用</button><button data-c="gj">同歸經</button><button data-c="zz">同症狀</button></div><div class="tsub" id="tsub"></div><div class="tparts" id="tparts"></div><div class="tparts" id="tkeys" style="display:none"></div><div class="tpts" id="tpts"></div></div>
 <div class="tnav" id="tnav"><button id="tPrev">◀ 上一個</button><span id="tName"></span><button id="tNext">下一個 ▶</button></div>
@@ -99,6 +105,8 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 <div class="moves" id="moves"></div>
 <button class="mbasic" id="mBasic">📘 肌動學原理</button>
 <div class="mctl" id="mctl"><button id="mPlay">⏸</button><input type="range" id="mSlide" min="0" max="1000" value="0"><button id="mStop">結束</button></div>
+<div class="mctl2" id="mctl2"><button id="mBack">◀ 一格</button><button id="mFwd">一格 ▶</button><span class="sp">速度</span><button data-sp=".25">0.25×</button><button data-sp=".5">0.5×</button><button data-sp="1" class="on">1×</button><button data-sp="2">2×</button></div>
+<div class="mphase" id="mphase"></div>
 <div id="minfo"></div>
 <div class="card all" id="markCard"><h3>馬克的整合看法｜<span id="markR"></span></h3><span id="markT"></span><br><b>調整我來，維持交給你。</b></div>
 <a class="cta" id="cta" href="https://line.me/R/ti/p/@chunbalance">加入官方 LINE「鈞衡舍」聊聊</a>
@@ -768,7 +776,17 @@ function buildChak(){clearGroup('chak');clearLabels(['chak']);chak=[];const hi=c
 const ctr=(n,d)=>{const o=parts[n];if(!o)return null;const c=new THREE.Box3().setFromObject(o).getCenter(V());return d?c.add(d):c};
 function buildLabels(){clearLabels(['bone','mus']);const L0=REG_LBL[cur];
  L0.bone.forEach(([n,t])=>{const p=ctr(n);if(p)label('bone',t,p,'big')});
- L0.mus.forEach(e=>{const isA=Array.isArray(e);const n=isA?e[0]:e+'_l';const t=isA?e[1]:((MUS[e]&&MUS[e].zh)||e).replace(/（.*$/,'');const p=ctr(n)||ctr(n.replace(/_l$/,'_r'));if(p)label('mus',t,p,'big')})}
+ L0.mus.forEach(e=>{const isA=Array.isArray(e);const n=isA?e[0]:e+'_l';const t=isA?e[1]:((MUS[e]&&MUS[e].zh)||e).replace(/（.*$/,'');const pn=parts[n]?n:n.replace(/_l$/,'_r');const p=ctr(pn);if(p)label('mus',t,p,'big',{pn})})}
+// ===== 肌肉分層（1 淺層、2 中層、3 深層）與起止點方向 =====
+const DP={'levator-scapulae':2,'rhomboid-major':2,supraspinatus:2,infraspinatus:2,'teres-minor':2,'teres-major':2,'serratus-anterior':2,'pectoralis-minor':2,'erector-spinae':2,'adductor-brevis':2,'adductor-magnus':2,semimembranosus:2,soleus:2,plantaris:2,'fibularis-brevis':2,'extensor-carpi-radialis-brevis':2,'finger-flexors':2,'gluteus-minimus':3,
+ subscapularis:3,'psoas-major':3,iliacus:3,piriformis:3,'obturator-internus':3,popliteus:3,'flexor-digitorum-longus':3,'pronator-quadratus':3,supinator:3,'flexor-digitorum-brevis':2,
+ rotator_cuff:2,back_muscles:2,neck_muscles:2,intercostals:2,foot_muscles:2,hand_muscles:2,iliopsoas:3,diaphragm:3,pelvic_floor:3};
+const dpOf=o=>DP[o.userData.key||o.name.replace(/_[lr]$/,'')]||1;let dep=1;
+// 起點方向：u 上、d 下、m 往身體中線、l 往外、a 往前、p 往後
+const OE={trapezius:'m','levator-scapulae':'u','rhomboid-major':'m',supraspinatus:'m',infraspinatus:'m','teres-minor':'m',subscapularis:'m','teres-major':'md','deltoid-ant':'u','deltoid-mid':'u','deltoid-post':'u','serratus-anterior':'a','pectoralis-major':'m','pectoralis-minor':'d',sternocleidomastoid:'d',
+ 'biceps-brachii':'u','triceps-brachii':'u',brachioradialis:'u','extensor-carpi-radialis-longus':'u','extensor-carpi-radialis-brevis':'u','extensor-digitorum':'u','extensor-carpi-ulnaris':'u',supinator:'u','flexor-carpi-radialis':'u','palmaris-longus':'u','finger-flexors':'u','pronator-quadratus':'m',
+ 'external-oblique':'u','erector-spinae':'d','psoas-major':'u',iliacus:'u','gluteus-maximus':'m','gluteus-minimus':'u',piriformis:'m','obturator-internus':'m','adductor-longus':'u','adductor-brevis':'u','adductor-magnus':'u',gracilis:'u',quadriceps:'u','biceps-femoris':'u',semitendinosus:'u',semimembranosus:'u',sartorius:'u',
+ popliteus:'u',gastrocnemius:'u',soleus:'u',plantaris:'u','tibialis-anterior':'u','fibularis-longus':'u','fibularis-brevis':'u','flexor-digitorum-longus':'u','flexor-digitorum-brevis':'p','extensor-digitorum-longus':'u'};
 // ===== 疊層、點選 =====
 const on={skin:true,bone:true,mus:false,mer:true,tung:false,five:false,chak:false};
 let picked=null,solo=null,mv=null,scope='reg',scopeBusy=false;const hidden=new Set();
@@ -777,8 +795,10 @@ function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
  for(const o of Object.values(parts)){const k=o.userData.kind,n=o.name;if(k==='skin'){o.visible=on.skin&&!mv&&!solo;continue}
   if(k==='bone'){o.visible=showB;o.material=(on.bone&&BONE_HI.test(n)&&!mv)?mBoneHi:mBone}
   else{o.visible=showM;const r=roleOf(n);o.material=mv?(r?ROLE_M[r]:mIdle):(k==='mus'?mMus:mMusFar);if(mv&&!r&&k==='musg'&&!/neck|back/.test(n))o.visible=false}
+  if(k!=='bone'&&!mv&&!solo&&dep>1&&dpOf(o)<dep)o.visible=false;
   if(solo)o.visible=o===solo;else if(hidden.has(o))o.visible=false;if(o===picked)o.material=mPick}
  for(const k of['mer','tung','five','chak'])L(k).visible=on[k]&&!mv;const fm=on.five&&fiveSel&&!on.mer&&!mv;if(fm)L('mer').visible=true;MER.forEach(m=>merG[m.id].visible=fm?m.e===fiveSel:(!sel||sel===m.id));
+ const dB=on.mus&&!mv&&scope!=='all';document.getElementById('depBar').style.display=dB?'flex':'none';document.getElementById('depNote').style.display=dB&&dep>1?'block':'none';document.querySelectorAll('#depBar button').forEach(b=>b.classList.toggle('on',+b.dataset.d===dep));
  document.getElementById('fiveBar').style.display=on.five&&!mv?'flex':'none';document.getElementById('chakBar').style.display=on.chak&&!mv?'flex':'none';document.querySelectorAll('#fiveBar button').forEach(b=>b.classList.toggle('on',b.dataset.e===fiveSel));document.querySelectorAll('#chakBar button').forEach(b=>b.classList.toggle('on',+b.dataset.c===chakSel));
  leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv&&scope==='all'?'block':'none';for(const id of['mvSec','moves','mBasic','markCard'])document.getElementById(id).style.display=scope==='all'?'none':'';
  document.querySelectorAll('#chips button,#chips2 button').forEach(b=>b.classList.toggle('on',!!on[b.dataset.l]))}
@@ -791,12 +811,23 @@ function chipClick(e){const b=e.target.closest('button');if(!b)return;const k=b.
  applyVis();if(on[k]){lastLayer=k;if(k==='tung'){if(tMode==='all'){buildTung();partCard()}else{layerCard(k);goTung(0)}}else if(k==='five')fiveCard();else if(k==='chak')chakCard();else{layerCard(k);if(scope==='all')frameRegion()}}}
 document.getElementById('chips').onclick=chipClick;document.getElementById('chips2').onclick=chipClick;
 const side=n=>/_l$/.test(n)?'（左）':/_r$/.test(n)?'（右）':'';
-function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis();if(!o){box.style.display='none';return}
+function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis();showOI(o);if(!o){box.style.display='none';return}
  const n=o.name,b=n.replace(/_[lr]$/,''),m=MUS[o.userData.key||b]||BASEG_INFO[b];
  if(m){document.getElementById('pkName').textContent=m.zh+side(n);
   document.getElementById('pkInfo').innerHTML=`<table><tr><td>起點</td><td>${m.o}</td></tr><tr><td>止點</td><td>${m.i}</td></tr><tr><td>動作</td><td>${m.a}</td></tr><tr><td>神經</td><td>${m.nv}</td></tr><tr><td>經絡</td><td>${m.mer}</td></tr>${m.tung?`<tr><td>董氏</td><td>${m.tung}</td></tr>`:''}${m.sf?`<tr><td>重點</td><td>${m.sf}</td></tr>`:''}</table>`}
  else{document.getElementById('pkName').textContent=(BONE_ZH[b]||n)+side(n);document.getElementById('pkInfo').innerHTML=BONE_INFO[b]?`<p style="margin:0">${BONE_INFO[b]}</p>`:'<p style="margin:0;color:#8fa0b8">切換到對應的分區，可以看到這裡的細部肌肉。</p>'}
  box.style.display='block'}
+document.getElementById('depBar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=+b.dataset.d;dep=(dep===d||d===1)?1:d;if(picked&&picked.userData.kind!=='bone'&&dpOf(picked)<dep)pickPart(null);applyVis();
+ const vis=[...new Set(Object.values(parts).filter(o=>o.visible&&(o.userData.kind==='mus'||o.userData.kind==='musg')).sort((x,y)=>(x.userData.kind==='mus'?0:1)-(y.userData.kind==='mus'?0:1)).map(o=>{const b=o.userData.key||o.name.replace(/_[lr]$/,'');return((MUS[b]&&MUS[b].zh)||BONE_ZH[b]||'').replace(/（.*$/,'')}).filter(Boolean))];
+ document.getElementById('depNote').textContent=dep===2?'淺層拿掉了（像斜方肌、三角肌、胸大肌、臀大肌），現在看到下一層：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):dep===3?'只留最深層，貼著骨頭的肌肉：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):'';};
+// 起點、止點標在 3D 上
+function oiEnds(o,code){const sd=/_l$/.test(o.name)?1:-1;const d=V(0,0,0);for(const c of code){if(c==='u')d.y+=1;if(c==='d')d.y-=1;if(c==='m')d.x-=sd;if(c==='l')d.x+=sd;if(c==='a')d.z+=1;if(c==='p')d.z-=1}d.normalize();
+ const a=o.geometry.attributes.position.array,n=a.length/3;let mn=1e9,mx=-1e9;const pr=new Float32Array(n);for(let i=0;i<n;i++){const v=a[i*3]*d.x+a[i*3+1]*d.y+a[i*3+2]*d.z;pr[i]=v;if(v<mn)mn=v;if(v>mx)mx=v}
+ const cut=(mx-mn)*.1,O=V(),I=V();let no=0,ni=0;for(let i=0;i<n;i++){if(pr[i]>=mx-cut){O.x+=a[i*3];O.y+=a[i*3+1];O.z+=a[i*3+2];no++}else if(pr[i]<=mn+cut){I.x+=a[i*3];I.y+=a[i*3+1];I.z+=a[i*3+2];ni++}}
+ return no&&ni?[O.divideScalar(no),I.divideScalar(ni)]:null}
+function showOI(o){clearGroup('oi');clearLabels(['oi']);on.oi=false;L('oi').visible=false;document.getElementById('oiKey').style.display='none';if(!o||o.userData.kind!=='mus'||mv)return;const code=OE[o.userData.key];if(!code)return;const e=oiEnds(o,code);if(!e)return;
+ [[e[0],0x58e07a,'起點'],[e[1],0xff6fb0,'止點']].forEach(([p,c,t])=>{const m=dot(L('oi'),p,c,.009);const h=new THREE.Mesh(new THREE.SphereGeometry(.02,14,10),glowMat(c,.45));h.renderOrder=6;m.add(h);label('oi',t,p,'oi',{c})});
+ on.oi=true;L('oi').visible=true;document.getElementById('oiKey').style.display='block'}
 let down=null;cv.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
 cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;const r=cv.getBoundingClientRect();
  rc.setFromCamera({x:(e.clientX-r.left)/r.width*2-1,y:-(e.clientY-r.top)/r.height*2+1},C);
@@ -831,14 +862,14 @@ function mats(k,a){const I=new THREE.Matrix4(),M={T:I,H:I,N:I,S:I,Cl:I,A:I};let 
 let mvKey=null,mvA=0,playing=true,fr=0;const tv=V();
 function setMove(k){const M0=MOVES[k];if(!M0.h&&!skinData){document.getElementById('mread').style.display='block';document.getElementById('mread').textContent='計算肌肉附著中…';setTimeout(()=>{buildSkin();setMove(k)},30);return}
  resetPose();mvKey=k;mv=M0;mvA=0;ph=0;playing=true;if(M0.h)prepHinge(k);pickPart(null);solo=null;hidden.clear();
- document.querySelectorAll('#moves button').forEach(b=>b.classList.toggle('on',b.dataset.mv===k));document.getElementById('mctl').style.display='flex';document.getElementById('mPlay').textContent='⏸';
+ document.querySelectorAll('#moves button').forEach(b=>b.classList.toggle('on',b.dataset.mv===k));document.getElementById('mctl').style.display='flex';document.getElementById('mctl2').style.display='flex';document.getElementById('mPlay').textContent='⏸';
  document.getElementById('roles').style.display='flex';document.getElementById('mread').style.display='block';applyVis();
  setMCard(`<h3>肌動學｜${mv.name}</h3><ul>${mv.txt.map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${mv.say}</p>${sfHTML(mv)}<p style="margin:8px 0 0;color:#8fa0b8;font-size:12px">看動作時，經絡、董氏等圖層會先隱藏；再點一次動作按鈕或按「結束」就回來。</p>`);if(M0.h)frameRegion(M0.view,1.7);else frame('back',k==='tilt'?1.55:null)}
 function resetPose(){if(hinge){for(const d of hinge.list){const g=d.o.geometry;g.attributes.position.array.set(d.orig);g.attributes.position.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere()}hinge=null}
  if(!skinData)return;for(const d of skinData.list){d.o.geometry.attributes.position.array.set(d.orig);d.o.geometry.attributes.position.needsUpdate=true;d.o.geometry.computeVertexNormals()}
  if(skinData.cerv){const g=skinData.cerv.o.geometry;g.attributes.position.array.set(skinData.cerv.orig);g.attributes.position.needsUpdate=true;g.computeVertexNormals()}
  for(const k of BK)for(const n of BODIES[k]){const o=parts[n];if(o&&n!=='spine_cervical'){o.matrixAutoUpdate=true;o.updateMatrix();o.updateMatrixWorld()}}}
-function stopMove(){resetPose();mv=null;mvKey=null;document.querySelectorAll('#moves button').forEach(b=>b.classList.remove('on'));['mctl','roles','mread'].forEach(i=>document.getElementById(i).style.display='none');applyVis();setMCard('')}
+function stopMove(){resetPose();mv=null;mvKey=null;document.querySelectorAll('#moves button').forEach(b=>b.classList.remove('on'));['mctl','mctl2','mphase','roles','mread'].forEach(i=>document.getElementById(i).style.display='none');applyVis();setMCard('')}
 function pose(a){const {M,read}=mats(mvKey,a);const E=BK.map(k=>M[k].elements);
  for(const k of BK)if(k!=='N'&&k!=='T')for(const n of BODIES[k]){const o=parts[n];if(!o)continue;o.matrixAutoUpdate=false;o.matrix.copy(M[k]);o.matrixWorldNeedsUpdate=true}
  for(const d of skinData.list){const arr=d.o.geometry.attributes.position.array,w=d.w,orig=d.orig,n=orig.length/3;
@@ -875,8 +906,11 @@ function poseH(a){const H=hinge,h=H.h,M0=MOVES[mvKey];const th=(M0.rev?1-a:a)*M0
 function buildMoves(){document.getElementById('moves').innerHTML=REG[cur].moves.map(k=>`<button data-mv="${k}">${MOVES[k].name}</button>`).join('')}
 document.getElementById('moves').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(mvKey===b.dataset.mv){stopMove();return}setMove(b.dataset.mv)};
 document.getElementById('mPlay').onclick=()=>{playing=!playing;document.getElementById('mPlay').textContent=playing?'⏸':'▶'};
-document.getElementById('mSlide').oninput=e=>{playing=false;document.getElementById('mPlay').textContent='▶';mvA=e.target.value/1000};
+document.getElementById('mSlide').oninput=e=>{playing=false;document.getElementById('mPlay').textContent='▶';mvA=e.target.value/1000;ph=Math.acos(1-2*mvA)};
 document.getElementById('mStop').onclick=stopMove;
+let spd=1,prevA=0;const stepA=d=>{playing=false;document.getElementById('mPlay').textContent='▶';mvA=Math.min(1,Math.max(0,mvA+d));ph=Math.acos(1-2*mvA)};
+document.getElementById('mBack').onclick=()=>stepA(-.05);document.getElementById('mFwd').onclick=()=>stepA(.05);
+document.querySelectorAll('#mctl2 [data-sp]').forEach(b=>b.onclick=()=>{spd=+b.dataset.sp;document.querySelectorAll('#mctl2 [data-sp]').forEach(x=>x.classList.toggle('on',x===b));if(!playing){playing=true;document.getElementById('mPlay').textContent='⏸'}});
 // ===== 鏡頭 =====
 let goal=null;const VIEWS={back:[0,1.36,-1.6],front:[0,1.36,1.6],side:[-1.6,1.36,0]};
 function frame(v,dist){const p=V(...VIEWS[v||'back']);if(dist)p.setLength(dist).setY(1.36);goal={t:V(0,1.3,0),p}}
@@ -912,11 +946,12 @@ ctl.addEventListener('start',()=>goal=null);
 const t0=performance.now(),tmp=V();let ph=0,lastT=0;
 function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  if(goal){ctl.target.lerp(goal.t,.12);C.position.lerp(goal.p,.12);if(C.position.distanceTo(goal.p)<.003)goal=null}ctl.update();
- if(mv){if(playing){ph+=dt*1.1;mvA=(1-Math.cos(ph))/2}if(mv.h)poseH(mvA);else pose(mvA)}
+ if(mv){if(playing){ph+=Math.min(dt,.1)*1.1*spd;mvA=(1-Math.cos(ph))/2}if(mv.h)poseH(mvA);else pose(mvA);const dA=mvA-prevA;prevA=mvA;const mp=document.getElementById('mphase');mp.style.display='block';
+  if(Math.abs(dA)>1e-5)mp.dataset.d=dA>0?'1':'0';mp.textContent=mvA<.02?'起始位置':mvA>.98?'動作到底：紅色肌肉最短，藍色肌肉被拉到最長':mp.dataset.d==='0'?'▼ 回到原位：紅色肌肉慢慢放長，藍色肌肉回到原本長度':'▲ 做動作：紅色主動肌收縮變短，藍色拮抗肌被拉長'}
  flowDots.forEach((d,i)=>d.position.copy(flows[i].cu.getPoint((t*.15+i*.137)%1)));
  tungPts.forEach((p,i)=>p.ring.scale.setScalar((i===tIdx?1.5:1)*(1+.3*Math.sin(t*4+i))));chak.forEach(h=>h.scale.setScalar(1+.2*Math.sin(t*3)));
  R.render(S,C);const w=stage.clientWidth,h=stage.clientHeight;
- for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='mer'&&o.t==='name'&&on.five&&fiveSel&&!on.mer&&!mv)vis=MER_E[o.m]===fiveSel;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0&&tungPts[tIdx]?o.grp===tungPts[tIdx].gi:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;
+ for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='mer'&&o.t==='name'&&on.five&&fiveSel&&!on.mer&&!mv)vis=MER_E[o.m]===fiveSel;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0&&tungPts[tIdx]?o.grp===tungPts[tIdx].gi:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;if(vis&&o.pn&&parts[o.pn]&&!parts[o.pn].visible)vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
 buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
