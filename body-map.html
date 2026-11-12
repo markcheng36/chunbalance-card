@@ -798,7 +798,7 @@ function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
   if(k!=='bone'&&!mv&&!solo&&dep>1&&dpOf(o)<dep)o.visible=false;
   if(solo)o.visible=o===solo;else if(hidden.has(o))o.visible=false;if(o===picked)o.material=mPick}
  for(const k of['mer','tung','five','chak'])L(k).visible=on[k]&&!mv;const fm=on.five&&fiveSel&&!on.mer&&!mv;if(fm)L('mer').visible=true;MER.forEach(m=>merG[m.id].visible=fm?m.e===fiveSel:(!sel||sel===m.id));
- const dB=on.mus&&!mv&&scope!=='all';document.getElementById('depBar').style.display=dB?'flex':'none';document.getElementById('depNote').style.display=dB&&dep>1?'block':'none';document.querySelectorAll('#depBar button').forEach(b=>b.classList.toggle('on',+b.dataset.d===dep));
+ const dB=on.mus&&!mv;document.getElementById('depBar').style.display=dB?'flex':'none';document.getElementById('depNote').style.display=dB?'block':'none';if(dep===1)document.getElementById('depNote').textContent='上面三顆可以把肌肉一層層剝開；點任何一條肌肉，3D 上會亮出起點（綠）和止點（粉紅）。';document.querySelectorAll('#depBar button').forEach(b=>b.classList.toggle('on',+b.dataset.d===dep));
  document.getElementById('fiveBar').style.display=on.five&&!mv?'flex':'none';document.getElementById('chakBar').style.display=on.chak&&!mv?'flex':'none';document.querySelectorAll('#fiveBar button').forEach(b=>b.classList.toggle('on',b.dataset.e===fiveSel));document.querySelectorAll('#chakBar button').forEach(b=>b.classList.toggle('on',+b.dataset.c===chakSel));
  leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv&&scope==='all'?'block':'none';for(const id of['mvSec','moves','mBasic','markCard'])document.getElementById(id).style.display=scope==='all'?'none':'';
  document.querySelectorAll('#chips button,#chips2 button').forEach(b=>b.classList.toggle('on',!!on[b.dataset.l]))}
@@ -819,7 +819,7 @@ function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis
  box.style.display='block'}
 document.getElementById('depBar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=+b.dataset.d;dep=(dep===d||d===1)?1:d;if(picked&&picked.userData.kind!=='bone'&&dpOf(picked)<dep)pickPart(null);applyVis();
  const vis=[...new Set(Object.values(parts).filter(o=>o.visible&&(o.userData.kind==='mus'||o.userData.kind==='musg')).sort((x,y)=>(x.userData.kind==='mus'?0:1)-(y.userData.kind==='mus'?0:1)).map(o=>{const b=o.userData.key||o.name.replace(/_[lr]$/,'');return((MUS[b]&&MUS[b].zh)||BONE_ZH[b]||'').replace(/（.*$/,'')}).filter(Boolean))];
- document.getElementById('depNote').textContent=dep===2?'淺層拿掉了（像斜方肌、三角肌、胸大肌、臀大肌），現在看到下一層：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):dep===3?'只留最深層，貼著骨頭的肌肉：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):'';};
+ document.getElementById('depNote').textContent=dep===2?'淺層拿掉了（像斜方肌、三角肌、胸大肌、臀大肌），現在看到下一層：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):dep===3?'只留最深層，貼著骨頭的肌肉：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):'上面三顆可以把肌肉一層層剝開；點任何一條肌肉，3D 上會亮出起點（綠）和止點（粉紅）。';};
 // 起點、止點標在 3D 上
 function oiEnds(o,code){const sd=/_l$/.test(o.name)?1:-1;const d=V(0,0,0);for(const c of code){if(c==='u')d.y+=1;if(c==='d')d.y-=1;if(c==='m')d.x-=sd;if(c==='l')d.x+=sd;if(c==='a')d.z+=1;if(c==='p')d.z-=1}d.normalize();
  const a=o.geometry.attributes.position.array,n=a.length/3;let mn=1e9,mx=-1e9;const pr=new Float32Array(n);for(let i=0;i<n;i++){const v=a[i*3]*d.x+a[i*3+1]*d.y+a[i*3+2]*d.z;pr[i]=v;if(v<mn)mn=v;if(v>mx)mx=v}
