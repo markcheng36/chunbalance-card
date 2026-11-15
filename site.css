@@ -294,3 +294,18 @@ b{font-weight:700;}
   .nav-in .brand small{font-size:8.5px;letter-spacing:1px;}
   .nav-btn{padding:7px 10px;font-size:13.5px;}
 }
+
+/* ===== 為什麼選鈞衡舍、頁尾 QR、免責聲明 ===== */
+.why{margin-top:26px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.why-c{background:#fff;border-radius:20px;padding:22px 20px;border:1px solid var(--line);border-top:4px solid var(--olive);}
+.why-c .n{font-family:var(--mono);font-size:12px;color:var(--coral);letter-spacing:1px;}
+.why-c h3{font-size:18px;font-weight:900;margin-top:4px;line-height:1.45;}
+.why-c p{font-size:14.5px;color:var(--ink-soft);margin-top:6px;}
+.foot-qr{display:inline-flex;align-items:center;gap:12px;margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 16px 10px 10px;text-align:left;}
+.foot-qr img{width:92px;height:92px;display:block;}
+.foot-qr span{font-size:13px;font-weight:700;color:var(--charcoal);line-height:1.6;}
+.foot .disclaimer{font-size:11.5px;opacity:.85;margin-top:12px;}
+@media (max-width:760px){
+  .why{grid-template-columns:1fr;gap:10px;}
+  .foot-qr{display:none;}
+}

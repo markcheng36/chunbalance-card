@@ -117,7 +117,7 @@ p.mark-say{max-width:420px;width:100%;text-align:left;margin:2px auto 14px;paddi
       <p class="small">長按圖片可以存起來或傳給朋友</p>
       <p id="endTip"></p>
       <div class="row">
-        <a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約足部張力檢測</a>
+        <a class="btn line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE 預約足部張力評估</a>
       </div>
       <div class="row">
         <a class="btn alt" href="https://chunbalance.com/book.html" target="_blank" rel="noopener">線上預約</a>
@@ -383,7 +383,7 @@ function rating(){const sc=S.score;if(S.cleared>=LEVELS.length)return '站穩大
 function end(){S.run=false;banner('');
   const worst=Object.entries(S.coll).sort((a,b)=>b[1]-a[1])[0];
   const title=rating();$('endTitle').textContent=title;
-  $('endTip').innerHTML=(worst[1]>.3?TIPS[worst[0]]+'<br>':'你三個足弓都撐得很好！<br>')+'這是遊戲裡的你。真實的足弓要看你的腳，來做<b>足部張力檢測</b>就知道。';
+  $('endTip').innerHTML=(worst[1]>.3?TIPS[worst[0]]+'<br>':'你三個足弓都撐得很好！<br>')+'這是遊戲裡的你。真實的足弓要看你的腳，來做<b>足部張力評估</b>就知道。';
   $('shareImg').src=card(title,worst[1]>.3?worst[0]:null);$('ovEnd').hidden=false;}
 function card(title,worst){
   const k=document.createElement('canvas');k.width=1080;k.height=1350;const c=k.getContext('2d');
