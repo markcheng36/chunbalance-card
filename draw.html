@@ -377,7 +377,7 @@ $('tplBtn').onclick = async () => {
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
     ['場次', '券號從', '券號到', '不抽號碼', '獎項'],
-    [today(), 1, 30, '5, 12, 20-25', '足弓墊, 免費調整一次, 足部張力檢測'],
+    [today(), 1, 30, '5, 12, 20-25', '足弓墊, 免費調整一次, 足部張力評估'],
   ]), '抽獎設定');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['名字'], ['王小明'], ['陳小美']]), '名單');
   XLSX.writeFile(wb, '鈞衡舍抽獎_範本.xlsx');

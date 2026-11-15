@@ -79,7 +79,7 @@ p.mark-say{max-width:420px;width:100%;text-align:left;margin:2px auto 14px;paddi
     <canvas id="c" width="600" height="760"></canvas>
 
     <div class="ov" id="ovStart">
-      <div class="mini">足部張力檢測・結構調整體驗</div>
+      <div class="mini">足部張力評估・結構調整體驗</div>
       <h1>足弓的<em>一天</em></h1>
       <p class="mark-say">站不穩，還要走一整天，會怎麼樣？每一步的衝擊腳底接不住，就往膝蓋、腰、肩膀一路傳。跟著小人過一天，看看身體有多累。</p>
       <div class="steps"><div><b>先量腳圖</b>聽聽身體<br>想告訴我們什麼</div><div><b>兩指當兩腳</b>左右交替點<br>一步一步走</div><div><b>走完一天</b>看到了晚上<br>身體累積多少</div></div>
@@ -191,7 +191,7 @@ const PRINT={tight:[.95,.95,.95],flat:[.05,.05,.05]};
 const READ={tight:{look:'腳印中間<b>空了一大塊</b>，外側只剩細細一條，前腳掌只有兩個點',arch:'足弓太緊下不來',body:'走路沒有緩衝，衝擊直直往上，容易<b>腰緊、肩頸硬、頭重重的</b>'},
             flat:{look:'腳印<b>印滿一大片</b>，內側也整片貼地，前腳掌壓成一大塊',arch:'足弓塌掉上不去',body:'撐不住身體，<b>膝蓋往內倒、腰跟著塌</b>，腳底容易痠'}};
 function setChoices(arr){$('choices').innerHTML='';arr.forEach(([t,fn,cls])=>{const b=document.createElement('button');b.innerHTML=t;if(cls)b.className=cls;b.onclick=fn;$('choices').appendChild(b);});}
-function startMap(){G.phase='map';G.ink=0;G.inking=false;$('chap').textContent='足部張力檢測・量腳圖';hint('<b>按住腳印</b>，把腳底壓下去拓印');}
+function startMap(){G.phase='map';G.ink=0;G.inking=false;$('chap').textContent='足部張力評估・量腳圖';hint('<b>按住腳印</b>，把腳底壓下去拓印');}
 function mapStep(dt){if(G.phase!=='map')return;if(G.inking){G.ink=Math.min(1,G.ink+dt/1.2);if(G.ink>=1){G.phase='mapread';G.inking=false;tone(660,.2);
   hint('腳圖印好了。看腳印，你的足弓是？');setChoices([['太緊下不來',()=>readMap('tight')],['塌掉上不去',()=>readMap('flat')]]);}}else G.ink=Math.max(0,G.ink-dt*.5);}
 function readMap(v){const ok=v===G.foot,r=READ[G.foot];G.mapOk=ok;tone(ok?880:200,.2);setChoices([]);
