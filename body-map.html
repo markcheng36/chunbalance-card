@@ -77,6 +77,7 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 .cta{display:block;text-align:center;background:#06c755;color:#fff;text-decoration:none;padding:12px;border-radius:12px;margin:14px 0;font-weight:600}
 .note{color:var(--mut);font-size:11px;text-align:center;line-height:1.6}.note a{color:var(--mut)}
 .tulink{display:block;margin:10px 0 4px;padding:10px 12px;border-radius:10px;background:#8b1e1e;color:#fff;text-decoration:none;text-align:center;font-weight:600;touch-action:manipulation}
+.rlbox{margin-top:8px;border-top:1px solid #2a3a52;padding-top:6px;font-size:13px;line-height:1.5}.rlh{color:#ffd9a0;margin-bottom:4px}.rl{margin:4px 0}.rl b{white-space:nowrap}.rl i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.rl small{color:#9fb0c8}.rlgo{background:#1d2a3d;color:#e8eef7;border:1px solid #3a4d6a;border-radius:6px;padding:1px 6px;font-size:12px}.rlt{color:#8fa0b8;font-size:12px;margin-top:4px}
 </style><link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
@@ -98,12 +99,12 @@ h1{font-size:22px;margin:4px 0 2px}h1 small{font-size:13px;color:var(--mut);font
 </div>
 <div class="card pick" id="pick"><h3 id="pkName"></h3><div id="pkInfo"></div><div class="oikey" id="oiKey" style="display:none"><i style="background:#58e07a"></i>起點（比較固定的一端）<i style="background:#ff6fb0"></i>止點（被拉動的一端）</div><div class="acts"><button id="bSolo">只看它</button><button id="bHide">隱藏它</button><button id="bAll">全部顯示</button></div></div>
 <div class="sec">可以一起看（複選）</div>
-<div class="chips" id="chips"><button data-l="skin">皮膚</button><button data-l="bone">骨骼</button><button data-l="mus">肌肉</button><button data-l="mer">經絡</button><button data-l="tung">董氏</button></div>
-<div class="sec">單獨看（打開時經絡、董氏會先收起來）</div>
+<div class="chips" id="chips"><button data-l="skin">皮膚</button><button data-l="bone">骨骼</button><button data-l="mus">肌肉</button><button data-l="mer">十四經</button><button data-l="tung">董氏</button></div>
+<div class="sec">單獨看（打開時十四經、董氏會先收起來）</div>
 <div class="chips one" id="chips2"><button data-l="five">五行</button><button data-l="chak">脈輪</button></div>
 <div class="ebar" id="depBar"><button data-d="1" class="on">全部肌肉</button><button data-d="2">剝掉淺層</button><button data-d="3">只看深層</button></div><div class="depnote" id="depNote"></div>
 <div class="ebar" id="fiveBar"></div><div class="ebar" id="chakBar"></div>
-<div class="tmode" id="tmode"><div class="tparts tcat" id="tcat"><button data-c="ten" class="on">董氏十部位</button><button data-c="xym">宣宇門專用</button><button data-c="gj">同歸經</button><button data-c="zz">同症狀</button></div><div class="tsub" id="tsub"></div><div class="tparts" id="tparts"></div><div class="tparts" id="tkeys" style="display:none"></div><div class="tpts" id="tpts"></div></div>
+<div class="tmode" id="tmode"><div class="tparts tcat" id="tcat"><button data-c="ten" class="on">董氏十部位</button><button data-c="xym">宣宇門專用</button><button data-c="gj">董氏五經</button><button data-c="zz">同症狀</button></div><div class="tsub" id="tsub"></div><div class="tparts" id="tparts"></div><div class="tparts" id="tkeys" style="display:none"></div><div class="tpts" id="tpts"></div></div>
 <div class="tnav" id="tnav"><button id="tPrev">◀ 上一個</button><span id="tName"></span><button id="tNext">下一個 ▶</button></div>
 <div id="info"></div>
 <div class="sec" id="mvSec">肌動學：選一個動作，看肌肉怎麼收縮、伸長</div>
@@ -705,8 +706,12 @@ function curGroups(){
  if(tCat==='xym')return tPart<XYM_PARTS.length?XYM.filter(g=>g.p===tPart).map(g=>({lab:g.g,names:g.pts.map(q=>q.n),mem:g.pts.map(q=>q.n)})):COMBO.map(c=>({lab:c.g,names:c.pts,mem:c.pts,combo:1}));
  if(!tKey)return[];const k=ZZ_K.find(x=>x[0]===tKey);
  return TEN.map(g=>({lab:`${TEN_PARTS[g.p]}｜${g.g}`,names:g.pts.filter(n=>tCat==='gj'?gjHas(n,tKey):!!k&&k[1].test((PT[n]||{}).zz||'')),mem:g.pts})).filter(g=>g.names.length)}
-const GJ_K=['心','肝','脾','肺','腎','胃','膽','大腸','膀胱','三焦','心包','任督'];
-function gjHas(n,k){const s=(GJ[n]||'').replace(/（.*?）/g,'');if(k==='心')return s.replace(/心包/g,'').includes('心');if(k==='任督')return /任|督/.test(s);return s.includes(k)}
+const GJ_K=['心','肝','脾','肺','腎'];
+// 董氏只分五經：六腑併入相表裡的臟（小腸、三焦、心包→心；膽→肝；胃→脾；大腸→肺；膀胱→腎）
+const WU_RE={心:/心|小腸|三焦/,肝:/肝|膽/,脾:/脾|胃/,肺:/肺|大腸/,腎:/腎|膀胱/};
+function gjHas(n,k){const s=(GJ[n]||'').replace(/（.*?）/g,'');return WU_RE[k].test(s)}
+const WU_COL={心:0xff5a4d,肝:0x3ddc84,脾:0xffd166,肺:0xf4f4f4,腎:0x5b7cff},WU_CSS={心:'#ff5a4d',肝:'#3ddc84',脾:'#ffd166',肺:'#f4f4f4',腎:'#5b7cff'};
+const wuOf=n=>GJ_K.filter(k=>gjHas(n,k)).map(k=>k+'經').join('、');
 const ZZ_K=[['頭痛頭暈',/頭痛|頭暈|偏頭|頭昏|眩暈/],['眼睛',/眼|視|角膜|結膜|青光|白內障|迎風流淚/],['鼻子',/鼻/],['耳朵',/耳|重聽/],['喉嚨牙齒',/喉|牙|齒|扁桃|咽/],['感冒',/感冒|鼻塞/],['發燒',/發燒|退燒|退熱|高燒|發熱|消炎/],['頸肩',/頸|項|肩|落枕/],['手臂手指',/手|臂|肘|腕|指/],['背痛',/背/],['腰痛',/腰/],['坐骨腿痛',/坐骨|腿|髖|臀/],['膝蓋',/膝/],['腳踝足跟',/踝|足跟|腳/],['心臟',/心臟|心悸|心律|狹心|心肌|心口|心兩側|胸悶|胸痛/],['咳嗽氣喘',/咳|喘|支氣管/],['腸胃',/胃|腸|腹|消化|便秘|腹瀉|嘔|脹氣/],['肝膽',/肝|膽(?!固醇)|黃疸|脅/],['腎與水腫',/腎|水腫|浮腫|尿|膀胱/],['婦科',/婦|(?<!神)經痛|月經|子宮|卵巢|帶下|不妊|產後|乳/],['皮膚',/皮膚|濕疹|癢|疹|瘡/],['中風麻木',/中風|麻|半身不遂|顏面神經|痿/]];
 function keyCount(c,k){let n=0;const z=ZZ_K.find(x=>x[0]===k);TEN.forEach(g=>g.pts.forEach(q=>{if(c==='gj'?gjHas(q,k):z[1].test((PT[q]||{}).zz||''))n++}));return n}
 function keyLabel(k){return tCat==='gj'?(k==='任督'?'入任、督脈':'入'+k+'經'):k}
@@ -720,12 +725,12 @@ function buildTung(){clearGroup('tung');clearLabels(['tung']);tungPts=[];tIdx=-1
   const mid=p.clone().lerp(pain,.5).add(V(0,0,fz));const cu=new THREE.QuadraticBezierCurve3(p,mid,pain);const tb=new THREE.Mesh(new THREE.TubeGeometry(cu,40,.0012,6),new THREE.MeshBasicMaterial({color:0xffd166,transparent:true,opacity:.6,depthTest:false}));tb.renderOrder=5;L('tung').add(tb);tungPts.push(t)});
  dot(L('tung'),pain,0xff6b5a,.008);label('tung',R0.n+'痛點',pain,'big');document.getElementById('tName').textContent=''}
 function buildTungAll(){
- let gi=-1;const btn=[];curGroups().forEach(g=>{gi++;let first=true;const row=[];const mem=g.mem.join('、');
+ let gi=-1;const btn=[];const tc=tCat==='gj'&&tKey&&WU_COL[tKey]?WU_COL[tKey]:0xffd166;curGroups().forEach(g=>{gi++;let first=true;const row=[];const mem=g.mem.join('、');
   g.names.forEach(n=>{const q=PT[n];if(!q||!q.spec)return;const h=surf(...q.spec);if(!h)return;const p=h.p;
    const t={all:1,n,u:ptU(n),where:q.where,zz:q.zz,g:g.lab,mem,combo:g.combo,p,nrm:h.n,gi};const sm=(p.x<-.2&&p.y<.9)||(p.y>1.55&&Math.abs(p.x)>.06)?.5:1;
-   const r=new THREE.Mesh(new THREE.TorusGeometry(.009*sm,.002*sm,8,28),lineMat(0xffd166));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
-   const gl=new THREE.Mesh(new THREE.SphereGeometry(.014*sm,12,10),glowMat(0xffd166,.35));gl.position.copy(p);L('tung').add(gl);t.glow=gl;
-   label('tung',t.n,p,'gold tap',{grp:gi,head:first,ti:tungPts.length});first=false;row.push(`<button data-ti="${tungPts.length}">${t.n}</button>`);{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
+   const r=new THREE.Mesh(new THREE.TorusGeometry(.009*sm,.002*sm,8,28),lineMat(tc));r.renderOrder=6;r.position.copy(p);r.lookAt(p.clone().add(h.n));L('tung').add(r);t.ring=r;
+   const gl=new THREE.Mesh(new THREE.SphereGeometry(.014*sm,12,10),glowMat(tc,.35));gl.position.copy(p);L('tung').add(gl);t.glow=gl;
+   label('tung',t.n,p,'gold tap',{grp:gi,head:first,ti:tungPts.length});if(tc!==0xffd166)labels[labels.length-1].d.style.color=WU_CSS[tKey];first=false;row.push(`<button data-ti="${tungPts.length}">${t.n}</button>`);{const ti=tungPts.length;labels[labels.length-1].d.addEventListener('click',e=>{e.stopPropagation();goTung(ti)})}
    tungPts.push(t)});if(!row.length)return;if(g.names.length===1&&g.lab===g.names[0]){const last=btn[btn.length-1];if(last&&last.solo){last.h+=row.join('');return}btn.push({solo:1,h:row.join('')});return}btn.push({h:`<span>${g.lab}</span>${row.join('')}`})});
  document.getElementById('tpts').innerHTML=btn.map(x=>`<div class="tg">${x.h}</div>`).join('');
  document.getElementById('tName').textContent=tTitle();buildTungAllFrame()}
@@ -733,7 +738,7 @@ function buildTungAllFrame(){if(!tungPts.length)return;const box=new THREE.Box3(
  goal={t:c,p:c.clone().addScaledVector(n.lengthSq()?n:V(0,0,1),Math.min(1.4,Math.max(.42,sz*2.4))).add(V(0,.04,0))}}
 function partCard(){const SRC=`<div class="src">${tCat==='xym'?'穴組依宣宇門董氏抽籤筒的宣宇門專用區；症狀配穴是馬克提供的組合。':'穴位依宣宇門董氏抽籤筒的十部位。'}位置、歸經、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`;
  const TIP='<p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，3D 上會留下這個穴和同一組的穴（選到的那個比較大），看位置、歸經和主治；再點一次同一個按鈕，回到全部的點。</p>';
- if((tCat==='gj'||tCat==='zz')&&!tKey){setCard(`<h3>${tCat==='gj'?'同歸經':'同症狀'}</h3><p>${tCat==='gj'?'選一條經，就把抽籤筒十部位裡「歸經」有寫到這條經的穴全部找出來，一起放在身上看。':'選一個症狀，就把抽籤筒十部位裡「主治」有寫到這類症狀的穴全部找出來，一起放在身上看。'}</p><p style="color:var(--mut)">按鈕下面的小數字是有幾個穴。</p>${SRC}`);return}
+ if((tCat==='gj'||tCat==='zz')&&!tKey){setCard(`<h3>${tCat==='gj'?'董氏五經':'同症狀'}</h3><p>${tCat==='gj'?'董氏只分心、肝、脾、肺、腎五經，六腑併入相表裡的臟：小腸、三焦、心包併入心經，膽併入肝經，胃併入脾經，大腸併入肺經，膀胱併入腎經。選一經，就把抽籤筒十部位裡歸到這一經的穴全部找出來，用五行色標在身上（心紅、肝綠、脾黃、肺白、腎藍黑）。這裡的五經和「十四經」圖層是兩套系統，打開董氏時十四經的線會先收起來。一個穴寫到兩經以上，會出現在每一經裡，但仍是同一個穴。':'選一個症狀，就把抽籤筒十部位裡「主治」有寫到這類症狀的穴全部找出來，一起放在身上看。'}</p><p style="color:var(--mut)">按鈕下面的小數字是有幾個穴。</p>${SRC}`);return}
  const gs=curGroups();const n=gs.reduce((a,g)=>a+g.names.length,0);
  const how=tCat==='gj'?'<p style="margin:8px 0 0;color:var(--mut)">歸經照傳承網各穴的原文。</p>':tCat==='zz'?'<p style="margin:8px 0 0;color:var(--mut)">這裡的分類，是看各穴「主治」原文裡有沒有寫到這類症狀的字（例如「腰痛」「閃腰」都算腰痛），方便一起比較；用哪個穴還是依你的判斷。</p>':'';
  setCard(`<h3>${tTitle()}（${gs.length} 組、${n} 穴）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.lab}</b>${g.combo||(tCat!=='ten'&&tCat!=='xym')?'：'+g.names.join('、'):''}</li>`).join('')}</ul>${how}${TIP}${SRC}`)}
@@ -745,7 +750,7 @@ function tungOverview(){tIdx=-1;showOnlyTung();document.querySelectorAll('#tpts 
 document.getElementById('tpts').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(+b.dataset.ti===tIdx){tungOverview();return}goTung(+b.dataset.ti)};
 function renderKeys(){const p=tCat==='ten'||tCat==='xym';document.getElementById('tparts').style.display=p?'':'none';const k=document.getElementById('tkeys');k.style.display=p?'none':'';
  document.getElementById('tsub').textContent=tCat==='ten'?'師父抽籤筒的十個部位，全部穴位都在這裡；點穴位，同一組的穴會一起亮。':tCat==='xym'?'宣宇門專用的 44 組，加上症狀配穴（情緒三針等）。':tCat==='gj'?'選一條經，看所有入這條經的穴；再點一次取消。':'選一個症狀，看主治有寫到它的穴；再點一次取消。';
- if(p){renderParts();return}const ks=tCat==='gj'?GJ_K:ZZ_K.map(x=>x[0]);k.innerHTML=ks.map(x=>[x,keyCount(tCat,x)]).filter(x=>x[1]).map(([x,n])=>`<button data-k="${x}"${x===tKey?' class="on"':''}>${tCat==='gj'?(x==='任督'?'任督脈':x+'經'):x}<small>${n} 穴</small></button>`).join('')}
+ if(p){renderParts();return}const ks=tCat==='gj'?GJ_K:ZZ_K.map(x=>x[0]);k.innerHTML=ks.map(x=>[x,keyCount(tCat,x)]).filter(x=>x[1]).map(([x,n])=>`<button data-k="${x}"${x===tKey?' class="on"':''}>${tCat==='gj'?`<i style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;background:${WU_CSS[x]}"></i>`+x+'經':x}<small>${n} 穴</small></button>`).join('')}
 renderKeys();
 document.getElementById('tcat').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.c===tCat)return;tCat=b.dataset.c;tKey=null;tPart=0;document.querySelectorAll('#tcat button').forEach(x=>x.classList.toggle('on',x===b));renderKeys();buildTung();applyVis();partCard()};
 document.getElementById('tkeys').onclick=e=>{const b=e.target.closest('button');if(!b)return;tKey=b.dataset.k===tKey?null:b.dataset.k;document.querySelectorAll('#tkeys button').forEach(x=>x.classList.toggle('on',x.dataset.k===tKey));buildTung();applyVis();partCard()};
@@ -754,8 +759,8 @@ function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.len
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,t.all?.5:.95).add(V(0,t.all?.04:.1,0))};
  if(t.all){const gm=tungPts.filter(x=>x.gi===t.gi);if(gm.length>1){const bx=new THREE.Box3();gm.forEach(x=>bx.expandByPoint(x.p));const c=bx.getCenter(V()),d=Math.max(.5,bx.getSize(V()).length()*2.6);goal={t:c,p:c.clone().addScaledVector(t.nrm,d).add(V(0,.04,0))}}}
- if(t.all){const tu=t.u?`<a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:'';setCard(`<h3>${tCat==='xym'?'宣宇門':'董氏'}｜${t.n}</h3><table><tr><td>位置</td><td>${t.where||''}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>${t.combo?'配穴':'同一組'}</td><td>${t.combo?t.g+'（'+t.mem+'）':/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table>${tu}<div class="src">位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
- setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
+ if(t.all){const tu=t.u?`<a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:'';setCard(`<h3>${tCat==='xym'?'宣宇門':'董氏'}｜${t.n}</h3><table><tr><td>位置</td><td>${t.where||''}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${wuOf(t.n)?wuOf(t.n)+'<br><small style="color:var(--mut)">原文：'+GJ[t.n]+'</small>':GJ[t.n]}</td></tr>`:''}<tr><td>${t.combo?'配穴':'同一組'}</td><td>${t.combo?t.g+'（'+t.mem+'）':/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table>${tu}<div class="src">位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
+ setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${wuOf(t.n)?wuOf(t.n)+'<br><small style="color:var(--mut)">原文：'+GJ[t.n]+'</small>':GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
 document.getElementById('fiveBar').innerHTML=FIVE_ORDER.map(e=>`<button data-e="${e}"><i style="background:${hex(G5[e])}"></i>${e}</button>`).join('');
 document.getElementById('chakBar').innerHTML=CHAK.map((c,i)=>`<button data-c="${i}"><i style="background:${hex(chakC[i])}"></i>${c.n.replace('太陽神經叢輪','太陽輪')}</button>`).join('');
 function fiveCard(){if(!fiveSel){const d=LAYER_TXT.five;setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><div class="sf"><div class="sfh">五行怎麼互相影響</div><ul><li>相生（媽媽養小孩）：木生火、火生土、土生金、金生水、水生木</li><li>相剋（互相牽制）：木剋土、土剋水、水剋火、火剋金、金剋木</li><li>點下面的木、火、土、金、水，3D 會亮起這一行的臟腑和經絡</li></ul></div><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`);return}
@@ -805,23 +810,35 @@ function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
  for(const k of['mer','tung','five','chak'])L(k).visible=on[k]&&!mv;const fm=on.five&&fiveSel&&!on.mer&&!mv;if(fm)L('mer').visible=true;MER.forEach(m=>merG[m.id].visible=fm?m.e===fiveSel:(!sel||sel===m.id));
  const dB=on.mus&&!mv;document.getElementById('depBar').style.display=dB?'flex':'none';document.getElementById('depNote').style.display=dB?'block':'none';if(dep===1)document.getElementById('depNote').textContent='上面三顆可以把肌肉一層層剝開；點任何一條肌肉，3D 上會亮出起點（綠）和止點（粉紅）。';document.querySelectorAll('#depBar button').forEach(b=>b.classList.toggle('on',+b.dataset.d===dep));
  document.getElementById('fiveBar').style.display=on.five&&!mv?'flex':'none';document.getElementById('chakBar').style.display=on.chak&&!mv?'flex':'none';document.querySelectorAll('#fiveBar button').forEach(b=>b.classList.toggle('on',b.dataset.e===fiveSel));document.querySelectorAll('#chakBar button').forEach(b=>b.classList.toggle('on',+b.dataset.c===chakSel));
- leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv&&scope==='all'?'block':'none';for(const id of['mvSec','moves','mBasic','markCard'])document.getElementById(id).style.display=scope==='all'?'none':'';
+ leg.style.display=on.mer&&!mv?'grid':'none';document.getElementById('tnav').style.display=on.tung?'flex':'none';document.getElementById('tmode').style.display=on.tung&&!mv&&scope==='all'?'block':'none';for(const id of['mvSec','moves','mBasic'])document.getElementById(id).style.display=scope==='all'||!on.mus?'none':'';document.getElementById('markCard').style.display=scope==='all'?'none':'';if(!on.mus&&basicOpen)setMCard('');
  document.querySelectorAll('#chips button,#chips2 button').forEach(b=>b.classList.toggle('on',!!on[b.dataset.l]))}
 let basicOpen=false;function setCard(html){basicOpen=false;const mb=document.getElementById('mBasic');if(mb)mb.classList.remove('on');document.getElementById('info').innerHTML=html?`<div class="card">${html}</div>`:''}
 function setMCard(html){basicOpen=false;const mb=document.getElementById('mBasic');if(mb)mb.classList.remove('on');document.getElementById('minfo').innerHTML=html?`<div class="card">${html}</div>`:''}
 function layerCard(k){const d=LAYER_TXT[k];if(!d)return;if(typeof d[1]==='string'){setCard(`<h3>${d[0]}</h3><p style="margin:0">${d[1]}</p>`);return}
  setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`)}
 const SOLO=['five','chak'],JOIN=['mer','tung'];
-function chipClick(e){const b=e.target.closest('button');if(!b)return;const k=b.dataset.l;on[k]=!on[k];if(on[k]&&SOLO.includes(k))SOLO.concat(JOIN).forEach(x=>{if(x!==k)on[x]=false});if(on[k]&&JOIN.includes(k))SOLO.forEach(x=>on[x]=false);if(mv&&(k==='skin'))stopMove();
- applyVis();if(on[k]){lastLayer=k;if(k==='tung'){if(tMode==='all'){buildTung();partCard()}else{layerCard(k);goTung(0)}}else if(k==='five')fiveCard();else if(k==='chak')chakCard();else{layerCard(k);if(scope==='all')frameRegion()}}}
+function chipClick(e){const b=e.target.closest('button');if(!b)return;const k=b.dataset.l;on[k]=!on[k];if(on[k]&&SOLO.includes(k))SOLO.concat(JOIN).forEach(x=>{if(x!==k)on[x]=false});if(on[k]&&JOIN.includes(k))SOLO.forEach(x=>on[x]=false);if(mv&&(k==='skin'||(k==='mus'&&!on.mus)))stopMove();
+ if(on[k]&&k==='tung')on.mer=false;if(on[k]&&k==='mer')on.tung=false;applyVis();if(on[k]){lastLayer=k;if(k==='tung'){if(tMode==='all'){buildTung();partCard()}else{layerCard(k);goTung(0)}}else if(k==='five')fiveCard();else if(k==='chak')chakCard();else{layerCard(k);if(scope==='all')frameRegion()}}}
 document.getElementById('chips').onclick=chipClick;document.getElementById('chips2').onclick=chipClick;
+const ROLE_NM={c:'主動',s:'協同',a:'被動',st:'穩定'},ROLE_DOT={c:'#ff4d3a',s:'#ff9f43',a:'#4f8dff',st:'#ffd166'};
+const zhOf=n=>{const b=n.replace(/_[lr]$/,'');return(((MUS[b]||BASEG_INFO[b]||{}).zh)||BONE_ZH[b]||b).replace(/（.*$/,'')};
+function roleHTML(key,nm){const rows=[];const bs=n=>n.replace(/_[lr]$/,'');for(const k in MOVES){const R=MOVES[k].roles;if(!R)continue;const all=['c','s','a','st'].flatMap(r=>R[r]||[]);
+  const exact=all.includes(nm);let me=null;for(const r of['c','s','a','st'])if((R[r]||[]).some(n=>exact?n===nm:bs(n)===key)){me=r;break}if(!me)continue;
+  const both=all.some(n=>/_l$/.test(n))&&all.some(n=>/_r$/.test(n));const lab=n=>(both?(/_l$/.test(n)?'左':/_r$/.test(n)?'右':''):'')+zhOf(n);
+  const others=r=>[...new Set((R[r]||[]).filter(n=>exact?n!==nm:bs(n)!==key).map(lab))].join('、');
+  const can=scope!=='all'&&REG[cur].moves&&REG[cur].moves.includes(k);
+  let t=me==='c'?'自己收縮變短，帶出這個動作':me==='s'?'從旁幫忙出力':me==='a'?'不出力，被拉長':'出力固定關節，不讓它亂動';
+  const ex=[];if(me==='c'&&others('c'))ex.push('一起主動：'+others('c'));if(me!=='c'&&others('c'))ex.push('主動：'+others('c'));if(me!=='s'&&others('s'))ex.push('協同：'+others('s'));if(me!=='a'&&others('a'))ex.push('被拉長：'+others('a'));if(me==='a'&&others('a'))ex.push('一起被拉長：'+others('a'));
+  rows.push(`<div class="rl"><b><i style="background:${ROLE_DOT[me]}"></i>${ROLE_NM[me]}</b>｜${can?`<button class="rlgo" data-mv="${k}">${MOVES[k].name} ▶</button>`:MOVES[k].name}：${t}${ex.length?`<br><small>${ex.join('；')}</small>`:''}</div>`)}
+ if(!rows.length)return'';return`<div class="rlbox"><div class="rlh">在動作裡它是：主動、協同，還是被動？</div>${rows.join('')}<div class="rlt">主動＝收縮出力；協同＝幫忙；被動＝被拉長（拮抗）；穩定＝固定關節</div></div>`}
 const side=n=>/_l$/.test(n)?'（左）':/_r$/.test(n)?'（右）':'';
 function pickPart(o){const box=document.getElementById('pick');picked=o;applyVis();showOI(o);if(!o){box.style.display='none';return}
  const n=o.name,b=n.replace(/_[lr]$/,''),m=MUS[o.userData.key||b]||BASEG_INFO[b];
  if(m){document.getElementById('pkName').textContent=m.zh+side(n);
-  document.getElementById('pkInfo').innerHTML=`<table><tr><td>起點</td><td>${m.o}</td></tr><tr><td>止點</td><td>${m.i}</td></tr><tr><td>動作</td><td>${m.a}</td></tr><tr><td>神經</td><td>${m.nv}</td></tr><tr><td>經絡</td><td>${m.mer}</td></tr>${m.tung?`<tr><td>董氏</td><td>${m.tung}</td></tr>`:''}${m.sf?`<tr><td>重點</td><td>${m.sf}</td></tr>`:''}</table>`}
+  document.getElementById('pkInfo').innerHTML=`<table><tr><td>起點</td><td>${m.o}</td></tr><tr><td>止點</td><td>${m.i}</td></tr><tr><td>動作</td><td>${m.a}</td></tr><tr><td>神經</td><td>${m.nv}</td></tr><tr><td>經絡</td><td>${m.mer}</td></tr>${m.tung?`<tr><td>董氏</td><td>${m.tung}</td></tr>`:''}${m.sf?`<tr><td>重點</td><td>${m.sf}</td></tr>`:''}</table>${roleHTML(o.userData.key||b,n)}`}
  else{document.getElementById('pkName').textContent=(BONE_ZH[b]||n)+side(n);document.getElementById('pkInfo').innerHTML=BONE_INFO[b]?`<p style="margin:0">${BONE_INFO[b]}</p>`:'<p style="margin:0;color:#8fa0b8">切換到對應的分區，可以看到這裡的細部肌肉。</p>'}
  box.style.display='block'}
+document.getElementById('pkInfo').addEventListener('click',e=>{const b=e.target.closest('.rlgo');if(!b)return;if(mvKey!==b.dataset.mv)setMove(b.dataset.mv)});
 document.getElementById('depBar').onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=+b.dataset.d;dep=(dep===d||d===1)?1:d;if(picked&&picked.userData.kind!=='bone'&&dpOf(picked)<dep)pickPart(null);applyVis();
  const vis=[...new Set(Object.values(parts).filter(o=>o.visible&&(o.userData.kind==='mus'||o.userData.kind==='musg')).sort((x,y)=>(x.userData.kind==='mus'?0:1)-(y.userData.kind==='mus'?0:1)).map(o=>{const b=o.userData.key||o.name.replace(/_[lr]$/,'');return((MUS[b]&&MUS[b].zh)||BONE_ZH[b]||'').replace(/（.*$/,'')}).filter(Boolean))];
  document.getElementById('depNote').textContent=dep===2?'淺層拿掉了（像斜方肌、三角肌、胸大肌、臀大肌），現在看到下一層：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):dep===3?'只留最深層，貼著骨頭的肌肉：'+vis.slice(0,14).join('、')+(vis.length>14?'…':''):'上面三顆可以把肌肉一層層剝開；點任何一條肌肉，3D 上會亮出起點（綠）和止點（粉紅）。';};
