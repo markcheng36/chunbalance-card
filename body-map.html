@@ -701,8 +701,11 @@ function curGroups(){
  if(tCat==='xym')return tPart<XYM_PARTS.length?XYM.filter(g=>g.p===tPart).map(g=>({lab:g.g,names:g.pts.map(q=>q.n),mem:g.pts.map(q=>q.n)})):COMBO.map(c=>({lab:c.g,names:c.pts,mem:c.pts,combo:1}));
  if(!tKey)return[];const k=ZZ_K.find(x=>x[0]===tKey);
  return TEN.map(g=>({lab:`${TEN_PARTS[g.p]}｜${g.g}`,names:g.pts.filter(n=>tCat==='gj'?gjHas(n,tKey):!!k&&k[1].test((PT[n]||{}).zz||'')),mem:g.pts})).filter(g=>g.names.length)}
-const GJ_K=['心','肝','脾','肺','腎','胃','膽','大腸','膀胱','三焦','心包','任督'];
-function gjHas(n,k){const s=(GJ[n]||'').replace(/（.*?）/g,'');if(k==='心')return s.replace(/心包/g,'').includes('心');if(k==='任督')return /任|督/.test(s);return s.includes(k)}
+const GJ_K=['心','肝','脾','肺','腎'];
+// 董氏只分五經：六腑併入相表裡的臟（小腸、三焦、心包→心；膽→肝；胃→脾；大腸→肺；膀胱→腎）
+const WU_RE={心:/心|小腸|三焦/,肝:/肝|膽/,脾:/脾|胃/,肺:/肺|大腸/,腎:/腎|膀胱/};
+function gjHas(n,k){const s=(GJ[n]||'').replace(/（.*?）/g,'');return WU_RE[k].test(s)}
+const wuOf=n=>GJ_K.filter(k=>gjHas(n,k)).map(k=>k+'經').join('、');
 const ZZ_K=[['頭痛頭暈',/頭痛|頭暈|偏頭|頭昏|眩暈/],['眼睛',/眼|視|角膜|結膜|青光|白內障|迎風流淚/],['鼻子',/鼻/],['耳朵',/耳|重聽/],['喉嚨牙齒',/喉|牙|齒|扁桃|咽/],['感冒',/感冒|鼻塞/],['發燒',/發燒|退燒|退熱|高燒|發熱|消炎/],['頸肩',/頸|項|肩|落枕/],['手臂手指',/手|臂|肘|腕|指/],['背痛',/背/],['腰痛',/腰/],['坐骨腿痛',/坐骨|腿|髖|臀/],['膝蓋',/膝/],['腳踝足跟',/踝|足跟|腳/],['心臟',/心臟|心悸|心律|狹心|心肌|心口|心兩側|胸悶|胸痛/],['咳嗽氣喘',/咳|喘|支氣管/],['腸胃',/胃|腸|腹|消化|便秘|腹瀉|嘔|脹氣/],['肝膽',/肝|膽(?!固醇)|黃疸|脅/],['腎與水腫',/腎|水腫|浮腫|尿|膀胱/],['婦科',/婦|(?<!神)經痛|月經|子宮|卵巢|帶下|不妊|產後|乳/],['皮膚',/皮膚|濕疹|癢|疹|瘡/],['中風麻木',/中風|麻|半身不遂|顏面神經|痿/]];
 function keyCount(c,k){let n=0;const z=ZZ_K.find(x=>x[0]===k);TEN.forEach(g=>g.pts.forEach(q=>{if(c==='gj'?gjHas(q,k):z[1].test((PT[q]||{}).zz||''))n++}));return n}
 function keyLabel(k){return tCat==='gj'?(k==='任督'?'入任、督脈':'入'+k+'經'):k}
@@ -729,7 +732,7 @@ function buildTungAllFrame(){if(!tungPts.length)return;const box=new THREE.Box3(
  goal={t:c,p:c.clone().addScaledVector(n.lengthSq()?n:V(0,0,1),Math.min(1.4,Math.max(.42,sz*2.4))).add(V(0,.04,0))}}
 function partCard(){const SRC=`<div class="src">${tCat==='xym'?'穴組依宣宇門董氏抽籤筒的宣宇門專用區；症狀配穴是馬克提供的組合。':'穴位依宣宇門董氏抽籤筒的十部位。'}位置、歸經、主治照「董氏心氣神針傳承網」原文。點是畫在右邊身體的示意位置。</div>`;
  const TIP='<p style="margin:8px 0 0;color:#ffd9a0">點下面的穴位按鈕，3D 上會留下這個穴和同一組的穴（選到的那個比較大），看位置、歸經和主治；再點一次同一個按鈕，回到全部的點。</p>';
- if((tCat==='gj'||tCat==='zz')&&!tKey){setCard(`<h3>${tCat==='gj'?'同歸經':'同症狀'}</h3><p>${tCat==='gj'?'選一條經，就把抽籤筒十部位裡「歸經」有寫到這條經的穴全部找出來，一起放在身上看。':'選一個症狀，就把抽籤筒十部位裡「主治」有寫到這類症狀的穴全部找出來，一起放在身上看。'}</p><p style="color:var(--mut)">按鈕下面的小數字是有幾個穴。</p>${SRC}`);return}
+ if((tCat==='gj'||tCat==='zz')&&!tKey){setCard(`<h3>${tCat==='gj'?'同歸經':'同症狀'}</h3><p>${tCat==='gj'?'董氏只分心、肝、脾、肺、腎五經，六腑併入相表裡的臟：小腸、三焦、心包併入心經，膽併入肝經，胃併入脾經，大腸併入肺經，膀胱併入腎經。選一經，就把抽籤筒十部位裡歸到這一經的穴全部找出來，一起放在身上看。一個穴寫到兩經以上，會出現在每一經裡，但仍是同一個穴。':'選一個症狀，就把抽籤筒十部位裡「主治」有寫到這類症狀的穴全部找出來，一起放在身上看。'}</p><p style="color:var(--mut)">按鈕下面的小數字是有幾個穴。</p>${SRC}`);return}
  const gs=curGroups();const n=gs.reduce((a,g)=>a+g.names.length,0);
  const how=tCat==='gj'?'<p style="margin:8px 0 0;color:var(--mut)">歸經照傳承網各穴的原文。</p>':tCat==='zz'?'<p style="margin:8px 0 0;color:var(--mut)">這裡的分類，是看各穴「主治」原文裡有沒有寫到這類症狀的字（例如「腰痛」「閃腰」都算腰痛），方便一起比較；用哪個穴還是依你的判斷。</p>':'';
  setCard(`<h3>${tTitle()}（${gs.length} 組、${n} 穴）</h3><ul class="grp">${gs.map(g=>`<li><b>${g.lab}</b>${g.combo||(tCat!=='ten'&&tCat!=='xym')?'：'+g.names.join('、'):''}</li>`).join('')}</ul>${how}${TIP}${SRC}`)}
@@ -741,7 +744,7 @@ function tungOverview(){tIdx=-1;showOnlyTung();document.querySelectorAll('#tpts 
 document.getElementById('tpts').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(+b.dataset.ti===tIdx){tungOverview();return}goTung(+b.dataset.ti)};
 function renderKeys(){const p=tCat==='ten'||tCat==='xym';document.getElementById('tparts').style.display=p?'':'none';const k=document.getElementById('tkeys');k.style.display=p?'none':'';
  document.getElementById('tsub').textContent=tCat==='ten'?'師父抽籤筒的十個部位，全部穴位都在這裡；點穴位，同一組的穴會一起亮。':tCat==='xym'?'宣宇門專用的 44 組，加上症狀配穴（情緒三針等）。':tCat==='gj'?'選一條經，看所有入這條經的穴；再點一次取消。':'選一個症狀，看主治有寫到它的穴；再點一次取消。';
- if(p){renderParts();return}const ks=tCat==='gj'?GJ_K:ZZ_K.map(x=>x[0]);k.innerHTML=ks.map(x=>[x,keyCount(tCat,x)]).filter(x=>x[1]).map(([x,n])=>`<button data-k="${x}"${x===tKey?' class="on"':''}>${tCat==='gj'?(x==='任督'?'任督脈':x+'經'):x}<small>${n} 穴</small></button>`).join('')}
+ if(p){renderParts();return}const ks=tCat==='gj'?GJ_K:ZZ_K.map(x=>x[0]);k.innerHTML=ks.map(x=>[x,keyCount(tCat,x)]).filter(x=>x[1]).map(([x,n])=>`<button data-k="${x}"${x===tKey?' class="on"':''}>${tCat==='gj'?x+'經':x}<small>${n} 穴</small></button>`).join('')}
 renderKeys();
 document.getElementById('tcat').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.c===tCat)return;tCat=b.dataset.c;tKey=null;tPart=0;document.querySelectorAll('#tcat button').forEach(x=>x.classList.toggle('on',x===b));renderKeys();buildTung();applyVis();partCard()};
 document.getElementById('tkeys').onclick=e=>{const b=e.target.closest('button');if(!b)return;tKey=b.dataset.k===tKey?null:b.dataset.k;document.querySelectorAll('#tkeys button').forEach(x=>x.classList.toggle('on',x.dataset.k===tKey));buildTung();applyVis();partCard()};
@@ -750,8 +753,8 @@ function goTung(i){if(!tungPts.length)return;tIdx=(i+tungPts.length)%tungPts.len
  document.getElementById('tName').textContent=`${t.n}（${tIdx+1}/${tungPts.length}）`;
  goal={t:t.p.clone(),p:t.p.clone().addScaledVector(t.nrm,t.all?.5:.95).add(V(0,t.all?.04:.1,0))};
  if(t.all){const gm=tungPts.filter(x=>x.gi===t.gi);if(gm.length>1){const bx=new THREE.Box3();gm.forEach(x=>bx.expandByPoint(x.p));const c=bx.getCenter(V()),d=Math.max(.5,bx.getSize(V()).length()*2.6);goal={t:c,p:c.clone().addScaledVector(t.nrm,d).add(V(0,.04,0))}}}
- if(t.all){const tu=t.u?`<a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:'';setCard(`<h3>${tCat==='xym'?'宣宇門':'董氏'}｜${t.n}</h3><table><tr><td>位置</td><td>${t.where||''}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>${t.combo?'配穴':'同一組'}</td><td>${t.combo?t.g+'（'+t.mem+'）':/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table>${tu}<div class="src">位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
- setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
+ if(t.all){const tu=t.u?`<a class="tulink" href="${TU_BASE+t.u}/" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:'';setCard(`<h3>${tCat==='xym'?'宣宇門':'董氏'}｜${t.n}</h3><table><tr><td>位置</td><td>${t.where||''}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${wuOf(t.n)?wuOf(t.n)+'<br><small style="color:var(--mut)">原文：'+GJ[t.n]+'</small>':GJ[t.n]}</td></tr>`:''}<tr><td>${t.combo?'配穴':'同一組'}</td><td>${t.combo?t.g+'（'+t.mem+'）':/[（、]/.test(t.g)||!t.mem.includes('、')?t.g:t.g+'（'+t.mem+'）'}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr></table>${tu}<div class="src">位置、歸經、主治照傳承網原文。點是示意位置，實際以手摸骨性標誌為準。</div>`);return}
+ setCard(`<h3>董氏｜${t.n}</h3><table><tr><td>位置</td><td>${t.where}</td></tr>${GJ[t.n]?`<tr><td>歸經</td><td>${wuOf(t.n)?wuOf(t.n)+'<br><small style="color:var(--mut)">原文：'+GJ[t.n]+'</small>':GJ[t.n]}</td></tr>`:''}<tr><td>常一起用</td><td>${t.g}</td></tr><tr><td>主治</td><td>${t.zz}</td></tr><tr><td>${REG[cur].n}用途</td><td>${t.use}</td></tr></table>${tuUrl(t.n)?`<a class="tulink" href="${tuUrl(t.n)}" target="_blank" rel="noopener">到「董氏心氣神針傳承網」看 ${t.n}穴 的完整說明 ↗</a>`:''}<div class="src">穴位主治引自宣宇門／董氏奇穴傳承資料。</div>`)}
 document.getElementById('fiveBar').innerHTML=FIVE_ORDER.map(e=>`<button data-e="${e}"><i style="background:${hex(G5[e])}"></i>${e}</button>`).join('');
 document.getElementById('chakBar').innerHTML=CHAK.map((c,i)=>`<button data-c="${i}"><i style="background:${hex(chakC[i])}"></i>${c.n.replace('太陽神經叢輪','太陽輪')}</button>`).join('');
 function fiveCard(){if(!fiveSel){const d=LAYER_TXT.five;setCard(`<h3>${d[0]}</h3><ul>${d[1].map(x=>'<li>'+x+'</li>').join('')}</ul><div class="sf"><div class="sfh">五行怎麼互相影響</div><ul><li>相生（媽媽養小孩）：木生火、火生土、土生金、金生水、水生木</li><li>相剋（互相牽制）：木剋土、土剋水、水剋火、火剋金、金剋木</li><li>點下面的木、火、土、金、水，3D 會亮起這一行的臟腑和經絡</li></ul></div><p style="margin:8px 0 0;color:#ffd9a0">馬克說：${d[2]}</p>`);return}
