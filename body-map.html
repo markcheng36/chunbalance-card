@@ -798,7 +798,7 @@ const OE={trapezius:'m','levator-scapulae':'u','rhomboid-major':'m',supraspinatu
  'external-oblique':'u','erector-spinae':'d','psoas-major':'u',iliacus:'u','gluteus-maximus':'m','gluteus-minimus':'u',piriformis:'m','obturator-internus':'m','adductor-longus':'u','adductor-brevis':'u','adductor-magnus':'u',gracilis:'u',quadriceps:'u','biceps-femoris':'u',semitendinosus:'u',semimembranosus:'u',sartorius:'u',
  popliteus:'u',gastrocnemius:'u',soleus:'u',plantaris:'u','tibialis-anterior':'u','fibularis-longus':'u','fibularis-brevis':'u','flexor-digitorum-longus':'u','flexor-digitorum-brevis':'p','extensor-digitorum-longus':'u'};
 // ===== 疊層、點選 =====
-const on={skin:true,bone:true,mus:false,mer:true,tung:false,five:false,chak:false};
+const on={skin:true,bone:true,mus:true,mer:false,tung:false,five:false,chak:false};
 let picked=null,solo=null,mv=null,scope='reg',scopeBusy=false;const hidden=new Set();
 const roleOf=n=>{if(!mv)return null;for(const r of['c','s','a','st'])if(mv.roles[r].includes(n))return r;return null};
 function applyVis(){const showB=on.bone||!!mv,showM=on.mus||!!mv;
@@ -938,7 +938,7 @@ let goal=null;const VIEWS={back:[0,1.36,-1.6],front:[0,1.36,1.6],side:[-1.6,1.36
 function frame(v,dist){const p=V(...VIEWS[v||'back']);if(dist)p.setLength(dist).setY(1.36);goal={t:V(0,1.3,0),p}}
 function frameRegion(v,k){if(scope==='all'){const t=V(0,.88,0);goal={t,p:t.clone().addScaledVector(V(...VIEWS[v||'front']).setY(0).normalize(),3.6*(k||1)).add(V(0,.07,0))};return}const c=REG[cur].cam,t=V(...c.t);const dir=V(...VIEWS[v||c.v]).setY(0).normalize();goal={t,p:t.clone().addScaledVector(dir,c.d*(k||1)).add(V(0,.05,0))}}
 document.querySelectorAll('.view button').forEach(b=>b.onclick=()=>frameRegion(b.dataset.v));
-const MER_TXT0=LAYER_TXT.mer[1].slice(0,3),MER_SAY0=LAYER_TXT.mer[2];let lastLayer='mer';
+const MER_TXT0=LAYER_TXT.mer[1].slice(0,3),MER_SAY0=LAYER_TXT.mer[2];let lastLayer='mus';
 function applyRegionText(){const R0=REG[cur];
  LAYER_TXT.bone=['解剖｜骨骼',R0.bone[0],R0.bone[1]];LAYER_TXT.mus=['肌動｜肌肉',cur==='shoulder'?R0.mus[0]:R0.mus[0].concat(['點任何一條肌肉，看它的起點、止點、動作和神經；下方「肌動學」選一個動作，看哪些肌肉收縮、哪些被拉長']),R0.mus[1]];
  LAYER_TXT.mer=['經絡｜十四經',MER_TXT0.concat([R0.mer]),cur==='shoulder'?MER_SAY0:'一個地方卡住，整條經絡都會不順。'];
@@ -976,7 +976,7 @@ function loop(){const t=(performance.now()-t0)/1000,dt=t-lastT;lastT=t;
  for(const o of labels){let vis=!!on[o.k];if(mv&&['mer','tung','five','chak'].includes(o.k))vis=false;if(vis&&o.m)vis=sel?o.m===sel:false;if(o.k==='mer'&&o.t==='name'&&on.five&&fiveSel&&!on.mer&&!mv)vis=MER_E[o.m]===fiveSel;if(vis&&o.k==='tung'&&o.grp!=null)vis=tIdx>=0&&tungPts[tIdx]?o.grp===tungPts[tIdx].gi:o.head;if(o.k==='bone'&&(on.mus||mv||sel||(on.tung&&tIdx>=0)))vis=false;if((o.k==='mus'||o.k==='bone')&&(mv||solo||scope==='all'))vis=false;if(vis&&o.pn&&parts[o.pn]&&!parts[o.pn].visible)vis=false;
   if(!vis){o.d.style.display='none';continue}tmp.copy(o.p).project(C);o.d.style.display=tmp.z<1?'block':'none';o.d.style.left=((tmp.x+1)/2*w)+'px';o.d.style.top=((1-tmp.y)/2*h)+'px'}
  requestAnimationFrame(loop)}
-buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mer');loop();window.ready=1;window.setRegion=setRegion;
+buildRegion();{const c=REG[cur].cam,t=V(...c.t);ctl.target.copy(t);C.position.copy(t).addScaledVector(V(...VIEWS[c.v]).setY(0).normalize(),c.d).add(V(0,.05,0))}layerCard('mus');loop();window.ready=1;window.setRegion=setRegion;
 
 
 function sfHTML(m){if(!m.sf)return'';const q=m.q;return `<div class="sf"><div class="sfh">肌動學重點</div><ul>${m.sf.map(x=>'<li>'+x+'</li>').join('')}</ul>${q?`<div class="qz"><div class="qq">考考你：${q[0]}</div>${q[1].map((o,i)=>`<button data-i="${i}">${'ABCD'[i]}. ${o}</button>`).join('')}<div class="qa"></div></div>`:''}</div>`}
