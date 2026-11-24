@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鈞衡舍小舖（預覽）</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<style>
+:root{
+  --charcoal:#4A4441;--olive:#7E9150;--olive-dark:#5E6E3A;--coral:#D4554B;
+  --bg:#F7F3EC;--card:#fff;--line:#DCD2C1;--ink:#2E2A27;--ink-soft:#6E665D;
+  --grad:linear-gradient(120deg,#5E6E3A 0%,#D4554B 100%);
+  --serif:"Noto Serif TC","Songti TC",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+body{background:var(--bg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);line-height:1.75;}
+a{color:inherit;text-decoration:none;}
+.wrap{max-width:520px;margin:0 auto;padding:28px 16px 60px;}
+.preview-tag{background:#FFF4D6;border:1px dashed #C9A23A;color:#7A5B10;font-size:13px;text-align:center;padding:6px 10px;border-radius:10px;margin-bottom:18px;}
+
+/* 個人區 */
+.head{text-align:center;}
+.avatar{width:104px;height:104px;border-radius:50%;object-fit:cover;object-position:center 20%;border:3px solid #fff;box-shadow:0 8px 22px rgba(60,50,30,.16);}
+.name{font-family:var(--serif);font-weight:900;font-size:24px;color:var(--charcoal);margin-top:10px;letter-spacing:2px;}
+.title{font-size:14px;color:var(--olive-dark);font-weight:700;}
+.title span{color:var(--coral);}
+.bio{margin-top:14px;font-size:15px;color:var(--ink-soft);text-align:left;background:var(--card);border-radius:16px;padding:14px 16px;}
+.links{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+.links a{font-size:14px;font-weight:700;padding:7px 16px;border-radius:999px;border:1.5px solid var(--charcoal);color:var(--charcoal);}
+.links a.line{background:#06C755;border-color:#06C755;color:#fff;}
+
+/* 商品 */
+h2{font-family:var(--serif);font-size:19px;color:var(--charcoal);margin:30px 0 12px;display:flex;align-items:center;gap:8px;}
+h2::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--coral);}
+.item{background:var(--card);border-radius:18px;padding:18px 16px 16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(60,50,30,.07);position:relative;overflow:hidden;}
+.item::after{content:"";position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--grad);}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--olive-dark);border:1px solid var(--olive);border-radius:999px;padding:1px 10px;}
+.item h3{font-size:18px;font-weight:900;color:var(--charcoal);margin-top:6px;}
+.price{margin-top:4px;display:flex;align-items:baseline;gap:10px;}
+.price b{font-size:22px;color:var(--coral);}
+.price s{font-size:14px;color:var(--ink-soft);}
+.price .tbd{font-size:12px;color:#7A5B10;background:#FFF4D6;border-radius:6px;padding:0 6px;}
+.item p{font-size:14.5px;color:var(--ink-soft);margin-top:6px;}
+.item ul{font-size:14.5px;color:var(--ink);margin:6px 0 0 1.2em;}
+.note{font-size:13px;color:var(--ink-soft);background:var(--bg);border-radius:10px;padding:8px 10px;margin-top:10px;}
+.buy{display:block;width:100%;margin-top:12px;background:var(--coral);color:#fff;font-weight:900;font-size:16px;padding:12px;border:0;border-radius:999px;cursor:pointer;font-family:inherit;}
+.buy.ghost{background:#fff;color:var(--charcoal);border:1.5px solid var(--charcoal);}
+
+/* 購買方式 */
+.steps{background:var(--card);border-radius:18px;padding:16px;}
+.steps ol{margin-left:1.3em;font-size:15px;}
+.steps li{margin:6px 0;}
+.steps .acct{background:var(--bg);border-radius:10px;padding:8px 10px;font-size:14px;margin-top:4px;}
+
+footer{text-align:center;margin-top:34px;font-size:13px;color:var(--ink-soft);}
+footer img{height:44px;opacity:.9;}
+footer .core{font-family:var(--serif);color:var(--charcoal);font-size:15px;margin:6px 0 2px;}
+
+/* 彈出視窗 */
+.sheet{position:fixed;inset:0;background:rgba(46,42,39,.45);display:none;align-items:flex-end;justify-content:center;z-index:50;}
+.sheet.on{display:flex;}
+.sheet-box{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 16px 24px;max-height:85vh;overflow:auto;}
+.sheet-box h4{font-size:17px;color:var(--charcoal);}
+.sheet-box .sum{font-size:15px;color:var(--coral);font-weight:900;margin:4px 0 10px;}
+.close{margin-top:12px;background:none;border:0;width:100%;font-size:15px;color:var(--ink-soft);padding:8px;font-family:inherit;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="preview-tag">預覽版：價格與匯款帳號都還沒定，按鈕不會真的收款</div>
+
+  <section class="head">
+    <img class="avatar" src="images/headshot.jpg" alt="馬克">
+    <div class="name">鈞衡舍小舖</div>
+    <div class="title">馬克 ｜ 身體結構平衡教練 <span>×</span> 前 IT 專案經理</div>
+    <div class="bio">在 IT 做了 10 年，從系統分析做到專案經理，每天都在幫公司和客戶解決問題。現在我解決的是人的身體問題，但習慣沒變：先搞懂問題，再給方法。<br>這裡放的是我自己每天在用的小工具，免帳號、手機打開就能用，分享給一樣在經營小店、帶活動的你。</div>
+    <div class="links">
+      <a class="line" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">加官方 LINE</a>
+      <a href="https://chunbalance.com/" target="_blank" rel="noopener">鈞衡舍官網</a>
+    </div>
+  </section>
+
+  <h2>單機版小工具</h2>
+
+  <div class="item">
+    <span class="tag">單機版工具</span>
+    <h3>優惠券產生器</h3>
+    <div class="price"><b>NT$ 399</b><s>NT$ 599</s><span class="tbd">價格待定</span></div>
+    <p>換上你自己的 LOGO、LINE QR 和地點，一分鐘做好一張可以傳 LINE 的優惠券。</p>
+    <ul>
+      <li>折價券、體驗券、抽獎券三種券</li>
+      <li>有效期限可設固定日期或「領取後 N 天」</li>
+      <li>A4 一頁 3 張列印，自動加流水號</li>
+    </ul>
+    <button class="buy" data-name="優惠券產生器" data-price="NT$ 399">我要這個</button>
+  </div>
+
+  <div class="item">
+    <span class="tag">單機版工具</span>
+    <h3>活動抽獎頁</h3>
+    <div class="price"><b>NT$ 299</b><s>NT$ 499</s><span class="tbd">價格待定</span></div>
+    <p>分會例會、店家活動現場抽獎，投影出來就能抽。</p>
+    <ul>
+      <li>名單直接貼上，或匯入 Excel</li>
+      <li>可以換成你的 LOGO 和標語</li>
+      <li>抽過的人不會重複中獎</li>
+    </ul>
+    <button class="buy" data-name="活動抽獎頁" data-price="NT$ 299">我要這個</button>
+  </div>
+
+  <div class="item">
+    <span class="tag">模板＋教學</span>
+    <h3>GAINS 個人網頁 自己改模板</h3>
+    <div class="price"><b>NT$ 1,500</b><span class="tbd">價格待定</span></div>
+    <p>BNI 夥伴專用。在試算表填好你的 GAINS，就有一頁自己的網頁，傳給夥伴一眼看懂你。</p>
+    <ul>
+      <li>試算表範本＋網頁模板</li>
+      <li>圖文說明書，照著做就能上線</li>
+      <li>免費網址，不用付主機費</li>
+    </ul>
+    <button class="buy" data-name="GAINS 個人網頁 自己改模板" data-price="NT$ 1,500">我要這個</button>
+  </div>
+
+  <div class="note" style="margin-bottom:14px">📱 單機版說明：資料只存在你自己手機或電腦的瀏覽器裡，不用註冊帳號，也不會上傳。換手機或清除瀏覽器資料前，請先用工具裡的「匯出備份」存一份。</div>
+
+  <h2>請馬克幫你做</h2>
+
+  <div class="item">
+    <span class="tag">代做</span>
+    <h3>小店官網、預約系統</h3>
+    <div class="price"><b>私訊報價</b></div>
+    <p>沒時間自己弄，就交給我。先聊你的店需要什麼，再給你方案，跟我調整身體的方式一樣：先懂問題，再給解法。</p>
+    <a class="buy ghost" style="text-align:center" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">LINE 聊聊</a>
+  </div>
+
+  <h2>購買方式</h2>
+  <div class="steps">
+    <ol>
+      <li>轉帳到下方帳號
+        <div class="acct">銀行代碼／帳號：<b>（待填）</b></div>
+      </li>
+      <li>加鈞衡舍官方 LINE <b>@chunbalance</b></li>
+      <li>傳「轉帳截圖＋姓名＋電話末三碼＋買的商品」</li>
+      <li>核對後，用 LINE 傳給你工具連結和通行碼</li>
+    </ol>
+  </div>
+
+  <footer>
+    <img src="images/logo.png" alt="鈞衡舍">
+    <div class="core">讓平衡，成為身體最自在的歸屬。</div>
+    <div>© 鈞衡舍 ChunBalance</div>
+  </footer>
+</div>
+
+<div class="sheet" id="sheet">
+  <div class="sheet-box">
+    <h4 id="s-name"></h4>
+    <div class="sum" id="s-price"></div>
+    <div class="steps" style="padding:0">
+      <ol>
+        <li>轉帳到：<b>（帳號待填）</b></li>
+        <li>加官方 LINE <b>@chunbalance</b></li>
+        <li>傳「轉帳截圖＋姓名＋電話末三碼＋商品名稱」</li>
+        <li>核對後傳給你工具連結和通行碼</li>
+      </ol>
+    </div>
+    <a class="buy" style="background:#06C755;text-align:center" href="https://line.me/R/ti/p/@chunbalance" target="_blank" rel="noopener">我轉好了，去 LINE 傳截圖</a>
+    <button class="close" id="s-close">先不用</button>
+  </div>
+</div>
+
+<script>
+var sheet=document.getElementById('sheet');
+document.querySelectorAll('button.buy').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.getElementById('s-name').textContent=b.dataset.name;
+    document.getElementById('s-price').textContent=b.dataset.price;
+    sheet.classList.add('on');
+  });
+});
+document.getElementById('s-close').onclick=function(){sheet.classList.remove('on');};
+sheet.addEventListener('click',function(e){if(e.target===sheet)sheet.classList.remove('on');});
+</script>
+</body>
+</html>
